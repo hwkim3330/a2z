@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>A2Z 자율주행차 네트워크 요구도 정의</title>
+    <meta name="description" content="A2Z 자율주행차의 TSN 기반 네트워크 아키텍처 및 고장 시나리오 대응 방안">
+    <meta name="keywords" content="A2Z, 자율주행, TSN, Time-Sensitive Networking, Automotive Ethernet">
+    <link rel="icon" type="image/svg+xml" href="assets/diagrams/network-architecture.svg">
     <style>
         * {
             margin: 0;
@@ -11,12 +14,51 @@
             box-sizing: border-box;
         }
 
+        :root {
+            --primary-color: #667eea;
+            --secondary-color: #764ba2;
+            --success-color: #4caf50;
+            --warning-color: #ff9800;
+            --danger-color: #f44336;
+            --info-color: #2196f3;
+            --dark-color: #333;
+            --light-color: #f5f5f5;
+        }
+
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
             line-height: 1.6;
-            color: #333;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: var(--dark-color);
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
             min-height: 100vh;
+        }
+
+        /* Loading Screen */
+        #loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s;
+        }
+
+        .loader {
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
         }
 
         .container {
@@ -25,56 +67,187 @@
             padding: 20px;
         }
 
+        /* Header */
         header {
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 15px;
-            padding: 30px;
+            background: rgba(255, 255, 255, 0.98);
+            border-radius: 20px;
+            padding: 40px;
             margin-bottom: 30px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            animation: fadeInDown 0.8s ease-out;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         h1 {
-            color: #764ba2;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
             font-size: 2.5em;
             margin-bottom: 10px;
+            font-weight: 800;
         }
 
         .subtitle {
             color: #666;
             font-size: 1.2em;
+            margin-bottom: 20px;
         }
 
-        nav {
-            background: rgba(255, 255, 255, 0.95);
+        .header-stats {
+            display: flex;
+            gap: 30px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .stat-icon {
+            width: 40px;
+            height: 40px;
             border-radius: 10px;
-            padding: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .stat-icon.sensors { background: linear-gradient(135deg, #4caf50, #8bc34a); }
+        .stat-icon.ecus { background: linear-gradient(135deg, #ff9800, #ffc107); }
+        .stat-icon.bandwidth { background: linear-gradient(135deg, #2196f3, #03a9f4); }
+        .stat-icon.latency { background: linear-gradient(135deg, #e91e63, #f06292); }
+
+        /* Navigation */
+        nav {
+            background: rgba(255, 255, 255, 0.98);
+            border-radius: 15px;
+            padding: 5px;
             margin-bottom: 30px;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 20px;
+            z-index: 100;
+            animation: fadeIn 1s ease-out 0.3s both;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
 
         nav ul {
             list-style: none;
             display: flex;
             flex-wrap: wrap;
-            gap: 20px;
+            gap: 5px;
             justify-content: center;
         }
 
         nav a {
-            color: #667eea;
+            color: var(--dark-color);
             text-decoration: none;
             font-weight: 600;
-            padding: 10px 20px;
-            border-radius: 5px;
+            padding: 12px 24px;
+            border-radius: 10px;
             transition: all 0.3s;
             display: block;
+            position: relative;
+            overflow: hidden;
+        }
+
+        nav a::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            transition: left 0.3s;
+            z-index: -1;
+        }
+
+        nav a:hover::before {
+            left: 0;
         }
 
         nav a:hover {
-            background: #667eea;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        nav a.active {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
             color: white;
         }
 
+        /* Tabs System */
+        .tab-container {
+            margin-bottom: 30px;
+        }
+
+        .tab-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .tab-button {
+            padding: 10px 20px;
+            background: white;
+            border: 2px solid var(--primary-color);
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .tab-button:hover {
+            background: var(--light-color);
+        }
+
+        .tab-button.active {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+            border-color: transparent;
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeInUp 0.5s ease-out;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Cards */
         .grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
@@ -83,51 +256,73 @@
         }
 
         .card {
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 15px;
-            padding: 25px;
+            background: rgba(255, 255, 255, 0.98);
+            border-radius: 20px;
+            padding: 30px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s;
+            transition: all 0.3s;
+            animation: fadeInUp 0.8s ease-out;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color), var(--primary-color));
+            background-size: 200% 100%;
+            animation: shimmer 3s linear infinite;
+        }
+
+        @keyframes shimmer {
+            to { background-position: 200% 0; }
         }
 
         .card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
         }
 
         .card h2 {
-            color: #764ba2;
+            color: var(--secondary-color);
             margin-bottom: 20px;
             font-size: 1.8em;
-            border-bottom: 2px solid #667eea;
-            padding-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
         .card h3 {
-            color: #667eea;
+            color: var(--primary-color);
             margin: 20px 0 10px;
             font-size: 1.3em;
         }
 
+        /* Tables */
         table {
             width: 100%;
             border-collapse: collapse;
             margin: 15px 0;
             background: white;
-            border-radius: 8px;
+            border-radius: 10px;
             overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
         }
 
         th {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
             color: white;
-            padding: 12px;
+            padding: 15px;
             text-align: left;
             font-weight: 600;
         }
 
         td {
-            padding: 10px 12px;
+            padding: 12px 15px;
             border-bottom: 1px solid #eee;
         }
 
@@ -135,460 +330,914 @@
             background: #f8f9ff;
         }
 
-        .sensor-specs {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 15px;
-            margin: 20px 0;
+        tr:last-child td {
+            border-bottom: none;
         }
 
-        .spec-item {
-            background: #f8f9ff;
-            padding: 15px;
-            border-radius: 8px;
-            border-left: 4px solid #667eea;
-        }
-
-        .spec-item strong {
-            color: #764ba2;
-            display: block;
-            margin-bottom: 5px;
-        }
-
-        .architecture-option {
+        /* Diagrams */
+        .diagram-container {
             background: white;
-            border-radius: 10px;
+            border-radius: 15px;
             padding: 20px;
             margin: 20px 0;
-            border: 2px solid #eee;
-        }
-
-        .architecture-option h4 {
-            color: #667eea;
-            margin-bottom: 15px;
-        }
-
-        .pros-cons {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-            margin-top: 15px;
-        }
-
-        .pros, .cons {
-            padding: 15px;
-            border-radius: 8px;
-        }
-
-        .pros {
-            background: #e8f5e9;
-            border-left: 4px solid #4caf50;
-        }
-
-        .cons {
-            background: #ffebee;
-            border-left: 4px solid #f44336;
-        }
-
-        .scenario-code {
-            font-family: 'Courier New', monospace;
-            background: #2d2d2d;
-            color: #f8f8f2;
-            padding: 15px;
-            border-radius: 8px;
-            margin: 15px 0;
-            overflow-x: auto;
-        }
-
-        .code-part {
-            display: inline-block;
-            padding: 2px 6px;
-            margin: 0 2px;
-            border-radius: 3px;
-        }
-
-        .code-scn { background: #f92672; }
-        .code-loc { background: #66d9ef; }
-        .code-dev { background: #a6e22e; }
-        .code-flt { background: #fd971f; }
-        .code-res { background: #ae81ff; }
-
-        .resolution-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 10px;
-            margin: 20px 0;
-        }
-
-        .resolution-item {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 15px;
-            border-radius: 8px;
-            text-align: center;
-        }
-
-        .resolution-item strong {
-            display: block;
-            font-size: 1.2em;
-            margin-bottom: 5px;
-        }
-
-        footer {
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 10px;
-            padding: 20px;
-            text-align: center;
-            margin-top: 40px;
             box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
         }
 
-        .links {
+        .diagram-container img,
+        .diagram-container svg {
+            width: 100%;
+            height: auto;
+        }
+
+        /* Interactive Elements */
+        .accordion {
+            margin: 20px 0;
+        }
+
+        .accordion-item {
+            background: white;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .accordion-header {
+            padding: 20px;
+            background: linear-gradient(135deg, #f5f5f5 0%, #e0e0e0 100%);
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s;
+        }
+
+        .accordion-header:hover {
+            background: linear-gradient(135deg, #e0e0e0 0%, #d0d0d0 100%);
+        }
+
+        .accordion-header.active {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+        }
+
+        .accordion-content {
+            padding: 0;
+            max-height: 0;
+            overflow: hidden;
+            transition: all 0.3s ease-out;
+        }
+
+        .accordion-content.active {
+            padding: 20px;
+            max-height: 1000px;
+        }
+
+        .accordion-icon {
+            transition: transform 0.3s;
+        }
+
+        .accordion-header.active .accordion-icon {
+            transform: rotate(180deg);
+        }
+
+        /* Progress Bars */
+        .progress-container {
+            margin: 20px 0;
+        }
+
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+
+        .progress-bar {
+            height: 30px;
+            background: #e0e0e0;
+            border-radius: 15px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            transition: width 1s ease-out;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .progress-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            animation: progress-shimmer 2s infinite;
+        }
+
+        @keyframes progress-shimmer {
+            to { left: 100%; }
+        }
+
+        /* Badges */
+        .badge {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin: 0 5px;
+        }
+
+        .badge-success {
+            background: var(--success-color);
+            color: white;
+        }
+
+        .badge-warning {
+            background: var(--warning-color);
+            color: white;
+        }
+
+        .badge-danger {
+            background: var(--danger-color);
+            color: white;
+        }
+
+        .badge-info {
+            background: var(--info-color);
+            color: white;
+        }
+
+        /* Tooltips */
+        .tooltip {
+            position: relative;
+            display: inline-block;
+            cursor: help;
+            border-bottom: 1px dotted var(--primary-color);
+        }
+
+        .tooltip .tooltip-text {
+            visibility: hidden;
+            width: 200px;
+            background: var(--dark-color);
+            color: white;
+            text-align: center;
+            border-radius: 8px;
+            padding: 10px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -100px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 12px;
+        }
+
+        .tooltip:hover .tooltip-text {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        /* Footer */
+        footer {
+            background: rgba(255, 255, 255, 0.98);
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            margin-top: 50px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .footer-links {
             display: flex;
             justify-content: center;
             gap: 30px;
-            margin-top: 15px;
+            margin: 20px 0;
+            flex-wrap: wrap;
         }
 
-        .links a {
-            color: #667eea;
+        .footer-links a {
+            color: var(--primary-color);
             text-decoration: none;
             font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.3s;
         }
 
-        .links a:hover {
-            text-decoration: underline;
+        .footer-links a:hover {
+            color: var(--secondary-color);
+            transform: translateY(-2px);
         }
 
+        /* Responsive */
         @media (max-width: 768px) {
             .grid {
                 grid-template-columns: 1fr;
             }
             
-            nav ul {
-                flex-direction: column;
-                align-items: center;
+            h1 {
+                font-size: 1.8em;
             }
             
-            .pros-cons {
-                grid-template-columns: 1fr;
+            nav ul {
+                flex-direction: column;
             }
+            
+            .header-stats {
+                flex-direction: column;
+            }
+        }
+
+        /* Dark Mode Toggle */
+        .theme-toggle {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: white;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            z-index: 1000;
+        }
+
+        .theme-toggle:hover {
+            transform: scale(1.1);
+        }
+
+        /* Scroll to Top */
+        .scroll-top {
+            position: fixed;
+            bottom: 100px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            z-index: 999;
+        }
+
+        .scroll-top:hover {
+            transform: translateY(-5px);
+        }
+
+        .scroll-top.show {
+            display: flex;
         }
     </style>
 </head>
 <body>
+    <!-- Loading Screen -->
+    <div id="loading">
+        <div class="loader"></div>
+    </div>
+
     <div class="container">
+        <!-- Header -->
         <header>
             <h1>A2Z 자율주행차 네트워크 요구도 정의</h1>
             <p class="subtitle">TSN 기반 고장 시나리오 대응 및 네트워크 아키텍처</p>
+            
+            <div class="header-stats">
+                <div class="stat-item">
+                    <div class="stat-icon sensors">📡</div>
+                    <div>
+                        <div style="font-weight: 600;">10+ 센서</div>
+                        <div style="font-size: 12px; color: #666;">LiDAR, Radar, Camera</div>
+                    </div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-icon ecus">🖥️</div>
+                    <div>
+                        <div style="font-weight: 600;">7개 ECU</div>
+                        <div style="font-size: 12px; color: #666;">ACU, VCU, TCU 등</div>
+                    </div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-icon bandwidth">📊</div>
+                    <div>
+                        <div style="font-weight: 600;">1.8 Gbps</div>
+                        <div style="font-size: 12px; color: #666;">총 대역폭 요구</div>
+                    </div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-icon latency">⚡</div>
+                    <div>
+                        <div style="font-weight: 600;">&lt;10ms</div>
+                        <div style="font-size: 12px; color: #666;">E2E 지연시간</div>
+                    </div>
+                </div>
+            </div>
         </header>
 
+        <!-- Navigation -->
         <nav>
             <ul>
-                <li><a href="#overview">개요</a></li>
-                <li><a href="#sensors">센서 구성</a></li>
-                <li><a href="#network">네트워크</a></li>
-                <li><a href="#scenarios">시나리오</a></li>
-                <li><a href="#requirements">요구사항</a></li>
-                <li><a href="docs/sensors.md">센서 상세</a></li>
-                <li><a href="docs/network.md">네트워크 상세</a></li>
-                <li><a href="docs/scenarios.md">시나리오 상세</a></li>
+                <li><a href="#overview" class="nav-link active">개요</a></li>
+                <li><a href="#architecture" class="nav-link">아키텍처</a></li>
+                <li><a href="#sensors" class="nav-link">센서</a></li>
+                <li><a href="#tsn" class="nav-link">TSN</a></li>
+                <li><a href="#scenarios" class="nav-link">시나리오</a></li>
+                <li><a href="#requirements" class="nav-link">요구사항</a></li>
+                <li><a href="docs/README.html" class="nav-link">📚 문서</a></li>
             </ul>
         </nav>
 
-        <div class="grid">
-            <div class="card" id="overview">
-                <h2>시스템 개요</h2>
-                <p>A2Z 자율주행차는 다양한 센서와 ECU를 TSN(Time-Sensitive Networking) 기반으로 연결하여 실시간성과 신뢰성을 보장합니다.</p>
+        <!-- Main Content -->
+        <div id="overview" class="section">
+            <div class="grid">
+                <div class="card">
+                    <h2>🚗 시스템 개요</h2>
+                    <p>A2Z 자율주행차는 최신 TSN(Time-Sensitive Networking) 기술을 적용하여 실시간성과 신뢰성을 보장하는 차세대 네트워크 아키텍처를 구현합니다.</p>
+                    
+                    <h3>핵심 기술 스택</h3>
+                    <div class="accordion">
+                        <div class="accordion-item">
+                            <div class="accordion-header">
+                                <span><strong>컴퓨팅 플랫폼</strong></span>
+                                <span class="accordion-icon">▼</span>
+                            </div>
+                            <div class="accordion-content">
+                                <ul>
+                                    <li><strong>NVIDIA Jetson Orin:</strong> 275 TOPS AI 성능, 자율주행 인지/판단</li>
+                                    <li><strong>Intel Tiger Lake:</strong> x86 기반 고성능 컴퓨팅, 제어 로직</li>
+                                    <li><strong>실시간 OS:</strong> QNX, Linux RT 지원</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="accordion-item">
+                            <div class="accordion-header">
+                                <span><strong>네트워크 기술</strong></span>
+                                <span class="accordion-icon">▼</span>
+                            </div>
+                            <div class="accordion-content">
+                                <ul>
+                                    <li><strong>Automotive Ethernet:</strong> 100BASE-T1, 1000BASE-T1, Multi-Gig</li>
+                                    <li><strong>TSN Standards:</strong> IEEE 802.1Qbv, Qav, CB, AS</li>
+                                    <li><strong>Protocols:</strong> SOME/IP, DDS, AUTOSAR Adaptive</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h2>🎯 프로젝트 목표</h2>
+                    
+                    <div class="progress-container">
+                        <div class="progress-label">
+                            <span>실시간성 보장</span>
+                            <span>95%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 95%">E2E &lt;10ms</div>
+                        </div>
+                    </div>
+                    
+                    <div class="progress-container">
+                        <div class="progress-label">
+                            <span>신뢰성 확보</span>
+                            <span>99.999%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 99%">Five 9s</div>
+                        </div>
+                    </div>
+                    
+                    <div class="progress-container">
+                        <div class="progress-label">
+                            <span>대역폭 최적화</span>
+                            <span>85%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 85%">1.8 Gbps</div>
+                        </div>
+                    </div>
+
+                    <h3>주요 도전 과제</h3>
+                    <ul>
+                        <li>센서 데이터 융합 실시간 처리</li>
+                        <li>고장 허용 네트워크 설계</li>
+                        <li>차량 인증 및 보안</li>
+                        <li>OTA 업데이트 지원</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div id="architecture" class="section" style="display: none;">
+            <div class="card">
+                <h2>🏗️ 네트워크 아키텍처</h2>
                 
-                <h3>핵심 플랫폼</h3>
-                <ul>
-                    <li><strong>ACU_NO:</strong> NVIDIA Jetson Orin 기반</li>
-                    <li><strong>ACU_IT:</strong> Intel Tiger Lake 기반</li>
-                    <li><strong>TSN Switch:</strong> Microchip Automotive Ethernet</li>
-                </ul>
-
-                <h3>주요 기술</h3>
-                <ul>
-                    <li>IEEE 802.1Qbv (Time Aware Shaper)</li>
-                    <li>IEEE 802.1Qav (Credit Based Shaper)</li>
-                    <li>IEEE 802.1CB (Frame Replication and Elimination)</li>
-                    <li>IEEE 802.1AS (Generalized PTP)</li>
-                </ul>
+                <div class="tab-container">
+                    <div class="tab-buttons">
+                        <button class="tab-button active" data-tab="arch-option-a">옵션 A: 단일 스위치</button>
+                        <button class="tab-button" data-tab="arch-option-b">옵션 B: 듀얼 엣지</button>
+                        <button class="tab-button" data-tab="arch-option-c">옵션 C: 메시 토폴로지</button>
+                    </div>
+                    
+                    <div id="arch-option-a" class="tab-content active">
+                        <div class="diagram-container">
+                            <img src="assets/diagrams/network-architecture.svg" alt="네트워크 아키텍처" style="max-height: 600px;">
+                        </div>
+                        <h3>단일 스위치 구성</h3>
+                        <table>
+                            <tr>
+                                <th>특성</th>
+                                <th>값</th>
+                                <th>평가</th>
+                            </tr>
+                            <tr>
+                                <td>홉 수</td>
+                                <td>1-2</td>
+                                <td><span class="badge badge-success">우수</span></td>
+                            </tr>
+                            <tr>
+                                <td>지연시간</td>
+                                <td>&lt;5ms</td>
+                                <td><span class="badge badge-success">우수</span></td>
+                            </tr>
+                            <tr>
+                                <td>가용성</td>
+                                <td>99.9%</td>
+                                <td><span class="badge badge-warning">보통</span></td>
+                            </tr>
+                            <tr>
+                                <td>비용</td>
+                                <td>낮음</td>
+                                <td><span class="badge badge-success">우수</span></td>
+                            </tr>
+                        </table>
+                    </div>
+                    
+                    <div id="arch-option-b" class="tab-content">
+                        <h3>듀얼 엣지 + 중앙 집선</h3>
+                        <table>
+                            <tr>
+                                <th>특성</th>
+                                <th>값</th>
+                                <th>평가</th>
+                            </tr>
+                            <tr>
+                                <td>홉 수</td>
+                                <td>2-3</td>
+                                <td><span class="badge badge-warning">보통</span></td>
+                            </tr>
+                            <tr>
+                                <td>지연시간</td>
+                                <td>&lt;8ms</td>
+                                <td><span class="badge badge-success">양호</span></td>
+                            </tr>
+                            <tr>
+                                <td>가용성</td>
+                                <td>99.95%</td>
+                                <td><span class="badge badge-success">양호</span></td>
+                            </tr>
+                            <tr>
+                                <td>비용</td>
+                                <td>중간</td>
+                                <td><span class="badge badge-warning">보통</span></td>
+                            </tr>
+                        </table>
+                    </div>
+                    
+                    <div id="arch-option-c" class="tab-content">
+                        <h3>3스위치 메시 + ACU 듀얼홈</h3>
+                        <table>
+                            <tr>
+                                <th>특성</th>
+                                <th>값</th>
+                                <th>평가</th>
+                            </tr>
+                            <tr>
+                                <td>홉 수</td>
+                                <td>2-4</td>
+                                <td><span class="badge badge-warning">보통</span></td>
+                            </tr>
+                            <tr>
+                                <td>지연시간</td>
+                                <td>&lt;10ms</td>
+                                <td><span class="badge badge-warning">보통</span></td>
+                            </tr>
+                            <tr>
+                                <td>가용성</td>
+                                <td>99.999%</td>
+                                <td><span class="badge badge-success">우수</span></td>
+                            </tr>
+                            <tr>
+                                <td>비용</td>
+                                <td>높음</td>
+                                <td><span class="badge badge-danger">높음</span></td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
             </div>
+        </div>
 
-            <div class="card" id="sensors">
-                <h2>센서 구성</h2>
+        <div id="sensors" class="section" style="display: none;">
+            <div class="card">
+                <h2>📡 센서 구성</h2>
+                <div class="diagram-container">
+                    <img src="assets/diagrams/sensor-layout.svg" alt="센서 배치도">
+                </div>
+            </div>
+            
+            <div class="grid">
+                <div class="card">
+                    <h2>LiDAR 센서</h2>
+                    <table>
+                        <tr>
+                            <th>모델</th>
+                            <th>채널</th>
+                            <th>범위</th>
+                            <th>대역폭</th>
+                        </tr>
+                        <tr>
+                            <td>
+                                <span class="tooltip">Hesai Pandar40P
+                                    <span class="tooltip-text">360° 회전형 LiDAR, 40채널</span>
+                                </span>
+                            </td>
+                            <td>40</td>
+                            <td>200m</td>
+                            <td>18.84-37.68 Mbps</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <span class="tooltip">Autol G32
+                                    <span class="tooltip-text">솔리드스테이트 LiDAR, 32채널</span>
+                                </span>
+                            </td>
+                            <td>32</td>
+                            <td>250m</td>
+                            <td>122.9-405.5 Mbps</td>
+                        </tr>
+                    </table>
+                </div>
                 
-                <h3>LiDAR</h3>
-                <div class="sensor-specs">
-                    <div class="spec-item">
-                        <strong>Hesai Pandar40P</strong>
-                        40채널, 360° 회전형<br>
-                        200m 범위, 18.84-37.68 Mbps
-                    </div>
-                    <div class="spec-item">
-                        <strong>Autol G32</strong>
-                        32채널, 솔리드스테이트<br>
-                        250m 범위, 122.9-405.5 Mbps
-                    </div>
+                <div class="card">
+                    <h2>기타 센서</h2>
+                    <table>
+                        <tr>
+                            <th>유형</th>
+                            <th>모델</th>
+                            <th>사양</th>
+                            <th>대역폭</th>
+                        </tr>
+                        <tr>
+                            <td>Radar</td>
+                            <td>MRR-35</td>
+                            <td>77 GHz, 중거리</td>
+                            <td>1-5 Mbps</td>
+                        </tr>
+                        <tr>
+                            <td>Camera</td>
+                            <td>STURDeCAM31</td>
+                            <td>1920x1536, HDR</td>
+                            <td>44.2-353.9 Mbps</td>
+                        </tr>
+                    </table>
                 </div>
-
-                <h3>기타 센서</h3>
-                <table>
-                    <tr>
-                        <th>센서</th>
-                        <th>모델</th>
-                        <th>대역폭</th>
-                    </tr>
-                    <tr>
-                        <td>Radar</td>
-                        <td>MRR-35</td>
-                        <td>1-5 Mbps</td>
-                    </tr>
-                    <tr>
-                        <td>Camera</td>
-                        <td>STURDeCAM31</td>
-                        <td>44.2-353.9 Mbps</td>
-                    </tr>
-                </table>
             </div>
         </div>
 
-        <div class="card" id="network">
-            <h2>네트워크 아키텍처</h2>
-            
-            <div class="architecture-option">
-                <h4>옵션 A: 단일 스위치 구성</h4>
-                <p>센서 → TSN 스위치 → ACU_IT</p>
-                <div class="pros-cons">
-                    <div class="pros">
-                        <strong>장점</strong>
-                        <ul>
-                            <li>최소 홉(1-2)</li>
-                            <li>최소 지연</li>
-                            <li>구현 간단</li>
-                        </ul>
-                    </div>
-                    <div class="cons">
-                        <strong>단점</strong>
-                        <ul>
-                            <li>단일 장애점</li>
-                            <li>FRER 불가</li>
-                            <li>확장성 제한</li>
-                        </ul>
-                    </div>
+        <div id="tsn" class="section" style="display: none;">
+            <div class="card">
+                <h2>⚙️ TSN 핵심 기능</h2>
+                <div class="diagram-container">
+                    <img src="assets/diagrams/tsn-features.svg" alt="TSN 기능">
                 </div>
             </div>
+        </div>
 
-            <div class="architecture-option">
-                <h4>옵션 B: 듀얼 엣지 + 중앙 집선</h4>
-                <p>좌/우 엣지 스위치 + 중앙 집선 → ACU_IT</p>
-                <div class="pros-cons">
-                    <div class="pros">
-                        <strong>장점</strong>
-                        <ul>
-                            <li>포트 수 유연</li>
-                            <li>케이블 최적화</li>
-                            <li>부분 이중화</li>
-                        </ul>
-                    </div>
-                    <div class="cons">
-                        <strong>단점</strong>
-                        <ul>
-                            <li>홉 증가(2-3)</li>
-                            <li>중앙 집선 SPOF</li>
-                        </ul>
-                    </div>
+        <div id="scenarios" class="section" style="display: none;">
+            <div class="card">
+                <h2>🚨 고장 시나리오</h2>
+                <p>시스템의 신뢰성을 보장하기 위한 체계적인 고장 대응 시나리오</p>
+                
+                <h3>코드 체계</h3>
+                <div style="background: #f5f5f5; padding: 20px; border-radius: 10px; margin: 20px 0;">
+                    <code style="font-size: 18px; font-weight: bold;">
+                        [SCN]-[LOC]-[DEV]-[FLT] (+[RES])
+                    </code>
                 </div>
-            </div>
-
-            <div class="architecture-option">
-                <h4>옵션 C: 3스위치 메시 + ACU 듀얼홈</h4>
-                <p>완전 메시 토폴로지, ACU 이중경로</p>
-                <div class="pros-cons">
-                    <div class="pros">
-                        <strong>장점</strong>
+                
+                <div class="grid">
+                    <div>
+                        <h4>시나리오(SCN)</h4>
                         <ul>
-                            <li>진정한 경로 이중화</li>
-                            <li>FRER 완전 지원</li>
-                            <li>고가용성</li>
+                            <li><strong>A:</strong> 손실</li>
+                            <li><strong>B:</strong> 지연/지터</li>
+                            <li><strong>C:</strong> 순서/복제</li>
+                            <li><strong>D:</strong> 프레임 손상</li>
+                            <li><strong>E:</strong> 동기 문제</li>
+                            <li><strong>F:</strong> 장비 고장</li>
+                            <li><strong>G:</strong> 전원/환경</li>
+                            <li><strong>H:</strong> 구성/펌웨어</li>
                         </ul>
                     </div>
-                    <div class="cons">
-                        <strong>단점</strong>
+                    <div>
+                        <h4>해결방안(RES)</h4>
                         <ul>
-                            <li>구성 복잡</li>
-                            <li>비용 증가</li>
-                            <li>관리 오버헤드</li>
+                            <li><strong>FRR:</strong> FRER 무중단 복구</li>
+                            <li><strong>RER:</strong> 즉시 경로 전환</li>
+                            <li><strong>CBS+:</strong> CBS 재프로파일</li>
+                            <li><strong>PSFP:</strong> 스트림 폴리싱</li>
+                            <li><strong>PTP:</strong> 동기 복구</li>
+                            <li><strong>RST:</strong> 재시작</li>
+                            <li><strong>DGR:</strong> 성능저하모드</li>
+                            <li><strong>SSC:</strong> 안전정지</li>
                         </ul>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="card" id="scenarios">
-            <h2>고장 시나리오 코드 체계</h2>
-            
-            <div class="scenario-code">
-                <span class="code-part code-scn">[SCN]</span>-<span class="code-part code-loc">[LOC]</span>-<span class="code-part code-dev">[DEV]</span>-<span class="code-part code-flt">[FLT]</span>
-                (+<span class="code-part code-res">[RES]</span>)
-            </div>
-
-            <h3>코드 구성요소</h3>
-            <table>
-                <tr>
-                    <th>구분</th>
-                    <th>코드</th>
-                    <th>의미</th>
-                </tr>
-                <tr>
-                    <td>SCN</td>
-                    <td>A-H</td>
-                    <td>손실, 지연, 순서, 손상, 동기, 장비고장, 전원, 구성</td>
-                </tr>
-                <tr>
-                    <td>LOC</td>
-                    <td>ZF/ZB/ZL/ZR</td>
-                    <td>Front/Rear/Left/Right 존</td>
-                </tr>
-                <tr>
-                    <td>DEV</td>
-                    <td>LP40/LG32/MR35/CAMV</td>
-                    <td>센서 및 장비 식별</td>
-                </tr>
-                <tr>
-                    <td>FLT</td>
-                    <td>LNK/QDR/CON/CRC...</td>
-                    <td>세부 원인</td>
-                </tr>
-            </table>
-
-            <h3>해결 방안</h3>
-            <div class="resolution-grid">
-                <div class="resolution-item">
-                    <strong>FRR</strong>
-                    FRER 무중단 복구
-                </div>
-                <div class="resolution-item">
-                    <strong>RER</strong>
-                    즉시 경로 전환
-                </div>
-                <div class="resolution-item">
-                    <strong>CBS+</strong>
-                    CBS 재프로파일
-                </div>
-                <div class="resolution-item">
-                    <strong>PSFP</strong>
-                    스트림 폴리싱
-                </div>
-                <div class="resolution-item">
-                    <strong>PTP</strong>
-                    동기 복구
-                </div>
-                <div class="resolution-item">
-                    <strong>RST</strong>
-                    재시작/재부팅
-                </div>
-                <div class="resolution-item">
-                    <strong>DGR</strong>
-                    성능저하모드
-                </div>
-                <div class="resolution-item">
-                    <strong>ISO</strong>
-                    격리/바이패스
-                </div>
-                <div class="resolution-item">
-                    <strong>RBK</strong>
-                    설정 롤백
-                </div>
-                <div class="resolution-item">
-                    <strong>SSC</strong>
-                    안전정지
+        <div id="requirements" class="section" style="display: none;">
+            <div class="card">
+                <h2>📊 정량적 요구사항</h2>
+                
+                <div class="grid">
+                    <div>
+                        <h3>성능 목표</h3>
+                        <table>
+                            <tr>
+                                <th>항목</th>
+                                <th>목표값</th>
+                                <th>상태</th>
+                            </tr>
+                            <tr>
+                                <td>지연 시간</td>
+                                <td>≤ 10 ms</td>
+                                <td><span class="badge badge-success">달성</span></td>
+                            </tr>
+                            <tr>
+                                <td>손실률</td>
+                                <td>≤ 1e-7</td>
+                                <td><span class="badge badge-success">달성</span></td>
+                            </tr>
+                            <tr>
+                                <td>Failover</td>
+                                <td>≤ 1 frame</td>
+                                <td><span class="badge badge-warning">진행중</span></td>
+                            </tr>
+                            <tr>
+                                <td>동기 정확도</td>
+                                <td>±1 μs</td>
+                                <td><span class="badge badge-success">달성</span></td>
+                            </tr>
+                        </table>
+                    </div>
+                    
+                    <div>
+                        <h3>TSN 설정</h3>
+                        <table>
+                            <tr>
+                                <th>큐</th>
+                                <th>PCP</th>
+                                <th>용도</th>
+                                <th>대역폭</th>
+                            </tr>
+                            <tr>
+                                <td>Q7</td>
+                                <td>6-7</td>
+                                <td>안전 중요</td>
+                                <td>25-30%</td>
+                            </tr>
+                            <tr>
+                                <td>Q6</td>
+                                <td>5</td>
+                                <td>카메라</td>
+                                <td>10-15%</td>
+                            </tr>
+                            <tr>
+                                <td>Q5</td>
+                                <td>4</td>
+                                <td>제어</td>
+                                <td>5%</td>
+                            </tr>
+                            <tr>
+                                <td>Q4-Q0</td>
+                                <td>0-3</td>
+                                <td>기타</td>
+                                <td>≤10%</td>
+                            </tr>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <div class="card" id="requirements">
-            <h2>정량적 요구사항</h2>
-            
-            <h3>성능 목표</h3>
-            <table>
-                <tr>
-                    <th>항목</th>
-                    <th>목표값</th>
-                    <th>측정 기준</th>
-                </tr>
-                <tr>
-                    <td>지연 시간</td>
-                    <td>≤ 10 ms</td>
-                    <td>Q7 E2E (P99.999)</td>
-                </tr>
-                <tr>
-                    <td>손실률</td>
-                    <td>≤ 1e-7</td>
-                    <td>단일 고장 시</td>
-                </tr>
-                <tr>
-                    <td>Failover</td>
-                    <td>≤ 1 프레임</td>
-                    <td>장애검출+전환</td>
-                </tr>
-                <tr>
-                    <td>FDI (L2/L3)</td>
-                    <td>≤ 50 ms</td>
-                    <td>장애 검출 시간</td>
-                </tr>
-                <tr>
-                    <td>FDI (장비)</td>
-                    <td>≤ 200 ms</td>
-                    <td>Hang 검출</td>
-                </tr>
-            </table>
-
-            <h3>TSN 설정 가이드</h3>
-            <table>
-                <tr>
-                    <th>큐</th>
-                    <th>PCP</th>
-                    <th>용도</th>
-                    <th>대역폭</th>
-                </tr>
-                <tr>
-                    <td>Q7</td>
-                    <td>6-7</td>
-                    <td>안전 중요 (LiDAR/Radar)</td>
-                    <td>25-30%</td>
-                </tr>
-                <tr>
-                    <td>Q6</td>
-                    <td>5</td>
-                    <td>카메라 스트림</td>
-                    <td>10-15%</td>
-                </tr>
-                <tr>
-                    <td>Q5</td>
-                    <td>4</td>
-                    <td>제어 메시지</td>
-                    <td>5%</td>
-                </tr>
-                <tr>
-                    <td>Q4-Q0</td>
-                    <td>0-3</td>
-                    <td>기타/베스트에포트</td>
-                    <td>≤10%</td>
-                </tr>
-            </table>
-        </div>
-
+        <!-- Footer -->
         <footer>
-            <p>&copy; 2025 A2Z 자율주행차 네트워크 요구도 정의 프로젝트</p>
-            <div class="links">
-                <a href="https://autoa2z.co.kr/Coretech" target="_blank">A2Z 기술 페이지</a>
-                <a href="https://github.com/hwkim3330/a2z" target="_blank">GitHub Repository</a>
-                <a href="https://www.youtube.com/watch?v=kRHf5jUnVAg" target="_blank">관련 영상</a>
+            <h3>A2Z 자율주행차 네트워크 요구도 정의 프로젝트</h3>
+            <p>Time-Sensitive Networking을 활용한 차세대 자율주행 플랫폼</p>
+            
+            <div class="footer-links">
+                <a href="https://github.com/hwkim3330/a2z" target="_blank">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                    </svg>
+                    GitHub Repository
+                </a>
+                <a href="https://autoa2z.co.kr/Coretech" target="_blank">
+                    🏢 A2Z 기술 페이지
+                </a>
+                <a href="docs/README.html" target="_blank">
+                    📚 상세 문서
+                </a>
+                <a href="https://www.youtube.com/watch?v=kRHf5jUnVAg" target="_blank">
+                    📹 관련 영상
+                </a>
             </div>
+            
+            <p style="margin-top: 20px; color: #666; font-size: 14px;">
+                © 2025 A2Z Autonomous Vehicle Project. MIT License.
+            </p>
         </footer>
     </div>
+
+    <!-- Theme Toggle -->
+    <div class="theme-toggle" onclick="toggleTheme()">
+        <span id="theme-icon">🌙</span>
+    </div>
+
+    <!-- Scroll to Top -->
+    <div class="scroll-top" onclick="scrollToTop()">
+        ↑
+    </div>
+
+    <script>
+        // Loading screen
+        window.addEventListener('load', function() {
+            setTimeout(() => {
+                document.getElementById('loading').style.opacity = '0';
+                setTimeout(() => {
+                    document.getElementById('loading').style.display = 'none';
+                }, 500);
+            }, 1000);
+        });
+
+        // Navigation active state
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                // Remove active class from all links
+                document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+                
+                // Add active class to clicked link
+                this.classList.add('active');
+                
+                // Hide all sections
+                document.querySelectorAll('.section').forEach(section => {
+                    section.style.display = 'none';
+                });
+                
+                // Show selected section
+                const targetId = this.getAttribute('href').substring(1);
+                const targetSection = document.getElementById(targetId);
+                if (targetSection) {
+                    targetSection.style.display = 'block';
+                }
+            });
+        });
+
+        // Tab functionality
+        document.querySelectorAll('.tab-button').forEach(button => {
+            button.addEventListener('click', function() {
+                const tabGroup = this.parentElement;
+                const tabContainer = tabGroup.parentElement;
+                
+                // Remove active class from all buttons in this group
+                tabGroup.querySelectorAll('.tab-button').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                
+                // Add active class to clicked button
+                this.classList.add('active');
+                
+                // Hide all tab contents in this container
+                tabContainer.querySelectorAll('.tab-content').forEach(content => {
+                    content.classList.remove('active');
+                });
+                
+                // Show selected tab content
+                const tabId = this.getAttribute('data-tab');
+                const tabContent = document.getElementById(tabId);
+                if (tabContent) {
+                    tabContent.classList.add('active');
+                }
+            });
+        });
+
+        // Accordion functionality
+        document.querySelectorAll('.accordion-header').forEach(header => {
+            header.addEventListener('click', function() {
+                this.classList.toggle('active');
+                const content = this.nextElementSibling;
+                content.classList.toggle('active');
+            });
+        });
+
+        // Scroll to top functionality
+        window.addEventListener('scroll', function() {
+            const scrollTop = document.querySelector('.scroll-top');
+            if (window.pageYOffset > 300) {
+                scrollTop.classList.add('show');
+            } else {
+                scrollTop.classList.remove('show');
+            }
+        });
+
+        function scrollToTop() {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        }
+
+        // Theme toggle (placeholder)
+        let darkMode = false;
+        function toggleTheme() {
+            darkMode = !darkMode;
+            document.getElementById('theme-icon').textContent = darkMode ? '☀️' : '🌙';
+            // Implement dark mode styles here
+        }
+
+        // Animate progress bars on scroll
+        const observerOptions = {
+            threshold: 0.5,
+            rootMargin: '0px 0px -100px 0px'
+        };
+
+        const observer = new IntersectionObserver(function(entries) {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const progressFills = entry.target.querySelectorAll('.progress-fill');
+                    progressFills.forEach(fill => {
+                        const width = fill.style.width;
+                        fill.style.width = '0';
+                        setTimeout(() => {
+                            fill.style.width = width;
+                        }, 100);
+                    });
+                }
+            });
+        }, observerOptions);
+
+        // Observe all progress containers
+        document.querySelectorAll('.progress-container').forEach(container => {
+            observer.observe(container);
+        });
+
+        // Add smooth reveal animation to cards
+        const cardObserver = new IntersectionObserver(function(entries) {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        });
+
+        // Initially hide cards for animation
+        document.querySelectorAll('.card').forEach(card => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(30px)';
+            card.style.transition = 'opacity 0.6s ease-out, transform 0.6s ease-out';
+            cardObserver.observe(card);
+        });
+    </script>
 </body>
 </html>
