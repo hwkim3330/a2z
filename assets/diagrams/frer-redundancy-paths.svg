@@ -1,0 +1,474 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1800 1200">
+  <defs>
+    <!-- Gradients for different path states -->
+    <linearGradient id="primaryPath" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#4caf50;stop-opacity:1"/>
+      <stop offset="100%" style="stop-color:#8bc34a;stop-opacity:1"/>
+    </linearGradient>
+    
+    <linearGradient id="secondaryPath" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#2196f3;stop-opacity:1"/>
+      <stop offset="100%" style="stop-color:#03a9f4;stop-opacity:1"/>
+    </linearGradient>
+    
+    <linearGradient id="failedPath" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#f44336;stop-opacity:1"/>
+      <stop offset="100%" style="stop-color:#ef5350;stop-opacity:1"/>
+    </linearGradient>
+    
+    <!-- Animated pulse for active paths -->
+    <filter id="pulse">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="2">
+        <animate attributeName="stdDeviation" values="2;4;2" dur="2s" repeatCount="indefinite"/>
+      </feGaussianBlur>
+      <feMerge>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    
+    <!-- Drop shadow -->
+    <filter id="shadow">
+      <feDropShadow dx="2" dy="2" stdDeviation="3" flood-opacity="0.3"/>
+    </filter>
+    
+    <!-- Animated dash pattern -->
+    <pattern id="movingDots" x="0" y="0" width="20" height="10" patternUnits="userSpaceOnUse">
+      <circle cx="5" cy="5" r="2" fill="#4caf50">
+        <animate attributeName="cx" from="5" to="25" dur="1s" repeatCount="indefinite"/>
+      </circle>
+    </pattern>
+    
+    <!-- Arrow markers -->
+    <marker id="arrowGreen" markerWidth="12" markerHeight="12" refX="11" refY="6" orient="auto">
+      <path d="M0,0 L0,12 L12,6 z" fill="#4caf50"/>
+    </marker>
+    
+    <marker id="arrowBlue" markerWidth="12" markerHeight="12" refX="11" refY="6" orient="auto">
+      <path d="M0,0 L0,12 L12,6 z" fill="#2196f3"/>
+    </marker>
+    
+    <marker id="arrowRed" markerWidth="12" markerHeight="12" refX="11" refY="6" orient="auto">
+      <path d="M0,0 L0,12 L12,6 z" fill="#f44336"/>
+    </marker>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="1800" height="1200" fill="#f5f5f5"/>
+  
+  <!-- Title -->
+  <text x="900" y="40" font-family="Arial, sans-serif" font-size="28" font-weight="bold" text-anchor="middle" fill="#263238">
+    IEEE 802.1CB FRER (Frame Replication and Elimination for Reliability)
+  </text>
+  <text x="900" y="70" font-family="Arial, sans-serif" font-size="16" text-anchor="middle" fill="#546e7a">
+    무중단 이중화 경로 시각화 - A2Z 자율주행 시스템
+  </text>
+  
+  <!-- Normal Operation Scenario -->
+  <g id="normal-operation" transform="translate(50, 100)">
+    <rect width="800" height="450" rx="20" fill="#e8f5e9" stroke="#4caf50" stroke-width="2"/>
+    <text x="400" y="35" font-size="20" font-weight="bold" text-anchor="middle" fill="#2e7d32">정상 동작 시나리오</text>
+    
+    <!-- Source -->
+    <g id="source-normal">
+      <rect x="50" y="80" width="120" height="80" rx="10" fill="#4caf50" filter="url(#shadow)"/>
+      <text x="110" y="110" font-size="14" font-weight="bold" text-anchor="middle" fill="white">LiDAR G32</text>
+      <text x="110" y="130" font-size="11" text-anchor="middle" fill="white">Source</text>
+      <text x="110" y="150" font-size="10" text-anchor="middle" fill="#c8e6c9">Stream ID: 0x1234</text>
+    </g>
+    
+    <!-- Replication Point -->
+    <g id="replication-normal">
+      <circle cx="250" cy="120" r="35" fill="#ff9800" filter="url(#shadow)"/>
+      <text x="250" y="115" font-size="12" font-weight="bold" text-anchor="middle" fill="white">FRER</text>
+      <text x="250" y="130" font-size="10" text-anchor="middle" fill="white">Replicate</text>
+      <text x="250" y="145" font-size="9" text-anchor="middle" fill="white">Seq: 1024</text>
+    </g>
+    
+    <!-- Path 1 (Primary) -->
+    <g id="path1-normal">
+      <rect x="350" y="50" width="150" height="60" rx="10" fill="url(#primaryPath)" filter="url(#shadow)"/>
+      <text x="425" y="75" font-size="12" font-weight="bold" text-anchor="middle" fill="white">Primary Path</text>
+      <text x="425" y="95" font-size="10" text-anchor="middle" fill="white">SW-A → SW-B</text>
+      
+      <!-- Animated data packets -->
+      <circle cx="380" cy="80" r="5" fill="#4caf50">
+        <animateMotion dur="2s" repeatCount="indefinite">
+          <mpath href="#primary-path-line"/>
+        </animateMotion>
+      </circle>
+    </g>
+    
+    <!-- Path 2 (Secondary) -->
+    <g id="path2-normal">
+      <rect x="350" y="130" width="150" height="60" rx="10" fill="url(#secondaryPath)" filter="url(#shadow)"/>
+      <text x="425" y="155" font-size="12" font-weight="bold" text-anchor="middle" fill="white">Secondary Path</text>
+      <text x="425" y="175" font-size="10" text-anchor="middle" fill="white">SW-C → SW-D</text>
+      
+      <!-- Animated data packets -->
+      <circle cx="380" cy="160" r="5" fill="#2196f3">
+        <animateMotion dur="2.2s" repeatCount="indefinite">
+          <mpath href="#secondary-path-line"/>
+        </animateMotion>
+      </circle>
+    </g>
+    
+    <!-- Elimination Point -->
+    <g id="elimination-normal">
+      <circle cx="580" cy="120" r="35" fill="#9c27b0" filter="url(#shadow)"/>
+      <text x="580" y="115" font-size="12" font-weight="bold" text-anchor="middle" fill="white">FRER</text>
+      <text x="580" y="130" font-size="10" text-anchor="middle" fill="white">Eliminate</text>
+      <text x="580" y="145" font-size="9" text-anchor="middle" fill="white">Accept: 1024</text>
+    </g>
+    
+    <!-- Destination -->
+    <g id="destination-normal">
+      <rect x="660" y="80" width="120" height="80" rx="10" fill="#2196f3" filter="url(#shadow)"/>
+      <text x="720" y="110" font-size="14" font-weight="bold" text-anchor="middle" fill="white">ACU_NO</text>
+      <text x="720" y="130" font-size="11" text-anchor="middle" fill="white">Destination</text>
+      <text x="720" y="150" font-size="10" text-anchor="middle" fill="#bbdefb">Received: 1024</text>
+    </g>
+    
+    <!-- Path lines -->
+    <path id="primary-path-line" d="M 170 120 Q 210 90 250 120 L 350 80 L 500 80 Q 540 90 580 120" 
+          stroke="#4caf50" stroke-width="3" fill="none" marker-end="url(#arrowGreen)"/>
+    <path id="secondary-path-line" d="M 170 120 Q 210 150 250 120 L 350 160 L 500 160 Q 540 150 580 120" 
+          stroke="#2196f3" stroke-width="3" fill="none" marker-end="url(#arrowBlue)"/>
+    
+    <!-- Status Indicators -->
+    <g id="status-normal">
+      <rect x="50" y="220" width="700" height="100" rx="10" fill="rgba(76,175,80,0.1)"/>
+      <text x="60" y="245" font-size="14" font-weight="bold" fill="#2e7d32">System Status:</text>
+      <text x="60" y="270" font-size="12" fill="#424242">• Primary Path: Active (Latency: 2ms, Loss: 0%)</text>
+      <text x="60" y="290" font-size="12" fill="#424242">• Secondary Path: Active (Latency: 2.2ms, Loss: 0%)</text>
+      <text x="60" y="310" font-size="12" fill="#424242">• Duplicates Eliminated: 1024/1024 (100%)</text>
+      
+      <circle cx="680" cy="270" r="15" fill="#4caf50">
+        <animate attributeName="opacity" values="1;0.5;1" dur="2s" repeatCount="indefinite"/>
+      </circle>
+      <text x="680" y="275" font-size="10" text-anchor="middle" fill="white" font-weight="bold">OK</text>
+    </g>
+    
+    <!-- Sequence Recovery Window -->
+    <g id="sequence-window">
+      <rect x="50" y="340" width="700" height="180" rx="10" fill="rgba(156,39,176,0.1)"/>
+      <text x="60" y="365" font-size="14" font-weight="bold" fill="#6a1b9a">Sequence Recovery Window:</text>
+      
+      <!-- Window visualization -->
+      <rect x="70" y="380" width="660" height="60" rx="5" fill="white" stroke="#9c27b0" stroke-width="2"/>
+      
+      <!-- Sequence numbers -->
+      <g id="seq-numbers">
+        <rect x="80" y="390" width="40" height="40" fill="#4caf50"/>
+        <text x="100" y="415" font-size="10" text-anchor="middle" fill="white">1020</text>
+        
+        <rect x="130" y="390" width="40" height="40" fill="#4caf50"/>
+        <text x="150" y="415" font-size="10" text-anchor="middle" fill="white">1021</text>
+        
+        <rect x="180" y="390" width="40" height="40" fill="#2196f3"/>
+        <text x="200" y="415" font-size="10" text-anchor="middle" fill="white">1022</text>
+        
+        <rect x="230" y="390" width="40" height="40" fill="#4caf50"/>
+        <text x="250" y="415" font-size="10" text-anchor="middle" fill="white">1023</text>
+        
+        <rect x="280" y="390" width="40" height="40" fill="#ff9800" stroke="#f44336" stroke-width="2"/>
+        <text x="300" y="415" font-size="10" text-anchor="middle" fill="white" font-weight="bold">1024</text>
+        
+        <rect x="330" y="390" width="40" height="40" fill="#e0e0e0"/>
+        <text x="350" y="415" font-size="10" text-anchor="middle" fill="#757575">1025</text>
+        
+        <rect x="380" y="390" width="40" height="40" fill="#e0e0e0"/>
+        <text x="400" y="415" font-size="10" text-anchor="middle" fill="#757575">1026</text>
+      </g>
+      
+      <text x="70" y="460" font-size="11" fill="#424242">Window Size: 64 frames | History Length: 256 frames</text>
+      <text x="70" y="480" font-size="11" fill="#424242">Recovery Timeout: 100ms | Reset Timeout: 10s</text>
+      <text x="70" y="500" font-size="11" fill="#4caf50">✓ Primary received | </text>
+      <text x="220" y="500" font-size="11" fill="#2196f3">✓ Secondary received | </text>
+      <text x="390" y="500" font-size="11" fill="#ff9800">⚡ Current</text>
+    </g>
+  </g>
+  
+  <!-- Failure Scenario -->
+  <g id="failure-scenario" transform="translate(900, 100)">
+    <rect width="800" height="450" rx="20" fill="#ffebee" stroke="#f44336" stroke-width="2"/>
+    <text x="400" y="35" font-size="20" font-weight="bold" text-anchor="middle" fill="#c62828">장애 발생 시나리오</text>
+    
+    <!-- Source -->
+    <g id="source-failure">
+      <rect x="50" y="80" width="120" height="80" rx="10" fill="#4caf50" filter="url(#shadow)"/>
+      <text x="110" y="110" font-size="14" font-weight="bold" text-anchor="middle" fill="white">LiDAR G32</text>
+      <text x="110" y="130" font-size="11" text-anchor="middle" fill="white">Source</text>
+      <text x="110" y="150" font-size="10" text-anchor="middle" fill="#c8e6c9">Stream ID: 0x1234</text>
+    </g>
+    
+    <!-- Replication Point -->
+    <g id="replication-failure">
+      <circle cx="250" cy="120" r="35" fill="#ff9800" filter="url(#shadow)"/>
+      <text x="250" y="115" font-size="12" font-weight="bold" text-anchor="middle" fill="white">FRER</text>
+      <text x="250" y="130" font-size="10" text-anchor="middle" fill="white">Replicate</text>
+      <text x="250" y="145" font-size="9" text-anchor="middle" fill="white">Seq: 2048</text>
+    </g>
+    
+    <!-- Path 1 (Failed) -->
+    <g id="path1-failure">
+      <rect x="350" y="50" width="150" height="60" rx="10" fill="url(#failedPath)" filter="url(#shadow)"/>
+      <text x="425" y="75" font-size="12" font-weight="bold" text-anchor="middle" fill="white">Primary Path</text>
+      <text x="425" y="95" font-size="10" text-anchor="middle" fill="white">❌ FAILED</text>
+      
+      <!-- Failure point -->
+      <g id="failure-point">
+        <circle cx="425" cy="80" r="20" fill="#f44336" stroke="#b71c1c" stroke-width="3">
+          <animate attributeName="r" values="20;25;20" dur="1s" repeatCount="indefinite"/>
+        </circle>
+        <text x="425" y="85" font-size="16" text-anchor="middle" fill="white" font-weight="bold">X</text>
+      </g>
+    </g>
+    
+    <!-- Path 2 (Active) -->
+    <g id="path2-failure">
+      <rect x="350" y="130" width="150" height="60" rx="10" fill="#4caf50" filter="url(#shadow)"/>
+      <text x="425" y="155" font-size="12" font-weight="bold" text-anchor="middle" fill="white">Secondary Path</text>
+      <text x="425" y="175" font-size="10" text-anchor="middle" fill="white">✓ ACTIVE</text>
+      
+      <!-- Animated data packets (increased) -->
+      <circle cx="380" cy="160" r="5" fill="#4caf50">
+        <animateMotion dur="1.5s" repeatCount="indefinite">
+          <mpath href="#secondary-path-line-failure"/>
+        </animateMotion>
+      </circle>
+      <circle cx="380" cy="160" r="5" fill="#4caf50">
+        <animateMotion dur="1.5s" begin="0.5s" repeatCount="indefinite">
+          <mpath href="#secondary-path-line-failure"/>
+        </animateMotion>
+      </circle>
+    </g>
+    
+    <!-- Elimination Point -->
+    <g id="elimination-failure">
+      <circle cx="580" cy="120" r="35" fill="#9c27b0" filter="url(#shadow)"/>
+      <text x="580" y="115" font-size="12" font-weight="bold" text-anchor="middle" fill="white">FRER</text>
+      <text x="580" y="130" font-size="10" text-anchor="middle" fill="white">Eliminate</text>
+      <text x="580" y="145" font-size="9" text-anchor="middle" fill="white">Seamless</text>
+    </g>
+    
+    <!-- Destination -->
+    <g id="destination-failure">
+      <rect x="660" y="80" width="120" height="80" rx="10" fill="#2196f3" filter="url(#shadow)"/>
+      <text x="720" y="110" font-size="14" font-weight="bold" text-anchor="middle" fill="white">ACU_NO</text>
+      <text x="720" y="130" font-size="11" text-anchor="middle" fill="white">Destination</text>
+      <text x="720" y="150" font-size="10" text-anchor="middle" fill="#bbdefb">No Loss!</text>
+    </g>
+    
+    <!-- Path lines -->
+    <path d="M 170 120 Q 210 90 250 120 L 350 80" 
+          stroke="#f44336" stroke-width="3" fill="none" stroke-dasharray="10,5"/>
+    <path id="secondary-path-line-failure" d="M 170 120 Q 210 150 250 120 L 350 160 L 500 160 Q 540 150 580 120 L 660 120" 
+          stroke="#4caf50" stroke-width="4" fill="none" marker-end="url(#arrowGreen)" filter="url(#pulse)"/>
+    
+    <!-- Status during failure -->
+    <g id="status-failure">
+      <rect x="50" y="220" width="700" height="100" rx="10" fill="rgba(244,67,54,0.1)"/>
+      <text x="60" y="245" font-size="14" font-weight="bold" fill="#c62828">Failure Recovery Status:</text>
+      <text x="60" y="270" font-size="12" fill="#424242">• Primary Path: FAILED (Link Down at SW-A)</text>
+      <text x="60" y="290" font-size="12" fill="#424242">• Secondary Path: Active (Handling 100% traffic)</text>
+      <text x="60" y="310" font-size="12" fill="#424242">• Frame Loss: 0 frames (Seamless failover)</text>
+      
+      <circle cx="680" cy="270" r="15" fill="#ff9800">
+        <animate attributeName="opacity" values="1;0.5;1" dur="1s" repeatCount="indefinite"/>
+      </circle>
+      <text x="680" y="275" font-size="10" text-anchor="middle" fill="white" font-weight="bold">WARN</text>
+    </g>
+    
+    <!-- Recovery Timeline -->
+    <g id="recovery-timeline">
+      <rect x="50" y="340" width="700" height="180" rx="10" fill="rgba(255,152,0,0.1)"/>
+      <text x="60" y="365" font-size="14" font-weight="bold" fill="#e65100">Failover Timeline:</text>
+      
+      <!-- Timeline -->
+      <line x1="80" y1="400" x2="720" y2="400" stroke="#757575" stroke-width="2"/>
+      
+      <!-- Events -->
+      <g id="timeline-events">
+        <circle cx="100" cy="400" r="8" fill="#4caf50"/>
+        <text x="100" y="425" font-size="10" text-anchor="middle">T=0ms</text>
+        <text x="100" y="440" font-size="9" text-anchor="middle">Normal</text>
+        
+        <circle cx="250" cy="400" r="8" fill="#f44336"/>
+        <text x="250" y="425" font-size="10" text-anchor="middle">T=10ms</text>
+        <text x="250" y="440" font-size="9" text-anchor="middle">Link Fail</text>
+        
+        <circle cx="400" cy="400" r="8" fill="#ff9800"/>
+        <text x="400" y="425" font-size="10" text-anchor="middle">T=10.1ms</text>
+        <text x="400" y="440" font-size="9" text-anchor="middle">Detected</text>
+        
+        <circle cx="550" cy="400" r="8" fill="#2196f3"/>
+        <text x="550" y="425" font-size="10" text-anchor="middle">T=10.2ms</text>
+        <text x="550" y="440" font-size="9" text-anchor="middle">Switched</text>
+        
+        <circle cx="700" cy="400" r="8" fill="#4caf50"/>
+        <text x="700" y="425" font-size="10" text-anchor="middle">T=10.3ms</text>
+        <text x="700" y="440" font-size="9" text-anchor="middle">Recovered</text>
+      </g>
+      
+      <text x="70" y="470" font-size="11" fill="#424242">Detection Time: 0.1ms | Switch Time: 0.1ms | Total Recovery: 0.3ms</text>
+      <text x="70" y="490" font-size="11" fill="#4caf50" font-weight="bold">✓ Zero Frame Loss Achieved</text>
+      <text x="70" y="510" font-size="11" fill="#424242">Secondary path immediately took over all traffic</text>
+    </g>
+  </g>
+  
+  <!-- FRER Configuration Parameters -->
+  <g id="frer-config" transform="translate(50, 580)">
+    <rect width="850" height="280" rx="20" fill="#f3e5f5" stroke="#9c27b0" stroke-width="2"/>
+    <text x="425" y="35" font-size="20" font-weight="bold" text-anchor="middle" fill="#6a1b9a">FRER Configuration Parameters</text>
+    
+    <g transform="translate(50, 60)">
+      <rect width="350" height="180" rx="10" fill="rgba(156,39,176,0.1)"/>
+      <text x="15" y="25" font-size="14" font-weight="bold" fill="#6a1b9a">Stream Identification:</text>
+      <text x="15" y="50" font-size="11" fill="#424242">• Stream ID: null (destination MAC/VLAN based)</text>
+      <text x="15" y="70" font-size="11" fill="#424242">• Destination MAC: 01:80:C2:00:00:0E</text>
+      <text x="15" y="90" font-size="11" fill="#424242">• VLAN ID: 10 (Priority: 7)</text>
+      <text x="15" y="110" font-size="11" fill="#424242">• EtherType: 0x88F7 (PTP)</text>
+      <text x="15" y="135" font-size="14" font-weight="bold" fill="#6a1b9a">Member Ports:</text>
+      <text x="15" y="155" font-size="11" fill="#424242">• Primary: Port 1 (2.5GbE)</text>
+      <text x="15" y="175" font-size="11" fill="#424242">• Secondary: Port 2 (2.5GbE)</text>
+    </g>
+    
+    <g transform="translate(450, 60)">
+      <rect width="350" height="180" rx="10" fill="rgba(156,39,176,0.1)"/>
+      <text x="15" y="25" font-size="14" font-weight="bold" fill="#6a1b9a">Sequence Recovery:</text>
+      <text x="15" y="50" font-size="11" fill="#424242">• Algorithm: Vector Recovery Algorithm</text>
+      <text x="15" y="70" font-size="11" fill="#424242">• Window Size: 64 frames</text>
+      <text x="15" y="90" font-size="11" fill="#424242">• History Length: 256 frames</text>
+      <text x="15" y="110" font-size="11" fill="#424242">• Recovery Timeout: 100ms</text>
+      <text x="15" y="130" font-size="11" fill="#424242">• Reset Timeout: 10 seconds</text>
+      <text x="15" y="155" font-size="14" font-weight="bold" fill="#6a1b9a">Latency Difference:</text>
+      <text x="15" y="175" font-size="11" fill="#424242">• Max Path Difference: 5ms</text>
+    </g>
+  </g>
+  
+  <!-- FRER Statistics -->
+  <g id="frer-statistics" transform="translate(950, 580)">
+    <rect width="800" height="280" rx="20" fill="#e3f2fd" stroke="#2196f3" stroke-width="2"/>
+    <text x="400" y="35" font-size="20" font-weight="bold" text-anchor="middle" fill="#1565c0">FRER Runtime Statistics</text>
+    
+    <!-- Live counters -->
+    <g transform="translate(50, 60)">
+      <rect width="700" height="180" rx="10" fill="rgba(33,150,243,0.1)"/>
+      
+      <!-- Left column -->
+      <text x="20" y="25" font-size="14" font-weight="bold" fill="#1565c0">Replication Statistics:</text>
+      <text x="20" y="50" font-size="11" fill="#424242">• Frames Replicated: 1,234,567,890</text>
+      <text x="20" y="70" font-size="11" fill="#424242">• Replication Rate: 30,000 fps</text>
+      <text x="20" y="90" font-size="11" fill="#424242">• Primary Path Sent: 1,234,567,890</text>
+      <text x="20" y="110" font-size="11" fill="#424242">• Secondary Path Sent: 1,234,567,890</text>
+      <text x="20" y="130" font-size="11" fill="#424242">• Replication Errors: 0</text>
+      
+      <!-- Middle column -->
+      <text x="250" y="25" font-size="14" font-weight="bold" fill="#1565c0">Elimination Statistics:</text>
+      <text x="250" y="50" font-size="11" fill="#424242">• Frames Passed: 1,234,567,890</text>
+      <text x="250" y="70" font-size="11" fill="#424242">• Duplicates Discarded: 1,234,567,885</text>
+      <text x="250" y="90" font-size="11" fill="#424242">• Out-of-Order: 5</text>
+      <text x="250" y="110" font-size="11" fill="#424242">• Rogue Duplicates: 0</text>
+      <text x="250" y="130" font-size="11" fill="#424242">• Lost Frames: 0</text>
+      
+      <!-- Right column -->
+      <text x="480" y="25" font-size="14" font-weight="bold" fill="#1565c0">Performance Metrics:</text>
+      <text x="480" y="50" font-size="11" fill="#424242">• Elimination Efficiency: 99.9996%</text>
+      <text x="480" y="70" font-size="11" fill="#424242">• Path 1 Availability: 99.999%</text>
+      <text x="480" y="90" font-size="11" fill="#424242">• Path 2 Availability: 99.998%</text>
+      <text x="480" y="110" font-size="11" fill="#424242">• System Availability: 99.99999%</text>
+      <text x="480" y="130" font-size="11" fill="#424242">• MTBF: 87,600 hours</text>
+      
+      <!-- Recovery events -->
+      <rect x="20" y="150" width="660" height="20" rx="5" fill="#4caf50"/>
+      <text x="350" y="165" font-size="11" text-anchor="middle" fill="white" font-weight="bold">
+        Last Failover Event: 2 days ago | Recovery Time: 0.2ms | Zero Frame Loss
+      </text>
+    </g>
+  </g>
+  
+  <!-- Multiple Stream Example -->
+  <g id="multiple-streams" transform="translate(50, 900)">
+    <rect width="1700" height="250" rx="20" fill="#fff3e0" stroke="#ff9800" stroke-width="2"/>
+    <text x="850" y="35" font-size="20" font-weight="bold" text-anchor="middle" fill="#e65100">Multi-Stream FRER Configuration</text>
+    
+    <!-- Stream Table -->
+    <g transform="translate(50, 60)">
+      <rect width="1600" height="160" rx="10" fill="white"/>
+      
+      <!-- Table headers -->
+      <line x1="0" y1="30" x2="1600" y2="30" stroke="#e0e0e0" stroke-width="2"/>
+      <text x="50" y="20" font-size="12" font-weight="bold" fill="#424242">Stream ID</text>
+      <text x="200" y="20" font-size="12" font-weight="bold" fill="#424242">Source</text>
+      <text x="350" y="20" font-size="12" font-weight="bold" fill="#424242">Destination</text>
+      <text x="500" y="20" font-size="12" font-weight="bold" fill="#424242">Priority</text>
+      <text x="600" y="20" font-size="12" font-weight="bold" fill="#424242">Window</text>
+      <text x="700" y="20" font-size="12" font-weight="bold" fill="#424242">Primary Path</text>
+      <text x="900" y="20" font-size="12" font-weight="bold" fill="#424242">Secondary Path</text>
+      <text x="1100" y="20" font-size="12" font-weight="bold" fill="#424242">Status</text>
+      <text x="1250" y="20" font-size="12" font-weight="bold" fill="#424242">Frames/s</text>
+      <text x="1400" y="20" font-size="12" font-weight="bold" fill="#424242">Duplicates</text>
+      <text x="1500" y="20" font-size="12" font-weight="bold" fill="#424242">Loss</text>
+      
+      <!-- Stream 1 -->
+      <text x="50" y="55" font-size="11" fill="#424242">0x1001</text>
+      <text x="200" y="55" font-size="11" fill="#424242">Pandar40P-F</text>
+      <text x="350" y="55" font-size="11" fill="#424242">ACU_NO</text>
+      <text x="500" y="55" font-size="11" fill="#424242">7</text>
+      <text x="600" y="55" font-size="11" fill="#424242">64</text>
+      <text x="700" y="55" font-size="11" fill="#424242">SW-F → SW-A → SW-B</text>
+      <text x="900" y="55" font-size="11" fill="#424242">SW-F → SW-C → SW-B</text>
+      <circle cx="1120" cy="50" r="5" fill="#4caf50"/>
+      <text x="1250" y="55" font-size="11" fill="#424242">1,875</text>
+      <text x="1400" y="55" font-size="11" fill="#424242">1,875</text>
+      <text x="1500" y="55" font-size="11" fill="#424242">0</text>
+      
+      <!-- Stream 2 -->
+      <text x="50" y="80" font-size="11" fill="#424242">0x1002</text>
+      <text x="200" y="80" font-size="11" fill="#424242">G32-L</text>
+      <text x="350" y="80" font-size="11" fill="#424242">ACU_NO</text>
+      <text x="500" y="80" font-size="11" fill="#424242">7</text>
+      <text x="600" y="80" font-size="11" fill="#424242">128</text>
+      <text x="700" y="80" font-size="11" fill="#424242">SW-L → SW-A → SW-B</text>
+      <text x="900" y="80" font-size="11" fill="#424242">SW-L → SW-D → SW-B</text>
+      <circle cx="1120" cy="75" r="5" fill="#4caf50"/>
+      <text x="1250" y="80" font-size="11" fill="#424242">12,500</text>
+      <text x="1400" y="80" font-size="11" fill="#424242">12,500</text>
+      <text x="1500" y="80" font-size="11" fill="#424242">0</text>
+      
+      <!-- Stream 3 -->
+      <text x="50" y="105" font-size="11" fill="#424242">0x1003</text>
+      <text x="200" y="105" font-size="11" fill="#424242">CAM-F1</text>
+      <text x="350" y="105" font-size="11" fill="#424242">ACU_IT</text>
+      <text x="500" y="105" font-size="11" fill="#424242">6</text>
+      <text x="600" y="105" font-size="11" fill="#424242">32</text>
+      <text x="700" y="105" font-size="11" fill="#424242">SW-F → SW-A → SW-B</text>
+      <text x="900" y="105" font-size="11" fill="#424242">SW-F → SW-C → SW-B</text>
+      <circle cx="1120" cy="100" r="5" fill="#4caf50"/>
+      <text x="1250" y="105" font-size="11" fill="#424242">900</text>
+      <text x="1400" y="105" font-size="11" fill="#424242">900</text>
+      <text x="1500" y="105" font-size="11" fill="#424242">0</text>
+      
+      <!-- Stream 4 -->
+      <text x="50" y="130" font-size="11" fill="#424242">0x1004</text>
+      <text x="200" y="130" font-size="11" fill="#424242">MRR-35R</text>
+      <text x="350" y="130" font-size="11" fill="#424242">ACU_IT</text>
+      <text x="500" y="130" font-size="11" fill="#424242">7</text>
+      <text x="600" y="130" font-size="11" fill="#424242">16</text>
+      <text x="700" y="130" font-size="11" fill="#424242">SW-R → SW-D → SW-B</text>
+      <text x="900" y="130" font-size="11" fill="#424242">SW-R → SW-A → SW-B</text>
+      <circle cx="1120" cy="125" r="5" fill="#ff9800"/>
+      <text x="1250" y="130" font-size="11" fill="#424242">2,500</text>
+      <text x="1400" y="130" font-size="11" fill="#424242">2,498</text>
+      <text x="1500" y="130" font-size="11" fill="#424242">2</text>
+      
+      <!-- Total -->
+      <line x1="0" y1="145" x2="1600" y2="145" stroke="#e0e0e0" stroke-width="2"/>
+      <text x="50" y="160" font-size="11" font-weight="bold" fill="#424242">Total</text>
+      <text x="1250" y="160" font-size="11" font-weight="bold" fill="#424242">17,775</text>
+      <text x="1400" y="160" font-size="11" font-weight="bold" fill="#424242">17,773</text>
+      <text x="1500" y="160" font-size="11" font-weight="bold" fill="#4caf50">99.99%</text>
+    </g>
+  </g>
+</svg>

@@ -1,0 +1,423 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2000 1400">
+  <defs>
+    <!-- Define animated gradients for data flow -->
+    <linearGradient id="dataFlowGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#4caf50;stop-opacity:1">
+        <animate attributeName="offset" from="0%" to="100%" dur="3s" repeatCount="indefinite"/>
+      </stop>
+      <stop offset="50%" style="stop-color:#8bc34a;stop-opacity:1">
+        <animate attributeName="offset" from="0%" to="100%" dur="3s" repeatCount="indefinite"/>
+      </stop>
+      <stop offset="100%" style="stop-color:#cddc39;stop-opacity:1">
+        <animate attributeName="offset" from="0%" to="100%" dur="3s" repeatCount="indefinite"/>
+      </stop>
+    </linearGradient>
+    
+    <linearGradient id="processingGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#2196f3;stop-opacity:1"/>
+      <stop offset="100%" style="stop-color:#1976d2;stop-opacity:1"/>
+    </linearGradient>
+    
+    <linearGradient id="controlGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#ff9800;stop-opacity:1"/>
+      <stop offset="100%" style="stop-color:#f57c00;stop-opacity:1"/>
+    </linearGradient>
+    
+    <!-- Filter for glow effect -->
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    
+    <!-- Animated dash pattern for data flow -->
+    <pattern id="movingDash" x="0" y="0" width="40" height="10" patternUnits="userSpaceOnUse">
+      <rect x="0" y="0" width="20" height="10" fill="#4caf50"/>
+      <rect x="20" y="0" width="20" height="10" fill="transparent"/>
+      <animateTransform attributeName="patternTransform" type="translate" from="0 0" to="40 0" dur="1s" repeatCount="indefinite"/>
+    </pattern>
+    
+    <!-- Arrow markers -->
+    <marker id="arrowData" markerWidth="15" markerHeight="15" refX="14" refY="7.5" orient="auto">
+      <path d="M0,0 L0,15 L15,7.5 z" fill="#4caf50"/>
+    </marker>
+    
+    <marker id="arrowControl" markerWidth="15" markerHeight="15" refX="14" refY="7.5" orient="auto">
+      <path d="M0,0 L0,15 L15,7.5 z" fill="#ff9800"/>
+    </marker>
+    
+    <marker id="arrowProcessed" markerWidth="15" markerHeight="15" refX="14" refY="7.5" orient="auto">
+      <path d="M0,0 L0,15 L15,7.5 z" fill="#2196f3"/>
+    </marker>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="2000" height="1400" fill="#f0f4f8"/>
+  
+  <!-- Title -->
+  <text x="1000" y="40" font-family="Arial, sans-serif" font-size="32" font-weight="bold" text-anchor="middle" fill="#263238">
+    A2Z 자율주행차 데이터 플로우 아키텍처
+  </text>
+  
+  <!-- Layer 1: Sensor Data Acquisition -->
+  <g id="sensor-layer">
+    <rect x="50" y="100" width="1900" height="250" rx="20" fill="#e8f5e9" stroke="#4caf50" stroke-width="2" opacity="0.3"/>
+    <text x="100" y="130" font-size="20" font-weight="bold" fill="#2e7d32">Layer 1: Sensor Data Acquisition</text>
+    
+    <!-- LiDAR Sensors -->
+    <g id="lidar-sensors">
+      <rect x="150" y="160" width="200" height="150" rx="15" fill="#4caf50" filter="url(#glow)"/>
+      <text x="250" y="190" font-size="16" font-weight="bold" text-anchor="middle" fill="white">LiDAR Sensors</text>
+      <text x="250" y="215" font-size="12" text-anchor="middle" fill="white">Pandar40P x2</text>
+      <text x="250" y="235" font-size="12" text-anchor="middle" fill="white">G32 x4</text>
+      <text x="250" y="260" font-size="11" text-anchor="middle" fill="#e8f5e9">Point Cloud</text>
+      <text x="250" y="280" font-size="11" text-anchor="middle" fill="#e8f5e9">30 Hz / 1M pts/frame</text>
+      <text x="250" y="300" font-size="11" text-anchor="middle" fill="#e8f5e9">~850 Mbps total</text>
+    </g>
+    
+    <!-- Camera Sensors -->
+    <g id="camera-sensors">
+      <rect x="400" y="160" width="200" height="150" rx="15" fill="#ff9800" filter="url(#glow)"/>
+      <text x="500" y="190" font-size="16" font-weight="bold" text-anchor="middle" fill="white">Camera Array</text>
+      <text x="500" y="215" font-size="12" text-anchor="middle" fill="white">8x Cameras</text>
+      <text x="500" y="235" font-size="12" text-anchor="middle" fill="white">1920x1536 @ 30fps</text>
+      <text x="500" y="260" font-size="11" text-anchor="middle" fill="#fff3e0">RGB + Depth</text>
+      <text x="500" y="280" font-size="11" text-anchor="middle" fill="#fff3e0">MJPEG/H.265</text>
+      <text x="500" y="300" font-size="11" text-anchor="middle" fill="#fff3e0">~600 Mbps total</text>
+    </g>
+    
+    <!-- Radar Sensors -->
+    <g id="radar-sensors">
+      <rect x="650" y="160" width="200" height="150" rx="15" fill="#2196f3" filter="url(#glow)"/>
+      <text x="750" y="190" font-size="16" font-weight="bold" text-anchor="middle" fill="white">Radar Array</text>
+      <text x="750" y="215" font-size="12" text-anchor="middle" fill="white">MRR-35 x4</text>
+      <text x="750" y="235" font-size="12" text-anchor="middle" fill="white">77 GHz FMCW</text>
+      <text x="750" y="260" font-size="11" text-anchor="middle" fill="#e3f2fd">Object List</text>
+      <text x="750" y="280" font-size="11" text-anchor="middle" fill="#e3f2fd">50 Hz update</text>
+      <text x="750" y="300" font-size="11" text-anchor="middle" fill="#e3f2fd">~20 Mbps total</text>
+    </g>
+    
+    <!-- Other Sensors -->
+    <g id="other-sensors">
+      <rect x="900" y="160" width="200" height="150" rx="15" fill="#9c27b0" filter="url(#glow)"/>
+      <text x="1000" y="190" font-size="16" font-weight="bold" text-anchor="middle" fill="white">Other Sensors</text>
+      <text x="1000" y="215" font-size="12" text-anchor="middle" fill="white">IMU/GNSS</text>
+      <text x="1000" y="235" font-size="12" text-anchor="middle" fill="white">Ultrasonic x8</text>
+      <text x="1000" y="260" font-size="11" text-anchor="middle" fill="#f3e5f5">Position/Motion</text>
+      <text x="1000" y="280" font-size="11" text-anchor="middle" fill="#f3e5f5">1000 Hz IMU</text>
+      <text x="1000" y="300" font-size="11" text-anchor="middle" fill="#f3e5f5">~10 Mbps total</text>
+    </g>
+    
+    <!-- Data Volume Indicator -->
+    <g id="data-volume">
+      <rect x="1200" y="160" width="250" height="150" rx="15" fill="#37474f" filter="url(#glow)"/>
+      <text x="1325" y="190" font-size="16" font-weight="bold" text-anchor="middle" fill="white">Raw Data Volume</text>
+      <text x="1325" y="220" font-size="14" text-anchor="middle" fill="#4caf50">Total Input: 1.48 Gbps</text>
+      <text x="1325" y="245" font-size="12" text-anchor="middle" fill="white">Peak: 1.8 Gbps</text>
+      <text x="1325" y="270" font-size="12" text-anchor="middle" fill="white">5.3 TB/hour</text>
+      <text x="1325" y="295" font-size="12" text-anchor="middle" fill="white">127 TB/day</text>
+    </g>
+    
+    <!-- Timestamps -->
+    <g id="timestamps">
+      <rect x="1500" y="160" width="200" height="150" rx="15" fill="#00bcd4" filter="url(#glow)"/>
+      <text x="1600" y="190" font-size="16" font-weight="bold" text-anchor="middle" fill="white">Time Stamping</text>
+      <text x="1600" y="215" font-size="12" text-anchor="middle" fill="white">gPTP Sync</text>
+      <text x="1600" y="235" font-size="12" text-anchor="middle" fill="white">HW Timestamp</text>
+      <text x="1600" y="260" font-size="11" text-anchor="middle" fill="white">Accuracy: ±1μs</text>
+      <text x="1600" y="280" font-size="11" text-anchor="middle" fill="white">All sensors</text>
+      <text x="1600" y="300" font-size="11" text-anchor="middle" fill="white">synchronized</text>
+    </g>
+  </g>
+  
+  <!-- Data Flow Arrows from Sensors -->
+  <g id="sensor-flow-arrows">
+    <path d="M 250 310 Q 250 350 400 400" stroke="#4caf50" stroke-width="4" fill="none" marker-end="url(#arrowData)">
+      <animate attributeName="stroke-dasharray" values="0,100;100,0" dur="2s" repeatCount="indefinite"/>
+    </path>
+    <path d="M 500 310 Q 500 350 550 400" stroke="#ff9800" stroke-width="4" fill="none" marker-end="url(#arrowData)">
+      <animate attributeName="stroke-dasharray" values="0,100;100,0" dur="2s" repeatCount="indefinite"/>
+    </path>
+    <path d="M 750 310 Q 750 350 700 400" stroke="#2196f3" stroke-width="4" fill="none" marker-end="url(#arrowData)">
+      <animate attributeName="stroke-dasharray" values="0,100;100,0" dur="2s" repeatCount="indefinite"/>
+    </path>
+    <path d="M 1000 310 Q 1000 350 850 400" stroke="#9c27b0" stroke-width="4" fill="none" marker-end="url(#arrowData)">
+      <animate attributeName="stroke-dasharray" values="0,100;100,0" dur="2s" repeatCount="indefinite"/>
+    </path>
+  </g>
+  
+  <!-- Layer 2: Pre-processing & Fusion -->
+  <g id="preprocessing-layer">
+    <rect x="50" y="380" width="1900" height="300" rx="20" fill="#e3f2fd" stroke="#2196f3" stroke-width="2" opacity="0.3"/>
+    <text x="100" y="410" font-size="20" font-weight="bold" fill="#1565c0">Layer 2: Pre-processing & Fusion</text>
+    
+    <!-- TSN Switches -->
+    <g id="tsn-switches">
+      <rect x="150" y="440" width="250" height="200" rx="15" fill="url(#processingGrad)" filter="url(#glow)"/>
+      <text x="275" y="470" font-size="16" font-weight="bold" text-anchor="middle" fill="white">TSN Switch Array</text>
+      <text x="275" y="495" font-size="12" text-anchor="middle" fill="white">4x Zone Switches</text>
+      <text x="275" y="515" font-size="12" text-anchor="middle" fill="white">2x Backbone Switches</text>
+      
+      <rect x="170" y="535" width="210" height="90" rx="10" fill="rgba(255,255,255,0.2)"/>
+      <text x="275" y="555" font-size="11" text-anchor="middle" fill="white">Features Active:</text>
+      <text x="275" y="575" font-size="10" text-anchor="middle" fill="white">• TAS (Time-Aware Shaper)</text>
+      <text x="275" y="590" font-size="10" text-anchor="middle" fill="white">• CBS (Credit-Based Shaper)</text>
+      <text x="275" y="605" font-size="10" text-anchor="middle" fill="white">• FRER (Frame Replication)</text>
+      <text x="275" y="620" font-size="10" text-anchor="middle" fill="white">• PSFP (Stream Filtering)</text>
+    </g>
+    
+    <!-- Data Aggregation -->
+    <g id="data-aggregation">
+      <rect x="450" y="440" width="250" height="200" rx="15" fill="#00acc1" filter="url(#glow)"/>
+      <text x="575" y="470" font-size="16" font-weight="bold" text-anchor="middle" fill="white">Data Aggregation</text>
+      <text x="575" y="495" font-size="12" text-anchor="middle" fill="white">Sensor Fusion Node</text>
+      
+      <rect x="470" y="515" width="210" height="110" rx="10" fill="rgba(255,255,255,0.2)"/>
+      <text x="575" y="535" font-size="11" text-anchor="middle" fill="white">Processing:</text>
+      <text x="575" y="555" font-size="10" text-anchor="middle" fill="white">• Time Alignment</text>
+      <text x="575" y="570" font-size="10" text-anchor="middle" fill="white">• Format Conversion</text>
+      <text x="575" y="585" font-size="10" text-anchor="middle" fill="white">• Data Validation</text>
+      <text x="575" y="600" font-size="10" text-anchor="middle" fill="white">• Compression (lossless)</text>
+      <text x="575" y="615" font-size="10" text-anchor="middle" fill="white">• Buffer Management</text>
+    </g>
+    
+    <!-- Pre-processing -->
+    <g id="preprocessing">
+      <rect x="750" y="440" width="250" height="200" rx="15" fill="#4527a0" filter="url(#glow)"/>
+      <text x="875" y="470" font-size="16" font-weight="bold" text-anchor="middle" fill="white">Pre-processing</text>
+      <text x="875" y="495" font-size="12" text-anchor="middle" fill="white">Edge Computing</text>
+      
+      <rect x="770" y="515" width="210" height="110" rx="10" fill="rgba(255,255,255,0.2)"/>
+      <text x="875" y="535" font-size="11" text-anchor="middle" fill="white">Operations:</text>
+      <text x="875" y="555" font-size="10" text-anchor="middle" fill="white">• Noise Filtering</text>
+      <text x="875" y="570" font-size="10" text-anchor="middle" fill="white">• Calibration</text>
+      <text x="875" y="585" font-size="10" text-anchor="middle" fill="white">• Coordinate Transform</text>
+      <text x="875" y="600" font-size="10" text-anchor="middle" fill="white">• ROI Extraction</text>
+      <text x="875" y="615" font-size="10" text-anchor="middle" fill="white">• Feature Detection</text>
+    </g>
+    
+    <!-- Bandwidth Optimization -->
+    <g id="bandwidth-opt">
+      <rect x="1050" y="440" width="250" height="200" rx="15" fill="#f4511e" filter="url(#glow)"/>
+      <text x="1175" y="470" font-size="16" font-weight="bold" text-anchor="middle" fill="white">QoS Management</text>
+      
+      <rect x="1070" y="495" width="210" height="130" rx="10" fill="rgba(255,255,255,0.2)"/>
+      <text x="1175" y="515" font-size="11" text-anchor="middle" fill="white">Priority Queues:</text>
+      <text x="1175" y="535" font-size="10" text-anchor="middle" fill="white">Q7: Safety Critical (30%)</text>
+      <text x="1175" y="550" font-size="10" text-anchor="middle" fill="white">Q6: Perception (25%)</text>
+      <text x="1175" y="565" font-size="10" text-anchor="middle" fill="white">Q5: Control (20%)</text>
+      <text x="1175" y="580" font-size="10" text-anchor="middle" fill="white">Q4: Diagnostics (15%)</text>
+      <text x="1175" y="595" font-size="10" text-anchor="middle" fill="white">Q3-Q0: Others (10%)</text>
+      <text x="1175" y="615" font-size="10" text-anchor="middle" fill="#ffccbc">Latency: &lt;1ms hop</text>
+    </g>
+    
+    <!-- Data Statistics -->
+    <g id="data-stats">
+      <rect x="1350" y="440" width="250" height="200" rx="15" fill="#558b2f" filter="url(#glow)"/>
+      <text x="1475" y="470" font-size="16" font-weight="bold" text-anchor="middle" fill="white">Processing Stats</text>
+      
+      <rect x="1370" y="495" width="210" height="130" rx="10" fill="rgba(255,255,255,0.2)"/>
+      <text x="1475" y="515" font-size="11" text-anchor="middle" fill="white">Throughput:</text>
+      <text x="1475" y="535" font-size="10" text-anchor="middle" fill="white">• Input: 1.48 Gbps</text>
+      <text x="1475" y="550" font-size="10" text-anchor="middle" fill="white">• Processed: 1.2 Gbps</text>
+      <text x="1475" y="565" font-size="10" text-anchor="middle" fill="white">• Compression: 20%</text>
+      <text x="1475" y="580" font-size="10" text-anchor="middle" fill="white">• Latency: 2-5ms</text>
+      <text x="1475" y="595" font-size="10" text-anchor="middle" fill="white">• CPU: 65% avg</text>
+      <text x="1475" y="615" font-size="10" text-anchor="middle" fill="white">• Memory: 8GB/16GB</text>
+    </g>
+  </g>
+  
+  <!-- Flow arrows from preprocessing -->
+  <g id="preprocessing-flow">
+    <path d="M 275 640 Q 275 680 400 720" stroke="#2196f3" stroke-width="5" fill="none" marker-end="url(#arrowProcessed)">
+      <animate attributeName="stroke-dasharray" values="0,100;100,0" dur="1.5s" repeatCount="indefinite"/>
+    </path>
+    <path d="M 575 640 Q 575 680 600 720" stroke="#2196f3" stroke-width="5" fill="none" marker-end="url(#arrowProcessed)">
+      <animate attributeName="stroke-dasharray" values="0,100;100,0" dur="1.5s" repeatCount="indefinite"/>
+    </path>
+    <path d="M 875 640 Q 875 680 800 720" stroke="#2196f3" stroke-width="5" fill="none" marker-end="url(#arrowProcessed)">
+      <animate attributeName="stroke-dasharray" values="0,100;100,0" dur="1.5s" repeatCount="indefinite"/>
+    </path>
+  </g>
+  
+  <!-- Layer 3: Main Processing (ACUs) -->
+  <g id="main-processing-layer">
+    <rect x="50" y="700" width="1900" height="350" rx="20" fill="#f3e5f5" stroke="#9c27b0" stroke-width="2" opacity="0.3"/>
+    <text x="100" y="730" font-size="20" font-weight="bold" fill="#6a1b9a">Layer 3: Main Processing & Decision Making</text>
+    
+    <!-- ACU_NO (NVIDIA) -->
+    <g id="acu-no-processing">
+      <rect x="150" y="760" width="400" height="250" rx="15" fill="#1e88e5" filter="url(#glow)"/>
+      <text x="350" y="790" font-size="18" font-weight="bold" text-anchor="middle" fill="white">ACU_NO - AI Processing</text>
+      
+      <rect x="170" y="810" width="180" height="180" rx="10" fill="rgba(255,255,255,0.2)"/>
+      <text x="260" y="835" font-size="12" text-anchor="middle" fill="white" font-weight="bold">Perception Pipeline:</text>
+      <text x="260" y="855" font-size="10" text-anchor="middle" fill="white">• Object Detection</text>
+      <text x="260" y="870" font-size="10" text-anchor="middle" fill="white">• Segmentation</text>
+      <text x="260" y="885" font-size="10" text-anchor="middle" fill="white">• Tracking</text>
+      <text x="260" y="900" font-size="10" text-anchor="middle" fill="white">• Classification</text>
+      <text x="260" y="915" font-size="10" text-anchor="middle" fill="white">• Prediction</text>
+      <text x="260" y="935" font-size="11" text-anchor="middle" fill="#bbdefb">30 FPS processing</text>
+      <text x="260" y="955" font-size="11" text-anchor="middle" fill="#bbdefb">275 TOPS utilized</text>
+      <text x="260" y="975" font-size="11" text-anchor="middle" fill="#bbdefb">Latency: 20-33ms</text>
+      
+      <rect x="370" y="810" width="160" height="180" rx="10" fill="rgba(255,255,255,0.15)"/>
+      <text x="450" y="835" font-size="12" text-anchor="middle" fill="white" font-weight="bold">DNN Models:</text>
+      <text x="450" y="855" font-size="10" text-anchor="middle" fill="white">• YOLOv8 (Objects)</text>
+      <text x="450" y="870" font-size="10" text-anchor="middle" fill="white">• PointPillars (3D)</text>
+      <text x="450" y="885" font-size="10" text-anchor="middle" fill="white">• DeepLabV3+</text>
+      <text x="450" y="900" font-size="10" text-anchor="middle" fill="white">• LSTM (Predict)</text>
+      <text x="450" y="920" font-size="11" text-anchor="middle" fill="#bbdefb">TensorRT</text>
+      <text x="450" y="940" font-size="11" text-anchor="middle" fill="#bbdefb">FP16/INT8</text>
+      <text x="450" y="960" font-size="11" text-anchor="middle" fill="#bbdefb">GPU: 85% util</text>
+    </g>
+    
+    <!-- ACU_IT (Intel) -->
+    <g id="acu-it-processing">
+      <rect x="600" y="760" width="400" height="250" rx="15" fill="#43a047" filter="url(#glow)"/>
+      <text x="800" y="790" font-size="18" font-weight="bold" text-anchor="middle" fill="white">ACU_IT - Control & Planning</text>
+      
+      <rect x="620" y="810" width="180" height="180" rx="10" fill="rgba(255,255,255,0.2)"/>
+      <text x="710" y="835" font-size="12" text-anchor="middle" fill="white" font-weight="bold">Planning Pipeline:</text>
+      <text x="710" y="855" font-size="10" text-anchor="middle" fill="white">• Localization</text>
+      <text x="710" y="870" font-size="10" text-anchor="middle" fill="white">• Path Planning</text>
+      <text x="710" y="885" font-size="10" text-anchor="middle" fill="white">• Behavior Planning</text>
+      <text x="710" y="900" font-size="10" text-anchor="middle" fill="white">• Motion Control</text>
+      <text x="710" y="915" font-size="10" text-anchor="middle" fill="white">• Trajectory Opt</text>
+      <text x="710" y="935" font-size="11" text-anchor="middle" fill="#c8e6c9">100 Hz update</text>
+      <text x="710" y="955" font-size="11" text-anchor="middle" fill="#c8e6c9">Real-time OS</text>
+      <text x="710" y="975" font-size="11" text-anchor="middle" fill="#c8e6c9">Latency: &lt;10ms</text>
+      
+      <rect x="820" y="810" width="160" height="180" rx="10" fill="rgba(255,255,255,0.15)"/>
+      <text x="900" y="835" font-size="12" text-anchor="middle" fill="white" font-weight="bold">Algorithms:</text>
+      <text x="900" y="855" font-size="10" text-anchor="middle" fill="white">• EKF/UKF</text>
+      <text x="900" y="870" font-size="10" text-anchor="middle" fill="white">• A* / RRT*</text>
+      <text x="900" y="885" font-size="10" text-anchor="middle" fill="white">• MPC Control</text>
+      <text x="900" y="900" font-size="10" text-anchor="middle" fill="white">• State Machine</text>
+      <text x="900" y="920" font-size="11" text-anchor="middle" fill="#c8e6c9">C++ RT</text>
+      <text x="900" y="940" font-size="11" text-anchor="middle" fill="#c8e6c9">AUTOSAR AP</text>
+      <text x="900" y="960" font-size="11" text-anchor="middle" fill="#c8e6c9">CPU: 70% util</text>
+    </g>
+    
+    <!-- Decision Fusion -->
+    <g id="decision-fusion">
+      <rect x="1050" y="760" width="350" height="250" rx="15" fill="#8e24aa" filter="url(#glow)"/>
+      <text x="1225" y="790" font-size="18" font-weight="bold" text-anchor="middle" fill="white">Decision Fusion</text>
+      
+      <rect x="1070" y="810" width="310" height="180" rx="10" fill="rgba(255,255,255,0.2)"/>
+      <text x="1225" y="835" font-size="12" text-anchor="middle" fill="white" font-weight="bold">Arbitration:</text>
+      <text x="1225" y="855" font-size="10" text-anchor="middle" fill="white">• Safety Monitor</text>
+      <text x="1225" y="870" font-size="10" text-anchor="middle" fill="white">• Redundancy Check</text>
+      <text x="1225" y="885" font-size="10" text-anchor="middle" fill="white">• Voting System (2oo3)</text>
+      <text x="1225" y="900" font-size="10" text-anchor="middle" fill="white">• Fallback Logic</text>
+      <text x="1225" y="920" font-size="11" text-anchor="middle" fill="#e1bee7">ASIL-D Compliant</text>
+      <text x="1225" y="940" font-size="11" text-anchor="middle" fill="#e1bee7">Dual-channel</text>
+      <text x="1225" y="960" font-size="11" text-anchor="middle" fill="#e1bee7">Fail-operational</text>
+      <text x="1225" y="980" font-size="11" text-anchor="middle" fill="#e1bee7">Response: &lt;1ms</text>
+    </g>
+    
+    <!-- Output Generation -->
+    <g id="output-gen">
+      <rect x="1450" y="760" width="350" height="250" rx="15" fill="#d84315" filter="url(#glow)"/>
+      <text x="1625" y="790" font-size="18" font-weight="bold" text-anchor="middle" fill="white">Control Output</text>
+      
+      <rect x="1470" y="810" width="310" height="180" rx="10" fill="rgba(255,255,255,0.2)"/>
+      <text x="1625" y="835" font-size="12" text-anchor="middle" fill="white" font-weight="bold">Commands:</text>
+      <text x="1625" y="855" font-size="10" text-anchor="middle" fill="white">• Throttle: 0-100%</text>
+      <text x="1625" y="870" font-size="10" text-anchor="middle" fill="white">• Brake: 0-10 MPa</text>
+      <text x="1625" y="885" font-size="10" text-anchor="middle" fill="white">• Steering: ±540°</text>
+      <text x="1625" y="900" font-size="10" text-anchor="middle" fill="white">• Gear: P/R/N/D</text>
+      <text x="1625" y="920" font-size="11" text-anchor="middle" fill="#ffccbc">Update: 100 Hz</text>
+      <text x="1625" y="940" font-size="11" text-anchor="middle" fill="#ffccbc">CAN-FD / Ethernet</text>
+      <text x="1625" y="960" font-size="11" text-anchor="middle" fill="#ffccbc">Latency: &lt;5ms</text>
+      <text x="1625" y="980" font-size="11" text-anchor="middle" fill="#ffccbc">Jitter: &lt;100μs</text>
+    </g>
+  </g>
+  
+  <!-- Control flow arrows -->
+  <g id="control-flow">
+    <path d="M 550 900 L 600 900" stroke="#ff9800" stroke-width="6" fill="none" marker-end="url(#arrowControl)">
+      <animate attributeName="stroke-dasharray" values="0,50;50,0" dur="1s" repeatCount="indefinite"/>
+    </path>
+    <path d="M 1000 900 L 1050 900" stroke="#ff9800" stroke-width="6" fill="none" marker-end="url(#arrowControl)">
+      <animate attributeName="stroke-dasharray" values="0,50;50,0" dur="1s" repeatCount="indefinite"/>
+    </path>
+    <path d="M 1400 900 L 1450 900" stroke="#ff9800" stroke-width="6" fill="none" marker-end="url(#arrowControl)">
+      <animate attributeName="stroke-dasharray" values="0,50;50,0" dur="1s" repeatCount="indefinite"/>
+    </path>
+  </g>
+  
+  <!-- Layer 4: Actuators & Feedback -->
+  <g id="actuator-layer">
+    <rect x="50" y="1080" width="1900" height="250" rx="20" fill="#ffebee" stroke="#f44336" stroke-width="2" opacity="0.3"/>
+    <text x="100" y="1110" font-size="20" font-weight="bold" fill="#b71c1c">Layer 4: Actuators & Feedback</text>
+    
+    <!-- VCU -->
+    <g id="vcu-control">
+      <rect x="200" y="1140" width="250" height="150" rx="15" fill="url(#controlGrad)" filter="url(#glow)"/>
+      <text x="325" y="1170" font-size="16" font-weight="bold" text-anchor="middle" fill="white">VCU</text>
+      <text x="325" y="1195" font-size="12" text-anchor="middle" fill="white">Vehicle Control</text>
+      <text x="325" y="1220" font-size="11" text-anchor="middle" fill="#fff3e0">• EPS Motor</text>
+      <text x="325" y="1240" font-size="11" text-anchor="middle" fill="#fff3e0">• EHB Actuator</text>
+      <text x="325" y="1260" font-size="11" text-anchor="middle" fill="#fff3e0">• Drive Motor</text>
+      <text x="325" y="1280" font-size="11" text-anchor="middle" fill="#fff3e0">Response: 10ms</text>
+    </g>
+    
+    <!-- Feedback -->
+    <g id="feedback">
+      <rect x="550" y="1140" width="250" height="150" rx="15" fill="#00897b" filter="url(#glow)"/>
+      <text x="675" y="1170" font-size="16" font-weight="bold" text-anchor="middle" fill="white">Feedback Loop</text>
+      <text x="675" y="1195" font-size="12" text-anchor="middle" fill="white">Sensor Feedback</text>
+      <text x="675" y="1220" font-size="11" text-anchor="middle" fill="white">• Wheel Speed</text>
+      <text x="675" y="1240" font-size="11" text-anchor="middle" fill="white">• Steering Angle</text>
+      <text x="675" y="1260" font-size="11" text-anchor="middle" fill="white">• Brake Pressure</text>
+      <text x="675" y="1280" font-size="11" text-anchor="middle" fill="white">Update: 1000 Hz</text>
+    </g>
+    
+    <!-- Logging -->
+    <g id="logging">
+      <rect x="900" y="1140" width="250" height="150" rx="15" fill="#5e35b1" filter="url(#glow)"/>
+      <text x="1025" y="1170" font-size="16" font-weight="bold" text-anchor="middle" fill="white">Data Logging</text>
+      <text x="1025" y="1195" font-size="12" text-anchor="middle" fill="white">EDR / DSSAD</text>
+      <text x="1025" y="1220" font-size="11" text-anchor="middle" fill="white">• All commands</text>
+      <text x="1025" y="1240" font-size="11" text-anchor="middle" fill="white">• All feedback</text>
+      <text x="1025" y="1260" font-size="11" text-anchor="middle" fill="white">• Timestamps</text>
+      <text x="1025" y="1280" font-size="11" text-anchor="middle" fill="white">Storage: 4TB</text>
+    </g>
+    
+    <!-- Cloud Upload -->
+    <g id="cloud">
+      <rect x="1250" y="1140" width="250" height="150" rx="15" fill="#0288d1" filter="url(#glow)"/>
+      <text x="1375" y="1170" font-size="16" font-weight="bold" text-anchor="middle" fill="white">Cloud Upload</text>
+      <text x="1375" y="1195" font-size="12" text-anchor="middle" fill="white">TCU - 5G/LTE</text>
+      <text x="1375" y="1220" font-size="11" text-anchor="middle" fill="white">• Telemetry</text>
+      <text x="1375" y="1240" font-size="11" text-anchor="middle" fill="white">• Diagnostics</text>
+      <text x="1375" y="1260" font-size="11" text-anchor="middle" fill="white">• HD Maps</text>
+      <text x="1375" y="1280" font-size="11" text-anchor="middle" fill="white">Upload: 100 Mbps</text>
+    </g>
+    
+    <!-- Performance Metrics -->
+    <g id="metrics">
+      <rect x="1600" y="1140" width="250" height="150" rx="15" fill="#37474f" filter="url(#glow)"/>
+      <text x="1725" y="1170" font-size="16" font-weight="bold" text-anchor="middle" fill="white">Performance</text>
+      <text x="1725" y="1195" font-size="11" text-anchor="middle" fill="white">E2E Latency: 35-50ms</text>
+      <text x="1725" y="1215" font-size="11" text-anchor="middle" fill="white">Control Loop: 10ms</text>
+      <text x="1725" y="1235" font-size="11" text-anchor="middle" fill="white">Perception: 33ms</text>
+      <text x="1725" y="1255" font-size="11" text-anchor="middle" fill="white">Planning: 10ms</text>
+      <text x="1725" y="1275" font-size="11" text-anchor="middle" fill="white">Safety Margin: 20ms</text>
+    </g>
+  </g>
+  
+  <!-- Feedback loop arrows -->
+  <g id="feedback-arrows">
+    <path d="M 675 1140 Q 675 1050 350 1010" stroke="#00897b" stroke-width="3" fill="none" stroke-dasharray="5,5" opacity="0.7">
+      <animate attributeName="stroke-dashoffset" from="0" to="-10" dur="0.5s" repeatCount="indefinite"/>
+    </path>
+    <path d="M 675 1140 Q 675 1050 800 1010" stroke="#00897b" stroke-width="3" fill="none" stroke-dasharray="5,5" opacity="0.7">
+      <animate attributeName="stroke-dashoffset" from="0" to="-10" dur="0.5s" repeatCount="indefinite"/>
+    </path>
+  </g>
+</svg>

@@ -1,0 +1,693 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2400 2000">
+  <defs>
+    <!-- Gradient definitions -->
+    <linearGradient id="normalGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#4CAF50;stop-opacity:1"/>
+      <stop offset="100%" style="stop-color:#2E7D32;stop-opacity:1"/>
+    </linearGradient>
+    
+    <linearGradient id="warningGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FFA726;stop-opacity:1"/>
+      <stop offset="100%" style="stop-color:#F57C00;stop-opacity:1"/>
+    </linearGradient>
+    
+    <linearGradient id="criticalGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#EF5350;stop-opacity:1"/>
+      <stop offset="100%" style="stop-color:#C62828;stop-opacity:1"/>
+    </linearGradient>
+    
+    <linearGradient id="recoveryGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#42A5F5;stop-opacity:1"/>
+      <stop offset="100%" style="stop-color:#1565C0;stop-opacity:1"/>
+    </linearGradient>
+    
+    <!-- Arrow markers -->
+    <marker id="flowArrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L9,3 L0,6 z" fill="#333"/>
+    </marker>
+    
+    <marker id="criticalArrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L9,3 L0,6 z" fill="#C62828"/>
+    </marker>
+    
+    <!-- Filters -->
+    <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%">
+      <feDropShadow dx="3" dy="3" stdDeviation="4" flood-opacity="0.2"/>
+    </filter>
+    
+    <!-- Patterns -->
+    <pattern id="gridPattern" x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse">
+      <line x1="0" y1="0" x2="0" y2="40" stroke="#E0E0E0" stroke-width="0.5"/>
+      <line x1="0" y1="0" x2="40" y2="0" stroke="#E0E0E0" stroke-width="0.5"/>
+    </pattern>
+    
+    <!-- Animation for alerts -->
+    <animate id="alertPulse" attributeName="opacity" values="0.3;1;0.3" dur="1.5s" repeatCount="indefinite"/>
+  </defs>
+  
+  <!-- Background -->
+  <rect x="0" y="0" width="2400" height="2000" fill="#F8F9FA"/>
+  <rect x="0" y="0" width="2400" height="2000" fill="url(#gridPattern)"/>
+  
+  <!-- Title -->
+  <text x="1200" y="40" font-size="34" font-weight="bold" text-anchor="middle" fill="#2C3E50">
+    A2Z Failure Scenario Response Flowcharts
+  </text>
+  <text x="1200" y="75" font-size="20" text-anchor="middle" fill="#7F8C8D">
+    Automated Recovery Procedures for Critical System Failures
+  </text>
+  
+  <!-- Scenario 1: Sensor Failure (LiDAR) -->
+  <g transform="translate(50, 120)">
+    <rect x="0" y="0" width="700" height="850" rx="10" fill="white" stroke="#E0E0E0" stroke-width="2" filter="url(#shadow)"/>
+    <rect x="0" y="0" width="700" height="50" rx="10 10 0 0" fill="url(#criticalGrad)"/>
+    <text x="350" y="35" font-size="22" font-weight="bold" text-anchor="middle" fill="white">
+      SCN-FRN-LDR-HWF: Front LiDAR Failure
+    </text>
+    
+    <!-- Flowchart -->
+    <g transform="translate(50, 80)">
+      <!-- Detection -->
+      <rect x="200" y="0" width="200" height="60" rx="30" fill="url(#normalGrad)"/>
+      <text x="300" y="25" font-size="14" font-weight="bold" text-anchor="middle" fill="white">System Normal</text>
+      <text x="300" y="45" font-size="11" text-anchor="middle" fill="white">All sensors active</text>
+      
+      <!-- Failure Event -->
+      <rect x="200" y="100" width="200" height="60" rx="5" fill="url(#criticalGrad)"/>
+      <text x="300" y="125" font-size="14" font-weight="bold" text-anchor="middle" fill="white">LiDAR Failure</text>
+      <text x="300" y="145" font-size="11" text-anchor="middle" fill="white">No point cloud data</text>
+      <circle cx="380" cy="110" r="8" fill="#FFEB3B">
+        <animate attributeName="opacity" values="0;1;0" dur="1s" repeatCount="indefinite"/>
+      </circle>
+      
+      <!-- Detection Diamond -->
+      <g transform="translate(250, 200)">
+        <path d="M50,0 L100,30 L50,60 L0,30 Z" fill="#FFF9C4" stroke="#F57F17" stroke-width="2"/>
+        <text x="50" y="35" font-size="11" text-anchor="middle" fill="#333">Detect in 50ms?</text>
+      </g>
+      
+      <!-- Immediate Actions -->
+      <rect x="50" y="300" width="180" height="80" rx="5" fill="url(#warningGrad)"/>
+      <text x="140" y="325" font-size="13" font-weight="bold" text-anchor="middle" fill="white">Alert Generation</text>
+      <text x="140" y="345" font-size="10" text-anchor="middle" fill="white">• Log: ERR_LDR_001</text>
+      <text x="140" y="360" font-size="10" text-anchor="middle" fill="white">• Priority: CRITICAL</text>
+      <text x="140" y="375" font-size="10" text-anchor="middle" fill="white">• Notify: ACU_NO</text>
+      
+      <rect x="270" y="300" width="180" height="80" rx="5" fill="url(#recoveryGrad)"/>
+      <text x="360" y="325" font-size="13" font-weight="bold" text-anchor="middle" fill="white">Sensor Fusion</text>
+      <text x="360" y="345" font-size="10" text-anchor="middle" fill="white">• Activate Camera+Radar</text>
+      <text x="360" y="360" font-size="10" text-anchor="middle" fill="white">• Increase sampling rate</text>
+      <text x="360" y="375" font-size="10" text-anchor="middle" fill="white">• Expand FOV coverage</text>
+      
+      <rect x="490" y="300" width="160" height="80" rx="5" fill="#E1BEE7"/>
+      <text x="570" y="325" font-size="13" font-weight="bold" text-anchor="middle" fill="#4A148C">Speed Limit</text>
+      <text x="570" y="345" font-size="10" text-anchor="middle" fill="#333">• Max: 40 km/h</text>
+      <text x="570" y="360" font-size="10" text-anchor="middle" fill="#333">• Safe distance: 2x</text>
+      <text x="570" y="375" font-size="10" text-anchor="middle" fill="#333">• Lane change: OFF</text>
+      
+      <!-- Recovery Check -->
+      <g transform="translate(250, 420)">
+        <path d="M50,0 L100,30 L50,60 L0,30 Z" fill="#E8F5E9" stroke="#2E7D32" stroke-width="2"/>
+        <text x="50" y="35" font-size="11" text-anchor="middle" fill="#333">Recovered?</text>
+      </g>
+      
+      <!-- Recovery Success -->
+      <rect x="100" y="520" width="200" height="60" rx="5" fill="url(#normalGrad)"/>
+      <text x="200" y="545" font-size="13" font-weight="bold" text-anchor="middle" fill="white">Resume Normal</text>
+      <text x="200" y="565" font-size="10" text-anchor="middle" fill="white">Clear alerts, restore limits</text>
+      
+      <!-- Degraded Mode -->
+      <rect x="350" y="520" width="200" height="60" rx="5" fill="url(#warningGrad)"/>
+      <text x="450" y="545" font-size="13" font-weight="bold" text-anchor="middle" fill="white">Degraded Mode</text>
+      <text x="450" y="565" font-size="10" text-anchor="middle" fill="white">Continue with limitations</text>
+      
+      <!-- Safe Stop -->
+      <rect x="200" y="620" width="200" height="60" rx="5" fill="url(#criticalGrad)"/>
+      <text x="300" y="645" font-size="13" font-weight="bold" text-anchor="middle" fill="white">Minimal Risk Condition</text>
+      <text x="300" y="665" font-size="10" text-anchor="middle" fill="white">Pull over safely, hazards ON</text>
+      
+      <!-- Flow arrows -->
+      <line x1="300" y1="60" x2="300" y2="100" stroke="#333" stroke-width="2" marker-end="url(#flowArrow)"/>
+      <line x1="300" y1="160" x2="300" y2="200" stroke="#333" stroke-width="2" marker-end="url(#flowArrow)"/>
+      <line x1="250" y1="230" x2="140" y2="300" stroke="#333" stroke-width="2" marker-end="url(#flowArrow)"/>
+      <line x1="300" y1="260" x2="360" y2="300" stroke="#333" stroke-width="2" marker-end="url(#flowArrow)"/>
+      <line x1="350" y1="230" x2="570" y2="300" stroke="#333" stroke-width="2" marker-end="url(#flowArrow)"/>
+      <line x1="300" y1="480" x2="200" y2="520" stroke="#2E7D32" stroke-width="2" marker-end="url(#flowArrow)"/>
+      <line x1="300" y1="480" x2="450" y2="520" stroke="#F57C00" stroke-width="2" marker-end="url(#flowArrow)"/>
+      <line x1="450" y1="580" x2="300" y2="620" stroke="#C62828" stroke-width="2" marker-end="url(#criticalArrow)"/>
+    </g>
+    
+    <!-- Timeline -->
+    <g transform="translate(50, 730)">
+      <rect x="0" y="0" width="600" height="90" rx="5" fill="#F5F5F5"/>
+      <text x="10" y="25" font-size="14" font-weight="bold" fill="#333">Response Timeline:</text>
+      <line x1="50" y1="50" x2="550" y2="50" stroke="#333" stroke-width="2"/>
+      <circle cx="50" cy="50" r="5" fill="#4CAF50"/>
+      <text x="50" y="75" font-size="10" text-anchor="middle" fill="#333">0ms</text>
+      <circle cx="150" cy="50" r="5" fill="#FF9800"/>
+      <text x="150" y="75" font-size="10" text-anchor="middle" fill="#333">50ms</text>
+      <text x="150" y="40" font-size="9" text-anchor="middle" fill="#333">Detect</text>
+      <circle cx="250" cy="50" r="5" fill="#2196F3"/>
+      <text x="250" y="75" font-size="10" text-anchor="middle" fill="#333">100ms</text>
+      <text x="250" y="40" font-size="9" text-anchor="middle" fill="#333">Switch</text>
+      <circle cx="400" cy="50" r="5" fill="#9C27B0"/>
+      <text x="400" y="75" font-size="10" text-anchor="middle" fill="#333">500ms</text>
+      <text x="400" y="40" font-size="9" text-anchor="middle" fill="#333">Stable</text>
+      <circle cx="550" cy="50" r="5" fill="#F44336"/>
+      <text x="550" y="75" font-size="10" text-anchor="middle" fill="#333">30s</text>
+      <text x="550" y="40" font-size="9" text-anchor="middle" fill="#333">MRC</text>
+    </g>
+  </g>
+  
+  <!-- Scenario 2: Network Switch Failure -->
+  <g transform="translate(800, 120)">
+    <rect x="0" y="0" width="700" height="850" rx="10" fill="white" stroke="#E0E0E0" stroke-width="2" filter="url(#shadow)"/>
+    <rect x="0" y="0" width="700" height="50" rx="10 10 0 0" fill="url(#criticalGrad)"/>
+    <text x="350" y="35" font-size="22" font-weight="bold" text-anchor="middle" fill="white">
+      SCN-BCK-SW1-PWF: Switch Power Failure
+    </text>
+    
+    <!-- Flowchart -->
+    <g transform="translate(50, 80)">
+      <!-- Normal State -->
+      <rect x="200" y="0" width="200" height="60" rx="30" fill="url(#normalGrad)"/>
+      <text x="300" y="25" font-size="14" font-weight="bold" text-anchor="middle" fill="white">Network Active</text>
+      <text x="300" y="45" font-size="11" text-anchor="middle" fill="white">All paths available</text>
+      
+      <!-- Failure Event -->
+      <rect x="200" y="100" width="200" height="60" rx="5" fill="url(#criticalGrad)"/>
+      <text x="300" y="125" font-size="14" font-weight="bold" text-anchor="middle" fill="white">Switch Failure</text>
+      <text x="300" y="145" font-size="11" text-anchor="middle" fill="white">Power loss detected</text>
+      <circle cx="380" cy="110" r="8" fill="#FF5252">
+        <animate attributeName="opacity" values="0;1;0" dur="0.5s" repeatCount="indefinite"/>
+      </circle>
+      
+      <!-- FRER Activation -->
+      <rect x="150" y="200" width="300" height="80" rx="5" fill="url(#recoveryGrad)"/>
+      <text x="300" y="225" font-size="14" font-weight="bold" text-anchor="middle" fill="white">FRER Activation</text>
+      <text x="300" y="245" font-size="11" text-anchor="middle" fill="white">• Switch to redundant path</text>
+      <text x="300" y="260" font-size="11" text-anchor="middle" fill="white">• Sequence recovery enabled</text>
+      <text x="300" y="275" font-size="11" text-anchor="middle" fill="white">• Latency monitoring active</text>
+      
+      <!-- Path Reconfiguration -->
+      <g transform="translate(50, 320)">
+        <rect x="0" y="0" width="250" height="100" rx="5" fill="#E3F2FD"/>
+        <text x="125" y="25" font-size="13" font-weight="bold" text-anchor="middle" fill="#1565C0">Primary Path Lost</text>
+        <text x="10" y="45" font-size="10" fill="#333">• SW1 → SW2: FAILED</text>
+        <text x="10" y="60" font-size="10" fill="#333">• Affected ECUs: 4</text>
+        <text x="10" y="75" font-size="10" fill="#333">• Lost bandwidth: 2.5Gbps</text>
+        <text x="10" y="90" font-size="10" fill="#333">• Packet loss: 0.02%</text>
+      </g>
+      
+      <g transform="translate(350, 320)">
+        <rect x="0" y="0" width="250" height="100" rx="5" fill="#C8E6C9"/>
+        <text x="125" y="25" font-size="13" font-weight="bold" text-anchor="middle" fill="#2E7D32">Backup Path Active</text>
+        <text x="10" y="45" font-size="10" fill="#333">• SW1 → SW3 → SW2: OK</text>
+        <text x="10" y="60" font-size="10" fill="#333">• Added latency: +2ms</text>
+        <text x="10" y="75" font-size="10" fill="#333">• Bandwidth: 1Gbps (limited)</text>
+        <text x="10" y="90" font-size="10" fill="#333">• QoS: Priority traffic only</text>
+      </g>
+      
+      <!-- Traffic Prioritization -->
+      <rect x="150" y="450" width="300" height="100" rx="5" fill="url(#warningGrad)"/>
+      <text x="300" y="475" font-size="14" font-weight="bold" text-anchor="middle" fill="white">Traffic Management</text>
+      <text x="300" y="495" font-size="11" text-anchor="middle" fill="white">• Safety-critical: Priority 7</text>
+      <text x="300" y="510" font-size="11" text-anchor="middle" fill="white">• Control messages: Priority 6</text>
+      <text x="300" y="525" font-size="11" text-anchor="middle" fill="white">• Sensor data: Priority 5</text>
+      <text x="300" y="540" font-size="11" text-anchor="middle" fill="white">• Diagnostics: Dropped</text>
+      
+      <!-- Recovery Actions -->
+      <rect x="100" y="590" width="200" height="80" rx="5" fill="#FFECB3"/>
+      <text x="200" y="615" font-size="13" font-weight="bold" text-anchor="middle" fill="#E65100">Power Cycle</text>
+      <text x="200" y="635" font-size="10" text-anchor="middle" fill="#333">• Attempt restart</text>
+      <text x="200" y="650" font-size="10" text-anchor="middle" fill="#333">• Check thermal status</text>
+      <text x="200" y="665" font-size="10" text-anchor="middle" fill="#333">• Verify connections</text>
+      
+      <rect x="350" y="590" width="200" height="80" rx="5" fill="#FCE4EC"/>
+      <text x="450" y="615" font-size="13" font-weight="bold" text-anchor="middle" fill="#C2185B">Maintenance Alert</text>
+      <text x="450" y="635" font-size="10" text-anchor="middle" fill="#333">• Log hardware fault</text>
+      <text x="450" y="650" font-size="10" text-anchor="middle" fill="#333">• Schedule repair</text>
+      <text x="450" y="665" font-size="10" text-anchor="middle" fill="#333">• Continue degraded</text>
+      
+      <!-- Flow arrows -->
+      <line x1="300" y1="60" x2="300" y2="100" stroke="#333" stroke-width="2" marker-end="url(#flowArrow)"/>
+      <line x1="300" y1="160" x2="300" y2="200" stroke="#333" stroke-width="2" marker-end="url(#flowArrow)"/>
+      <line x1="300" y1="280" x2="175" y2="320" stroke="#333" stroke-width="2" marker-end="url(#flowArrow)"/>
+      <line x1="300" y1="280" x2="475" y2="320" stroke="#333" stroke-width="2" marker-end="url(#flowArrow)"/>
+      <line x1="300" y1="420" x2="300" y2="450" stroke="#333" stroke-width="2" marker-end="url(#flowArrow)"/>
+      <line x1="300" y1="550" x2="200" y2="590" stroke="#333" stroke-width="2" marker-end="url(#flowArrow)"/>
+      <line x1="300" y1="550" x2="450" y2="590" stroke="#333" stroke-width="2" marker-end="url(#flowArrow)"/>
+    </g>
+    
+    <!-- Network Impact -->
+    <g transform="translate(50, 730)">
+      <rect x="0" y="0" width="600" height="90" rx="5" fill="#F5F5F5"/>
+      <text x="10" y="25" font-size="14" font-weight="bold" fill="#333">Impact Analysis:</text>
+      <rect x="10" y="35" width="120" height="45" rx="3" fill="#4CAF50"/>
+      <text x="70" y="55" font-size="11" font-weight="bold" text-anchor="middle" fill="white">Before</text>
+      <text x="70" y="70" font-size="9" text-anchor="middle" fill="white">Latency: 2ms</text>
+      
+      <rect x="140" y="35" width="120" height="45" rx="3" fill="#FF9800"/>
+      <text x="200" y="55" font-size="11" font-weight="bold" text-anchor="middle" fill="white">During</text>
+      <text x="200" y="70" font-size="9" text-anchor="middle" fill="white">Latency: 4ms</text>
+      
+      <rect x="270" y="35" width="120" height="45" rx="3" fill="#2196F3"/>
+      <text x="330" y="55" font-size="11" font-weight="bold" text-anchor="middle" fill="white">Recovery</text>
+      <text x="330" y="70" font-size="9" text-anchor="middle" fill="white">Time: &lt;50ms</text>
+      
+      <rect x="400" y="35" width="120" height="45" rx="3" fill="#9C27B0"/>
+      <text x="460" y="55" font-size="11" font-weight="bold" text-anchor="middle" fill="white">Availability</text>
+      <text x="460" y="70" font-size="9" text-anchor="middle" fill="white">99.999%</text>
+    </g>
+  </g>
+  
+  <!-- Scenario 3: ECU Failure (ACU_NO) -->
+  <g transform="translate(1550, 120)">
+    <rect x="0" y="0" width="700" height="850" rx="10" fill="white" stroke="#E0E0E0" stroke-width="2" filter="url(#shadow)"/>
+    <rect x="0" y="0" width="700" height="50" rx="10 10 0 0" fill="url(#criticalGrad)"/>
+    <text x="350" y="35" font-size="22" font-weight="bold" text-anchor="middle" fill="white">
+      SCN-CMP-ACU-CRH: ACU_NO Crash
+    </text>
+    
+    <!-- Flowchart -->
+    <g transform="translate(50, 80)">
+      <!-- Normal State -->
+      <rect x="200" y="0" width="200" height="60" rx="30" fill="url(#normalGrad)"/>
+      <text x="300" y="25" font-size="14" font-weight="bold" text-anchor="middle" fill="white">ACU_NO Active</text>
+      <text x="300" y="45" font-size="11" text-anchor="middle" fill="white">Processing nominal</text>
+      
+      <!-- Failure Event -->
+      <rect x="200" y="100" width="200" height="60" rx="5" fill="url(#criticalGrad)"/>
+      <text x="300" y="125" font-size="14" font-weight="bold" text-anchor="middle" fill="white">System Crash</text>
+      <text x="300" y="145" font-size="11" text-anchor="middle" fill="white">Watchdog timeout</text>
+      <circle cx="380" cy="110" r="8" fill="#FF1744">
+        <animate attributeName="opacity" values="1;0;1" dur="0.3s" repeatCount="indefinite"/>
+      </circle>
+      
+      <!-- Immediate Failover -->
+      <rect x="150" y="200" width="300" height="80" rx="5" fill="url(#recoveryGrad)"/>
+      <text x="300" y="225" font-size="14" font-weight="bold" text-anchor="middle" fill="white">Hot Standby Takeover</text>
+      <text x="300" y="245" font-size="11" text-anchor="middle" fill="white">• ACU_IT assumes control</text>
+      <text x="300" y="260" font-size="11" text-anchor="middle" fill="white">• State synchronization: 20ms</text>
+      <text x="300" y="275" font-size="11" text-anchor="middle" fill="white">• Seamless transition</text>
+      
+      <!-- State Transfer -->
+      <g transform="translate(50, 320)">
+        <rect x="0" y="0" width="250" height="120" rx="5" fill="#E8EAF6"/>
+        <text x="125" y="25" font-size="13" font-weight="bold" text-anchor="middle" fill="#283593">State Transfer</text>
+        <text x="10" y="45" font-size="10" fill="#333">• Vehicle pose: Synced</text>
+        <text x="10" y="60" font-size="10" fill="#333">• Trajectory: Recovered</text>
+        <text x="10" y="75" font-size="10" fill="#333">• Object tracking: Updated</text>
+        <text x="10" y="90" font-size="10" fill="#333">• Planning state: Resumed</text>
+        <text x="10" y="105" font-size="10" fill="#333">• Control outputs: Active</text>
+      </g>
+      
+      <g transform="translate(350, 320)">
+        <rect x="0" y="0" width="250" height="120" rx="5" fill="#FFF9C4"/>
+        <text x="125" y="25" font-size="13" font-weight="bold" text-anchor="middle" fill="#F57F17">Performance Impact</text>
+        <text x="10" y="45" font-size="10" fill="#333">• Compute: 60% → 85%</text>
+        <text x="10" y="60" font-size="10" fill="#333">• Memory: 16GB → 24GB</text>
+        <text x="10" y="75" font-size="10" fill="#333">• Latency: +5ms average</text>
+        <text x="10" y="90" font-size="10" fill="#333">• Frame rate: 30 → 20 FPS</text>
+        <text x="10" y="105" font-size="10" fill="#333">• Features: Reduced set</text>
+      </g>
+      
+      <!-- Recovery Process -->
+      <rect x="50" y="470" width="200" height="100" rx="5" fill="#C8E6C9"/>
+      <text x="150" y="495" font-size="13" font-weight="bold" text-anchor="middle" fill="#2E7D32">Recovery Attempt</text>
+      <text x="150" y="515" font-size="10" text-anchor="middle" fill="#333">• Core dump saved</text>
+      <text x="150" y="530" font-size="10" text-anchor="middle" fill="#333">• System reboot initiated</text>
+      <text x="150" y="545" font-size="10" text-anchor="middle" fill="#333">• Memory check: PASS</text>
+      <text x="150" y="560" font-size="10" text-anchor="middle" fill="#333">• Service restart: 30s</text>
+      
+      <rect x="280" y="470" width="180" height="100" rx="5" fill="#BBDEFB"/>
+      <text x="370" y="495" font-size="13" font-weight="bold" text-anchor="middle" fill="#1565C0">Diagnostics</text>
+      <text x="370" y="515" font-size="10" text-anchor="middle" fill="#333">• Stack trace logged</text>
+      <text x="370" y="530" font-size="10" text-anchor="middle" fill="#333">• Memory analysis</text>
+      <text x="370" y="545" font-size="10" text-anchor="middle" fill="#333">• Thermal check</text>
+      <text x="370" y="560" font-size="10" text-anchor="middle" fill="#333">• Event correlation</text>
+      
+      <rect x="490" y="470" width="160" height="100" rx="5" fill="#FCE4EC"/>
+      <text x="570" y="495" font-size="13" font-weight="bold" text-anchor="middle" fill="#C2185B">Alert Fleet</text>
+      <text x="570" y="515" font-size="10" text-anchor="middle" fill="#333">• OTA update check</text>
+      <text x="570" y="530" font-size="10" text-anchor="middle" fill="#333">• Pattern analysis</text>
+      <text x="570" y="545" font-size="10" text-anchor="middle" fill="#333">• Preventive action</text>
+      <text x="570" y="560" font-size="10" text-anchor="middle" fill="#333">• Report to cloud</text>
+      
+      <!-- Decision Point -->
+      <g transform="translate(250, 600)">
+        <path d="M50,0 L100,30 L50,60 L0,30 Z" fill="#E1F5FE" stroke="#0277BD" stroke-width="2"/>
+        <text x="50" y="35" font-size="11" text-anchor="middle" fill="#333">Recovered?</text>
+      </g>
+      
+      <!-- Final States -->
+      <rect x="100" y="700" width="200" height="60" rx="5" fill="url(#normalGrad)"/>
+      <text x="200" y="725" font-size="13" font-weight="bold" text-anchor="middle" fill="white">Dual Active</text>
+      <text x="200" y="745" font-size="10" text-anchor="middle" fill="white">Both ACUs operational</text>
+      
+      <rect x="350" y="700" width="200" height="60" rx="5" fill="url(#warningGrad)"/>
+      <text x="450" y="725" font-size="13" font-weight="bold" text-anchor="middle" fill="white">Single Mode</text>
+      <text x="450" y="745" font-size="10" text-anchor="middle" fill="white">Schedule maintenance</text>
+      
+      <!-- Flow arrows -->
+      <line x1="300" y1="60" x2="300" y2="100" stroke="#333" stroke-width="2" marker-end="url(#flowArrow)"/>
+      <line x1="300" y1="160" x2="300" y2="200" stroke="#333" stroke-width="2" marker-end="url(#flowArrow)"/>
+      <line x1="300" y1="280" x2="175" y2="320" stroke="#333" stroke-width="2" marker-end="url(#flowArrow)"/>
+      <line x1="300" y1="280" x2="475" y2="320" stroke="#333" stroke-width="2" marker-end="url(#flowArrow)"/>
+      <line x1="175" y1="440" x2="150" y2="470" stroke="#333" stroke-width="2" marker-end="url(#flowArrow)"/>
+      <line x1="475" y1="440" x2="370" y2="470" stroke="#333" stroke-width="2" marker-end="url(#flowArrow)"/>
+      <line x1="475" y1="440" x2="570" y2="470" stroke="#333" stroke-width="2" marker-end="url(#flowArrow)"/>
+      <line x1="250" y1="630" x2="200" y2="700" stroke="#2E7D32" stroke-width="2" marker-end="url(#flowArrow)"/>
+      <line x1="350" y1="630" x2="450" y2="700" stroke="#F57C00" stroke-width="2" marker-end="url(#flowArrow)"/>
+    </g>
+  </g>
+  
+  <!-- Scenario 4: Power System Failure -->
+  <g transform="translate(50, 1000)">
+    <rect x="0" y="0" width="700" height="900" rx="10" fill="white" stroke="#E0E0E0" stroke-width="2" filter="url(#shadow)"/>
+    <rect x="0" y="0" width="700" height="50" rx="10 10 0 0" fill="url(#criticalGrad)"/>
+    <text x="350" y="35" font-size="22" font-weight="bold" text-anchor="middle" fill="white">
+      SCN-PWR-48V-UVF: 48V Rail Undervoltage
+    </text>
+    
+    <!-- Power System Diagram -->
+    <g transform="translate(50, 80)">
+      <!-- Normal Power Flow -->
+      <rect x="200" y="0" width="200" height="60" rx="30" fill="url(#normalGrad)"/>
+      <text x="300" y="25" font-size="14" font-weight="bold" text-anchor="middle" fill="white">Power Nominal</text>
+      <text x="300" y="45" font-size="11" text-anchor="middle" fill="white">48V @ 200A stable</text>
+      
+      <!-- Voltage Drop Event -->
+      <rect x="200" y="100" width="200" height="60" rx="5" fill="url(#warningGrad)"/>
+      <text x="300" y="125" font-size="14" font-weight="bold" text-anchor="middle" fill="white">Voltage Drop</text>
+      <text x="300" y="145" font-size="11" text-anchor="middle" fill="white">48V → 42V detected</text>
+      
+      <!-- Immediate Actions -->
+      <g transform="translate(0, 200)">
+        <rect x="50" y="0" width="180" height="100" rx="5" fill="#FFE0B2"/>
+        <text x="140" y="25" font-size="13" font-weight="bold" text-anchor="middle" fill="#E65100">Load Shedding</text>
+        <text x="60" y="45" font-size="10" fill="#333">• Comfort: OFF</text>
+        <text x="60" y="60" font-size="10" fill="#333">• Non-critical: OFF</text>
+        <text x="60" y="75" font-size="10" fill="#333">• Reduce compute: 50%</text>
+        <text x="60" y="90" font-size="10" fill="#333">• Sensor priority: Core</text>
+      </g>
+      
+      <g transform="translate(250, 200)">
+        <rect x="0" y="0" width="180" height="100" rx="5" fill="#E8F5E9"/>
+        <text x="90" y="25" font-size="13" font-weight="bold" text-anchor="middle" fill="#2E7D32">Battery Backup</text>
+        <text x="10" y="45" font-size="10" fill="#333">• 12V backup: Active</text>
+        <text x="10" y="60" font-size="10" fill="#333">• Runtime: 30 minutes</text>
+        <text x="10" y="75" font-size="10" fill="#333">• Critical systems only</text>
+        <text x="10" y="90" font-size="10" fill="#333">• Capacitor boost: ON</text>
+      </g>
+      
+      <g transform="translate(450, 200)">
+        <rect x="0" y="0" width="150" height="100" rx="5" fill="#FCE4EC"/>
+        <text x="75" y="25" font-size="13" font-weight="bold" text-anchor="middle" fill="#C2185B">Alerts</text>
+        <text x="10" y="45" font-size="10" fill="#333">• Driver warning</text>
+        <text x="10" y="60" font-size="10" fill="#333">• Fleet notify</text>
+        <text x="10" y="75" font-size="10" fill="#333">• Service required</text>
+        <text x="10" y="90" font-size="10" fill="#333">• Log: PWR_001</text>
+      </g>
+      
+      <!-- Power Distribution -->
+      <rect x="50" y="330" width="550" height="150" rx="5" fill="#F5F5F5"/>
+      <text x="325" y="355" font-size="14" font-weight="bold" text-anchor="middle" fill="#333">Emergency Power Distribution</text>
+      
+      <g transform="translate(70, 370)">
+        <rect x="0" y="0" width="120" height="80" rx="3" fill="#4CAF50"/>
+        <text x="60" y="20" font-size="11" font-weight="bold" text-anchor="middle" fill="white">Critical (100%)</text>
+        <text x="60" y="35" font-size="9" text-anchor="middle" fill="white">• Steering: 5kW</text>
+        <text x="60" y="48" font-size="9" text-anchor="middle" fill="white">• Brakes: 3kW</text>
+        <text x="60" y="61" font-size="9" text-anchor="middle" fill="white">• Core ECUs: 2kW</text>
+        <text x="60" y="74" font-size="9" text-anchor="middle" fill="white">Total: 10kW</text>
+      </g>
+      
+      <g transform="translate(210, 370)">
+        <rect x="0" y="0" width="120" height="80" rx="3" fill="#FF9800"/>
+        <text x="60" y="20" font-size="11" font-weight="bold" text-anchor="middle" fill="white">Essential (50%)</text>
+        <text x="60" y="35" font-size="9" text-anchor="middle" fill="white">• Sensors: 3kW</text>
+        <text x="60" y="48" font-size="9" text-anchor="middle" fill="white">• Compute: 4kW</text>
+        <text x="60" y="61" font-size="9" text-anchor="middle" fill="white">• Cooling: 1kW</text>
+        <text x="60" y="74" font-size="9" text-anchor="middle" fill="white">Total: 8kW</text>
+      </g>
+      
+      <g transform="translate(350, 370)">
+        <rect x="0" y="0" width="120" height="80" rx="3" fill="#F44336"/>
+        <text x="60" y="20" font-size="11" font-weight="bold" text-anchor="middle" fill="white">Disabled (0%)</text>
+        <text x="60" y="35" font-size="9" text-anchor="middle" fill="white">• Comfort: 2kW</text>
+        <text x="60" y="48" font-size="9" text-anchor="middle" fill="white">• Infotainment: 1kW</text>
+        <text x="60" y="61" font-size="9" text-anchor="middle" fill="white">• Aux systems: 2kW</text>
+        <text x="60" y="74" font-size="9" text-anchor="middle" fill="white">Saved: 5kW</text>
+      </g>
+      
+      <!-- Recovery Strategy -->
+      <g transform="translate(250, 520)">
+        <path d="M50,0 L100,30 L50,60 L0,30 Z" fill="#FFF9C4" stroke="#F57F17" stroke-width="2"/>
+        <text x="50" y="30" font-size="11" text-anchor="middle" fill="#333">Voltage</text>
+        <text x="50" y="45" font-size="11" text-anchor="middle" fill="#333">Stable?</text>
+      </g>
+      
+      <!-- Outcomes -->
+      <rect x="50" y="620" width="200" height="80" rx="5" fill="url(#normalGrad)"/>
+      <text x="150" y="645" font-size="13" font-weight="bold" text-anchor="middle" fill="white">Power Restored</text>
+      <text x="150" y="665" font-size="10" text-anchor="middle" fill="white">• Resume full operation</text>
+      <text x="150" y="680" font-size="10" text-anchor="middle" fill="white">• Clear power alerts</text>
+      <text x="150" y="695" font-size="10" text-anchor="middle" fill="white">• Log recovery event</text>
+      
+      <rect x="280" y="620" width="180" height="80" rx="5" fill="url(#warningGrad)"/>
+      <text x="370" y="645" font-size="13" font-weight="bold" text-anchor="middle" fill="white">Limp Home</text>
+      <text x="370" y="665" font-size="10" text-anchor="middle" fill="white">• Max speed: 30km/h</text>
+      <text x="370" y="680" font-size="10" text-anchor="middle" fill="white">• Essential only</text>
+      <text x="370" y="695" font-size="10" text-anchor="middle" fill="white">• Nearest safe stop</text>
+      
+      <rect x="490" y="620" width="160" height="80" rx="5" fill="url(#criticalGrad)"/>
+      <text x="570" y="645" font-size="13" font-weight="bold" text-anchor="middle" fill="white">Emergency Stop</text>
+      <text x="570" y="665" font-size="10" text-anchor="middle" fill="white">• Controlled stop</text>
+      <text x="570" y="680" font-size="10" text-anchor="middle" fill="white">• Hazards active</text>
+      <text x="570" y="695" font-size="10" text-anchor="middle" fill="white">• Call assistance</text>
+      
+      <!-- Timeline bar -->
+      <rect x="50" y="730" width="600" height="100" rx="5" fill="#263238"/>
+      <text x="350" y="755" font-size="14" font-weight="bold" text-anchor="middle" fill="#00FF00">Power Management Timeline</text>
+      <g transform="translate(70, 770)" font-family="monospace">
+        <text x="0" y="0" font-size="10" fill="#76FF03">T+0ms    : Undervoltage detected (42V)</text>
+        <text x="0" y="15" font-size="10" fill="#76FF03">T+10ms   : Load shedding initiated</text>
+        <text x="0" y="30" font-size="10" fill="#76FF03">T+50ms   : Battery backup engaged</text>
+        <text x="0" y="45" font-size="10" fill="#76FF03">T+100ms  : Critical systems prioritized</text>
+        <text x="300" y="0" font-size="10" fill="#FFEB3B">T+500ms  : Stable @ reduced power</text>
+        <text x="300" y="15" font-size="10" fill="#FFEB3B">T+1s     : Driver notification sent</text>
+        <text x="300" y="30" font-size="10" fill="#FFEB3B">T+30s    : Decision point reached</text>
+        <text x="300" y="45" font-size="10" fill="#FFEB3B">T+5min   : Maximum emergency runtime</text>
+      </g>
+    </g>
+  </g>
+  
+  <!-- Scenario 5: Communication Bus Failure -->
+  <g transform="translate(800, 1000)">
+    <rect x="0" y="0" width="700" height="900" rx="10" fill="white" stroke="#E0E0E0" stroke-width="2" filter="url(#shadow)"/>
+    <rect x="0" y="0" width="700" height="50" rx="10 10 0 0" fill="url(#criticalGrad)"/>
+    <text x="350" y="35" font-size="22" font-weight="bold" text-anchor="middle" fill="white">
+      SCN-NET-CAN-BTF: CAN Bus Timeout
+    </text>
+    
+    <g transform="translate(50, 80)">
+      <!-- Communication Matrix -->
+      <rect x="150" y="0" width="300" height="180" rx="5" fill="#F5F5F5"/>
+      <text x="300" y="25" font-size="14" font-weight="bold" text-anchor="middle" fill="#333">Communication Status</text>
+      
+      <g transform="translate(170, 40)">
+        <!-- Bus status grid -->
+        <rect x="0" y="0" width="60" height="40" rx="3" fill="#4CAF50"/>
+        <text x="30" y="20" font-size="10" font-weight="bold" text-anchor="middle" fill="white">ETH</text>
+        <text x="30" y="32" font-size="8" text-anchor="middle" fill="white">OK</text>
+        
+        <rect x="70" y="0" width="60" height="40" rx="3" fill="#F44336"/>
+        <text x="100" y="20" font-size="10" font-weight="bold" text-anchor="middle" fill="white">CAN-FD</text>
+        <text x="100" y="32" font-size="8" text-anchor="middle" fill="white">FAIL</text>
+        
+        <rect x="140" y="0" width="60" height="40" rx="3" fill="#4CAF50"/>
+        <text x="170" y="20" font-size="10" font-weight="bold" text-anchor="middle" fill="white">LIN</text>
+        <text x="170" y="32" font-size="8" text-anchor="middle" fill="white">OK</text>
+        
+        <rect x="210" y="0" width="60" height="40" rx="3" fill="#FF9800"/>
+        <text x="240" y="20" font-size="10" font-weight="bold" text-anchor="middle" fill="white">FlexRay</text>
+        <text x="240" y="32" font-size="8" text-anchor="middle" fill="white">DEGRADED</text>
+      </g>
+      
+      <g transform="translate(170, 95)">
+        <text x="0" y="0" font-size="12" font-weight="bold" fill="#333">Affected Systems:</text>
+        <text x="0" y="20" font-size="10" fill="#C62828">• Vehicle dynamics control</text>
+        <text x="0" y="35" font-size="10" fill="#C62828">• Powertrain coordination</text>
+        <text x="0" y="50" font-size="10" fill="#C62828">• Chassis sensors (8 nodes)</text>
+        <text x="0" y="65" font-size="10" fill="#C62828">• Safety monitoring</text>
+      </g>
+      
+      <!-- Fallback Protocol -->
+      <rect x="50" y="200" width="250" height="120" rx="5" fill="url(#recoveryGrad)"/>
+      <text x="175" y="225" font-size="14" font-weight="bold" text-anchor="middle" fill="white">Protocol Fallback</text>
+      <text x="60" y="245" font-size="11" fill="white">• CAN → Ethernet gateway active</text>
+      <text x="60" y="260" font-size="11" fill="white">• Message tunneling enabled</text>
+      <text x="60" y="275" font-size="11" fill="white">• Priority queuing implemented</text>
+      <text x="60" y="290" font-size="11" fill="white">• Bandwidth: 100Mbps allocated</text>
+      <text x="60" y="305" font-size="11" fill="white">• Latency penalty: +3ms</text>
+      
+      <rect x="350" y="200" width="250" height="120" rx="5" fill="#FFF3E0"/>
+      <text x="475" y="225" font-size="14" font-weight="bold" text-anchor="middle" fill="#E65100">Message Filtering</text>
+      <text x="360" y="245" font-size="11" fill="#333">• Safety-critical: PASS (100%)</text>
+      <text x="360" y="260" font-size="11" fill="#333">• Control loops: PASS (100%)</text>
+      <text x="360" y="275" font-size="11" fill="#333">• Diagnostics: REDUCE (20%)</text>
+      <text x="360" y="290" font-size="11" fill="#333">• Comfort: DROP (0%)</text>
+      <text x="360" y="305" font-size="11" fill="#333">• Total load: 40% capacity</text>
+      
+      <!-- Bus Recovery Process -->
+      <rect x="150" y="350" width="300" height="140" rx="5" fill="#E8EAF6"/>
+      <text x="300" y="375" font-size="14" font-weight="bold" text-anchor="middle" fill="#283593">CAN Bus Recovery</text>
+      
+      <g transform="translate(170, 390)">
+        <text x="0" y="0" font-size="11" fill="#333">1. Bus reset attempt (100ms)</text>
+        <text x="0" y="20" font-size="11" fill="#333">2. Transceiver power cycle (500ms)</text>
+        <text x="0" y="40" font-size="11" fill="#333">3. Termination resistance check</text>
+        <text x="0" y="60" font-size="11" fill="#333">4. Node isolation test</text>
+        <text x="0" y="80" font-size="11" fill="#333">5. Selective node reconnection</text>
+      </g>
+      
+      <!-- Decision branches -->
+      <g transform="translate(250, 520)">
+        <path d="M50,0 L100,30 L50,60 L0,30 Z" fill="#E1F5FE" stroke="#0277BD" stroke-width="2"/>
+        <text x="50" y="35" font-size="11" text-anchor="middle" fill="#333">Bus OK?</text>
+      </g>
+      
+      <!-- Recovery outcomes -->
+      <rect x="50" y="620" width="180" height="80" rx="5" fill="url(#normalGrad)"/>
+      <text x="140" y="645" font-size="13" font-weight="bold" text-anchor="middle" fill="white">Full Recovery</text>
+      <text x="140" y="665" font-size="10" text-anchor="middle" fill="white">• CAN restored</text>
+      <text x="140" y="680" font-size="10" text-anchor="middle" fill="white">• All nodes online</text>
+      <text x="140" y="695" font-size="10" text-anchor="middle" fill="white">• Normal operation</text>
+      
+      <rect x="260" y="620" width="180" height="80" rx="5" fill="url(#warningGrad)"/>
+      <text x="350" y="645" font-size="13" font-weight="bold" text-anchor="middle" fill="white">ETH Tunneling</text>
+      <text x="350" y="665" font-size="10" text-anchor="middle" fill="white">• Continue via gateway</text>
+      <text x="350" y="680" font-size="10" text-anchor="middle" fill="white">• Performance impact</text>
+      <text x="350" y="695" font-size="10" text-anchor="middle" fill="white">• Service required</text>
+      
+      <rect x="470" y="620" width="180" height="80" rx="5" fill="url(#criticalGrad)"/>
+      <text x="560" y="645" font-size="13" font-weight="bold" text-anchor="middle" fill="white">Isolation Mode</text>
+      <text x="560" y="665" font-size="10" text-anchor="middle" fill="white">• Faulty node isolated</text>
+      <text x="560" y="680" font-size="10" text-anchor="middle" fill="white">• Reduced functionality</text>
+      <text x="560" y="695" font-size="10" text-anchor="middle" fill="white">• Manual control only</text>
+    </g>
+  </g>
+  
+  <!-- Master Recovery Strategy Overview -->
+  <g transform="translate(1550, 1000)">
+    <rect x="0" y="0" width="700" height="900" rx="10" fill="white" stroke="#E0E0E0" stroke-width="2" filter="url(#shadow)"/>
+    <rect x="0" y="0" width="700" height="50" rx="10 10 0 0" fill="#263238"/>
+    <text x="350" y="35" font-size="22" font-weight="bold" text-anchor="middle" fill="#00FF00">
+      System-Wide Recovery Coordination
+    </text>
+    
+    <g transform="translate(50, 80)">
+      <!-- Priority Matrix -->
+      <rect x="0" y="0" width="600" height="200" rx="5" fill="#F5F5F5"/>
+      <text x="300" y="25" font-size="16" font-weight="bold" text-anchor="middle" fill="#333">Recovery Priority Matrix</text>
+      
+      <g transform="translate(20, 45)">
+        <!-- Priority levels -->
+        <rect x="0" y="0" width="560" height="35" rx="3" fill="#B71C1C"/>
+        <text x="10" y="22" font-size="12" font-weight="bold" fill="white">P0 - Critical (0-50ms)</text>
+        <text x="450" y="22" font-size="11" text-anchor="end" fill="white">Steering, Braking, Stability</text>
+        
+        <rect x="0" y="40" width="560" height="35" rx="3" fill="#E65100"/>
+        <text x="10" y="62" font-size="12" font-weight="bold" fill="white">P1 - Essential (50-200ms)</text>
+        <text x="450" y="62" font-size="11" text-anchor="end" fill="white">Perception, Planning, Power</text>
+        
+        <rect x="0" y="80" width="560" height="35" rx="3" fill="#FBC02D"/>
+        <text x="10" y="102" font-size="12" font-weight="bold" fill="white">P2 - Important (200ms-1s)</text>
+        <text x="450" y="102" font-size="11" text-anchor="end" fill="white">Localization, Mapping, Comms</text>
+        
+        <rect x="0" y="120" width="560" height="35" rx="3" fill="#689F38"/>
+        <text x="10" y="142" font-size="12" font-weight="bold" fill="white">P3 - Standard (1s-10s)</text>
+        <text x="450" y="142" font-size="11" text-anchor="end" fill="white">Diagnostics, Logging, Updates</text>
+      </g>
+      
+      <!-- Cascade Prevention -->
+      <rect x="0" y="220" width="600" height="180" rx="5" fill="#E8F5E9"/>
+      <text x="300" y="245" font-size="16" font-weight="bold" text-anchor="middle" fill="#2E7D32">Cascade Failure Prevention</text>
+      
+      <g transform="translate(20, 260)">
+        <rect x="0" y="0" width="180" height="110" rx="3" fill="white" stroke="#4CAF50" stroke-width="2"/>
+        <text x="90" y="20" font-size="12" font-weight="bold" text-anchor="middle" fill="#2E7D32">Isolation</text>
+        <text x="10" y="40" font-size="10" fill="#333">• Fault containment</text>
+        <text x="10" y="55" font-size="10" fill="#333">• Resource limits</text>
+        <text x="10" y="70" font-size="10" fill="#333">• Process sandboxing</text>
+        <text x="10" y="85" font-size="10" fill="#333">• Network segmentation</text>
+        <text x="10" y="100" font-size="10" fill="#333">• Watchdog timers</text>
+        
+        <rect x="200" y="0" width="180" height="110" rx="3" fill="white" stroke="#2196F3" stroke-width="2"/>
+        <text x="290" y="20" font-size="12" font-weight="bold" text-anchor="middle" fill="#1565C0">Redundancy</text>
+        <text x="210" y="40" font-size="10" fill="#333">• Hot standby systems</text>
+        <text x="210" y="55" font-size="10" fill="#333">• FRER paths</text>
+        <text x="210" y="70" font-size="10" fill="#333">• Sensor fusion</text>
+        <text x="210" y="85" font-size="10" fill="#333">• Power backup</text>
+        <text x="210" y="100" font-size="10" fill="#333">• State replication</text>
+        
+        <rect x="400" y="0" width="160" height="110" rx="3" fill="white" stroke="#FF9800" stroke-width="2"/>
+        <text x="480" y="20" font-size="12" font-weight="bold" text-anchor="middle" fill="#E65100">Graceful Degradation</text>
+        <text x="410" y="40" font-size="10" fill="#333">• Feature reduction</text>
+        <text x="410" y="55" font-size="10" fill="#333">• Performance limits</text>
+        <text x="410" y="70" font-size="10" fill="#333">• Safe mode operation</text>
+        <text x="410" y="85" font-size="10" fill="#333">• Manual override</text>
+        <text x="410" y="100" font-size="10" fill="#333">• Progressive shutdown</text>
+      </g>
+      
+      <!-- Recovery Metrics -->
+      <rect x="0" y="420" width="600" height="150" rx="5" fill="#263238"/>
+      <text x="300" y="445" font-size="16" font-weight="bold" text-anchor="middle" fill="#00FF00">Real-Time Recovery Metrics</text>
+      
+      <g transform="translate(20, 460)" font-family="monospace">
+        <text x="0" y="0" font-size="11" fill="#76FF03">MTBF (Mean Time Between Failures): 10,000 hours</text>
+        <text x="0" y="20" font-size="11" fill="#76FF03">MTTR (Mean Time To Recovery): &lt;500ms</text>
+        <text x="0" y="40" font-size="11" fill="#76FF03">Availability Target: 99.999% (5 nines)</text>
+        <text x="0" y="60" font-size="11" fill="#76FF03">Max Downtime/Year: 5.26 minutes</text>
+        <text x="0" y="80" font-size="11" fill="#76FF03">Recovery Success Rate: 99.95%</text>
+        
+        <text x="320" y="0" font-size="11" fill="#FFEB3B">Current Status:</text>
+        <text x="320" y="20" font-size="11" fill="#FFEB3B">Uptime: 2,847h 23m 15s</text>
+        <text x="320" y="40" font-size="11" fill="#FFEB3B">Last Incident: 72h ago</text>
+        <text x="320" y="60" font-size="11" fill="#FFEB3B">Recovery Count: 3</text>
+        <text x="320" y="80" font-size="11" fill="#FFEB3B">Health Score: 98.5%</text>
+      </g>
+      
+      <!-- Emergency Procedures -->
+      <rect x="0" y="590" width="600" height="230" rx="5" fill="white" stroke="#F44336" stroke-width="2"/>
+      <text x="300" y="615" font-size="16" font-weight="bold" text-anchor="middle" fill="#C62828">Emergency Stop Procedures</text>
+      
+      <g transform="translate(20, 630)">
+        <rect x="0" y="0" width="270" height="170" rx="3" fill="#FFEBEE"/>
+        <text x="135" y="20" font-size="12" font-weight="bold" text-anchor="middle" fill="#C62828">Immediate Stop</text>
+        <text x="10" y="40" font-size="10" fill="#333">Trigger: Multiple critical failures</text>
+        <text x="10" y="60" font-size="10" font-weight="bold" fill="#333">Actions:</text>
+        <text x="10" y="75" font-size="10" fill="#333">1. Maximum braking (ABS active)</text>
+        <text x="10" y="90" font-size="10" fill="#333">2. Hazard lights ON</text>
+        <text x="10" y="105" font-size="10" fill="#333">3. Emergency broadcast (V2X)</text>
+        <text x="10" y="120" font-size="10" fill="#333">4. Steering lock prevention</text>
+        <text x="10" y="135" font-size="10" fill="#333">5. Airbag priming</text>
+        <text x="10" y="150" font-size="10" fill="#333">6. Black box recording</text>
+        <text x="10" y="165" font-size="10" fill="#333">Time to stop: &lt;3 seconds @ 60km/h</text>
+        
+        <rect x="290" y="0" width="270" height="170" rx="3" fill="#FFF3E0"/>
+        <text x="425" y="20" font-size="12" font-weight="bold" text-anchor="middle" fill="#E65100">Controlled Pull-over</text>
+        <text x="300" y="40" font-size="10" fill="#333">Trigger: Degraded operation limit</text>
+        <text x="300" y="60" font-size="10" font-weight="bold" fill="#333">Actions:</text>
+        <text x="300" y="75" font-size="10" fill="#333">1. Identify safe location</text>
+        <text x="300" y="90" font-size="10" fill="#333">2. Signal lane changes</text>
+        <text x="300" y="105" font-size="10" fill="#333">3. Gradual speed reduction</text>
+        <text x="300" y="120" font-size="10" fill="#333">4. Move to shoulder/parking</text>
+        <text x="300" y="135" font-size="10" fill="#333">5. Engage parking brake</text>
+        <text x="300" y="150" font-size="10" fill="#333">6. Notify emergency services</text>
+        <text x="300" y="165" font-size="10" fill="#333">Time to safe stop: &lt;30 seconds</text>
+      </g>
+    </g>
+  </g>
+</svg>

@@ -1,0 +1,421 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1800 1400">
+  <defs>
+    <!-- Define gradients for different ECU types -->
+    <linearGradient id="acuGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1e88e5;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#1565c0;stop-opacity:1" />
+    </linearGradient>
+    
+    <linearGradient id="vcuGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#43a047;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#2e7d32;stop-opacity:1" />
+    </linearGradient>
+    
+    <linearGradient id="tcuGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#fb8c00;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#ef6c00;stop-opacity:1" />
+    </linearGradient>
+    
+    <linearGradient id="storageGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#8e24aa;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#6a1b9a;stop-opacity:1" />
+    </linearGradient>
+    
+    <filter id="dropShadow">
+      <feDropShadow dx="2" dy="2" stdDeviation="3" flood-opacity="0.3"/>
+    </filter>
+    
+    <!-- Connection type patterns -->
+    <pattern id="ethernet-pattern" width="10" height="10" patternUnits="userSpaceOnUse">
+      <rect width="10" height="10" fill="#e3f2fd"/>
+      <circle cx="5" cy="5" r="2" fill="#1976d2"/>
+    </pattern>
+    
+    <pattern id="can-pattern" width="10" height="10" patternUnits="userSpaceOnUse">
+      <rect width="10" height="10" fill="#fff3e0"/>
+      <rect x="0" y="4" width="10" height="2" fill="#f57c00"/>
+    </pattern>
+    
+    <pattern id="power-pattern" width="10" height="10" patternUnits="userSpaceOnUse">
+      <rect width="10" height="10" fill="#ffebee"/>
+      <path d="M5,0 L5,10 M0,5 L10,5" stroke="#d32f2f" stroke-width="1"/>
+    </pattern>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="1800" height="1400" fill="#f8f9fa"/>
+  
+  <!-- Title -->
+  <text x="900" y="40" font-family="Arial, sans-serif" font-size="28" font-weight="bold" text-anchor="middle" fill="#263238">
+    ECU 상세 연결 구성도 - A2Z 자율주행 시스템
+  </text>
+  
+  <!-- ACU_NO (NVIDIA Orin) Detailed -->
+  <g id="acu-no-detail" transform="translate(100, 100)">
+    <rect width="400" height="500" rx="20" fill="url(#acuGradient)" filter="url(#dropShadow)"/>
+    <text x="200" y="35" font-size="20" font-weight="bold" text-anchor="middle" fill="white">ACU_NO - NVIDIA Orin</text>
+    
+    <!-- CPU/GPU Specs -->
+    <rect x="20" y="60" width="360" height="100" rx="10" fill="rgba(255,255,255,0.2)"/>
+    <text x="30" y="85" font-size="14" fill="white" font-weight="bold">Computing Specs:</text>
+    <text x="30" y="105" font-size="12" fill="white">• CPU: 12-core ARM Cortex-A78AE</text>
+    <text x="30" y="125" font-size="12" fill="white">• GPU: 2048-core NVIDIA Ampere</text>
+    <text x="30" y="145" font-size="12" fill="white">• AI: 275 TOPS, 32 Tensor Cores</text>
+    
+    <!-- Memory -->
+    <rect x="20" y="170" width="170" height="80" rx="10" fill="rgba(255,255,255,0.15)"/>
+    <text x="30" y="195" font-size="14" fill="white" font-weight="bold">Memory:</text>
+    <text x="30" y="215" font-size="12" fill="white">• RAM: 64GB LPDDR5</text>
+    <text x="30" y="235" font-size="12" fill="white">• Storage: 256GB NVMe</text>
+    
+    <!-- Network Interfaces -->
+    <rect x="210" y="170" width="170" height="80" rx="10" fill="rgba(255,255,255,0.15)"/>
+    <text x="220" y="195" font-size="14" fill="white" font-weight="bold">Network:</text>
+    <text x="220" y="215" font-size="12" fill="white">• 2x 10GbE Ports</text>
+    <text x="220" y="235" font-size="12" fill="white">• TSN Support</text>
+    
+    <!-- I/O Ports -->
+    <rect x="20" y="260" width="360" height="140" rx="10" fill="rgba(255,255,255,0.15)"/>
+    <text x="30" y="285" font-size="14" fill="white" font-weight="bold">I/O Interfaces:</text>
+    
+    <!-- Port indicators -->
+    <g id="orin-ports">
+      <circle cx="60" cy="320" r="15" fill="#4caf50"/>
+      <text x="60" y="325" font-size="10" text-anchor="middle" fill="white">ETH1</text>
+      
+      <circle cx="110" cy="320" r="15" fill="#4caf50"/>
+      <text x="110" y="325" font-size="10" text-anchor="middle" fill="white">ETH2</text>
+      
+      <circle cx="160" cy="320" r="15" fill="#2196f3"/>
+      <text x="160" y="325" font-size="10" text-anchor="middle" fill="white">USB</text>
+      
+      <circle cx="210" cy="320" r="15" fill="#ff9800"/>
+      <text x="210" y="325" font-size="10" text-anchor="middle" fill="white">CAN</text>
+      
+      <circle cx="260" cy="320" r="15" fill="#9c27b0"/>
+      <text x="260" y="325" font-size="10" text-anchor="middle" fill="white">UART</text>
+      
+      <circle cx="310" cy="320" r="15" fill="#00bcd4"/>
+      <text x="310" y="325" font-size="10" text-anchor="middle" fill="white">SPI</text>
+      
+      <circle cx="360" cy="320" r="15" fill="#ffc107"/>
+      <text x="360" y="325" font-size="10" text-anchor="middle" fill="white">I2C</text>
+    </g>
+    
+    <text x="30" y="370" font-size="12" fill="white">• GMSL2 Camera: 16x ports</text>
+    <text x="30" y="390" font-size="12" fill="white">• PCIe Gen4: 4x lanes</text>
+    
+    <!-- Software Stack -->
+    <rect x="20" y="410" width="360" height="70" rx="10" fill="rgba(255,255,255,0.15)"/>
+    <text x="30" y="435" font-size="14" fill="white" font-weight="bold">Software Stack:</text>
+    <text x="30" y="455" font-size="12" fill="white">• OS: Ubuntu 20.04 RT + ROS2</text>
+    <text x="30" y="475" font-size="12" fill="white">• AI: TensorRT, CUDA, cuDNN</text>
+    
+    <!-- Status LEDs -->
+    <g id="status-leds">
+      <circle cx="50" cy="530" r="8" fill="#4caf50" opacity="0.8">
+        <animate attributeName="opacity" values="0.8;1;0.8" dur="2s" repeatCount="indefinite"/>
+      </circle>
+      <text x="65" y="535" font-size="10" fill="white">Power</text>
+      
+      <circle cx="150" cy="530" r="8" fill="#2196f3" opacity="0.8">
+        <animate attributeName="opacity" values="0.8;1;0.8" dur="1s" repeatCount="indefinite"/>
+      </circle>
+      <text x="165" y="535" font-size="10" fill="white">Processing</text>
+      
+      <circle cx="270" cy="530" r="8" fill="#ffc107" opacity="0.8">
+        <animate attributeName="opacity" values="0.8;1;0.8" dur="3s" repeatCount="indefinite"/>
+      </circle>
+      <text x="285" y="535" font-size="10" fill="white">Network</text>
+    </g>
+  </g>
+  
+  <!-- ACU_IT (Intel Tiger Lake) Detailed -->
+  <g id="acu-it-detail" transform="translate(550, 100)">
+    <rect width="400" height="500" rx="20" fill="url(#acuGradient)" filter="url(#dropShadow)"/>
+    <text x="200" y="35" font-size="20" font-weight="bold" text-anchor="middle" fill="white">ACU_IT - Intel Tiger Lake</text>
+    
+    <!-- CPU Specs -->
+    <rect x="20" y="60" width="360" height="100" rx="10" fill="rgba(255,255,255,0.2)"/>
+    <text x="30" y="85" font-size="14" fill="white" font-weight="bold">Computing Specs:</text>
+    <text x="30" y="105" font-size="12" fill="white">• CPU: Core i7-1185G7E (4C/8T)</text>
+    <text x="30" y="125" font-size="12" fill="white">• GPU: Intel Iris Xe Graphics</text>
+    <text x="30" y="145" font-size="12" fill="white">• TDP: 28W (configurable 12-28W)</text>
+    
+    <!-- Memory -->
+    <rect x="20" y="170" width="170" height="80" rx="10" fill="rgba(255,255,255,0.15)"/>
+    <text x="30" y="195" font-size="14" fill="white" font-weight="bold">Memory:</text>
+    <text x="30" y="215" font-size="12" fill="white">• RAM: 32GB DDR4</text>
+    <text x="30" y="235" font-size="12" fill="white">• Storage: 512GB SSD</text>
+    
+    <!-- Network -->
+    <rect x="210" y="170" width="170" height="80" rx="10" fill="rgba(255,255,255,0.15)"/>
+    <text x="220" y="195" font-size="14" fill="white" font-weight="bold">Network:</text>
+    <text x="220" y="215" font-size="12" fill="white">• 2x 10GbE i225-LM</text>
+    <text x="220" y="235" font-size="12" fill="white">• TSN IEEE 802.1</text>
+    
+    <!-- Real-time Features -->
+    <rect x="20" y="260" width="360" height="100" rx="10" fill="rgba(255,255,255,0.15)"/>
+    <text x="30" y="285" font-size="14" fill="white" font-weight="bold">Real-time Features:</text>
+    <text x="30" y="305" font-size="12" fill="white">• Intel TCC (Time Coordinated Computing)</text>
+    <text x="30" y="325" font-size="12" fill="white">• Hardware TSN Support</text>
+    <text x="30" y="345" font-size="12" fill="white">• Deterministic Latency &lt;1ms</text>
+    
+    <!-- Software -->
+    <rect x="20" y="370" width="360" height="80" rx="10" fill="rgba(255,255,255,0.15)"/>
+    <text x="30" y="395" font-size="14" fill="white" font-weight="bold">Software:</text>
+    <text x="30" y="415" font-size="12" fill="white">• OS: Linux RT / QNX</text>
+    <text x="30" y="435" font-size="12" fill="white">• AUTOSAR Adaptive Platform</text>
+  </g>
+  
+  <!-- VCU (Vehicle Control Unit) -->
+  <g id="vcu-detail" transform="translate(1000, 100)">
+    <rect width="350" height="400" rx="20" fill="url(#vcuGradient)" filter="url(#dropShadow)"/>
+    <text x="175" y="35" font-size="20" font-weight="bold" text-anchor="middle" fill="white">VCU - Vehicle Control</text>
+    
+    <!-- Control Functions -->
+    <rect x="20" y="60" width="310" height="120" rx="10" fill="rgba(255,255,255,0.2)"/>
+    <text x="30" y="85" font-size="14" fill="white" font-weight="bold">Control Functions:</text>
+    <text x="30" y="105" font-size="12" fill="white">• Throttle Control</text>
+    <text x="30" y="125" font-size="12" fill="white">• Brake Control (EHB)</text>
+    <text x="30" y="145" font-size="12" fill="white">• Steering Control (EPS)</text>
+    <text x="30" y="165" font-size="12" fill="white">• Gear Shift Control</text>
+    
+    <!-- Interfaces -->
+    <rect x="20" y="190" width="310" height="100" rx="10" fill="rgba(255,255,255,0.15)"/>
+    <text x="30" y="215" font-size="14" fill="white" font-weight="bold">Interfaces:</text>
+    <text x="30" y="235" font-size="12" fill="white">• CAN-FD: 5Mbps x 4 channels</text>
+    <text x="30" y="255" font-size="12" fill="white">• 1000BASE-T1: Control commands</text>
+    <text x="30" y="275" font-size="12" fill="white">• FlexRay: Safety-critical</text>
+    
+    <!-- Safety Features -->
+    <rect x="20" y="300" width="310" height="80" rx="10" fill="rgba(255,255,255,0.15)"/>
+    <text x="30" y="325" font-size="14" fill="white" font-weight="bold">Safety:</text>
+    <text x="30" y="345" font-size="12" fill="white">• ASIL-D Certified</text>
+    <text x="30" y="365" font-size="12" fill="white">• Dual-core lockstep MCU</text>
+  </g>
+  
+  <!-- TCU (Telematics Control Unit) -->
+  <g id="tcu-detail" transform="translate(1400, 100)">
+    <rect width="350" height="400" rx="20" fill="url(#tcuGradient)" filter="url(#dropShadow)"/>
+    <text x="175" y="35" font-size="20" font-weight="bold" text-anchor="middle" fill="white">TCU - Telematics</text>
+    
+    <!-- Communication -->
+    <rect x="20" y="60" width="310" height="120" rx="10" fill="rgba(255,255,255,0.2)"/>
+    <text x="30" y="85" font-size="14" fill="white" font-weight="bold">Communication:</text>
+    <text x="30" y="105" font-size="12" fill="white">• 5G/LTE Module</text>
+    <text x="30" y="125" font-size="12" fill="white">• Wi-Fi 6E / Bluetooth 5.2</text>
+    <text x="30" y="145" font-size="12" fill="white">• GNSS (GPS/GLONASS/BeiDou)</text>
+    <text x="30" y="165" font-size="12" fill="white">• V2X (DSRC/C-V2X)</text>
+    
+    <!-- Services -->
+    <rect x="20" y="190" width="310" height="100" rx="10" fill="rgba(255,255,255,0.15)"/>
+    <text x="30" y="215" font-size="14" fill="white" font-weight="bold">Services:</text>
+    <text x="30" y="235" font-size="12" fill="white">• OTA Updates</text>
+    <text x="30" y="255" font-size="12" fill="white">• Remote Diagnostics</text>
+    <text x="30" y="275" font-size="12" fill="white">• Cloud Connectivity</text>
+    
+    <!-- Security -->
+    <rect x="20" y="300" width="310" height="80" rx="10" fill="rgba(255,255,255,0.15)"/>
+    <text x="30" y="325" font-size="14" fill="white" font-weight="bold">Security:</text>
+    <text x="30" y="345" font-size="12" fill="white">• Hardware Security Module</text>
+    <text x="30" y="365" font-size="12" fill="white">• Secure Boot / Secure Storage</text>
+  </g>
+  
+  <!-- EDR & DSSAD (Data Storage) -->
+  <g id="storage-detail" transform="translate(100, 650)">
+    <rect width="400" height="350" rx="20" fill="url(#storageGradient)" filter="url(#dropShadow)"/>
+    <text x="200" y="35" font-size="20" font-weight="bold" text-anchor="middle" fill="white">EDR / DSSAD</text>
+    
+    <!-- EDR Section -->
+    <rect x="20" y="60" width="170" height="120" rx="10" fill="rgba(255,255,255,0.2)"/>
+    <text x="30" y="85" font-size="14" fill="white" font-weight="bold">EDR (Event Data):</text>
+    <text x="30" y="105" font-size="12" fill="white">• 30 sec pre-crash</text>
+    <text x="30" y="125" font-size="12" fill="white">• 5 sec post-crash</text>
+    <text x="30" y="145" font-size="12" fill="white">• 250Hz sampling</text>
+    <text x="30" y="165" font-size="12" fill="white">• 32GB Flash</text>
+    
+    <!-- DSSAD Section -->
+    <rect x="210" y="60" width="170" height="120" rx="10" fill="rgba(255,255,255,0.2)"/>
+    <text x="220" y="85" font-size="14" fill="white" font-weight="bold">DSSAD (AD Data):</text>
+    <text x="220" y="105" font-size="12" fill="white">• Continuous recording</text>
+    <text x="220" y="125" font-size="12" fill="white">• 6 months retention</text>
+    <text x="220" y="145" font-size="12" fill="white">• 4TB SSD Array</text>
+    <text x="220" y="165" font-size="12" fill="white">• RAID 1 Mirror</text>
+    
+    <!-- Data Types -->
+    <rect x="20" y="190" width="360" height="100" rx="10" fill="rgba(255,255,255,0.15)"/>
+    <text x="30" y="215" font-size="14" fill="white" font-weight="bold">Recorded Data:</text>
+    <text x="30" y="235" font-size="12" fill="white">• All sensor raw data</text>
+    <text x="30" y="255" font-size="12" fill="white">• Decision logs</text>
+    <text x="30" y="275" font-size="12" fill="white">• Control commands</text>
+    
+    <!-- Compliance -->
+    <rect x="20" y="300" width="360" height="40" rx="10" fill="rgba(255,255,255,0.15)"/>
+    <text x="200" y="325" font-size="12" fill="white" text-anchor="middle">UN-R157 / ISO 21448 Compliant</text>
+  </g>
+  
+  <!-- CMU (Connectivity Management Unit) -->
+  <g id="cmu-detail" transform="translate(550, 650)">
+    <rect width="400" height="350" rx="20" fill="#795548" filter="url(#dropShadow)"/>
+    <text x="200" y="35" font-size="20" font-weight="bold" text-anchor="middle" fill="white">CMU - Gateway</text>
+    
+    <!-- Gateway Functions -->
+    <rect x="20" y="60" width="360" height="100" rx="10" fill="rgba(255,255,255,0.2)"/>
+    <text x="30" y="85" font-size="14" fill="white" font-weight="bold">Gateway Functions:</text>
+    <text x="30" y="105" font-size="12" fill="white">• Protocol Translation</text>
+    <text x="30" y="125" font-size="12" fill="white">• Message Routing</text>
+    <text x="30" y="145" font-size="12" fill="white">• Firewall / Security Gateway</text>
+    
+    <!-- Supported Protocols -->
+    <rect x="20" y="170" width="360" height="120" rx="10" fill="rgba(255,255,255,0.15)"/>
+    <text x="30" y="195" font-size="14" fill="white" font-weight="bold">Protocol Support:</text>
+    <text x="30" y="215" font-size="12" fill="white">• Ethernet: TSN, TCP/IP, UDP</text>
+    <text x="30" y="235" font-size="12" fill="white">• CAN/CAN-FD: Classical, FD</text>
+    <text x="30" y="255" font-size="12" fill="white">• LIN: 2.2A</text>
+    <text x="30" y="275" font-size="12" fill="white">• SOME/IP, DDS</text>
+  </g>
+  
+  <!-- Connection Matrix -->
+  <g id="connection-matrix" transform="translate(1000, 650)">
+    <rect width="750" height="350" rx="20" fill="#37474f" filter="url(#dropShadow)"/>
+    <text x="375" y="35" font-size="20" font-weight="bold" text-anchor="middle" fill="white">ECU Connection Matrix</text>
+    
+    <!-- Connection Table -->
+    <g id="matrix-table">
+      <!-- Headers -->
+      <text x="80" y="80" font-size="12" fill="white" font-weight="bold">From/To</text>
+      <text x="180" y="80" font-size="12" fill="white" text-anchor="middle">ACU_NO</text>
+      <text x="260" y="80" font-size="12" fill="white" text-anchor="middle">ACU_IT</text>
+      <text x="340" y="80" font-size="12" fill="white" text-anchor="middle">VCU</text>
+      <text x="420" y="80" font-size="12" fill="white" text-anchor="middle">TCU</text>
+      <text x="500" y="80" font-size="12" fill="white" text-anchor="middle">EDR</text>
+      <text x="580" y="80" font-size="12" fill="white" text-anchor="middle">CMU</text>
+      
+      <!-- Row: ACU_NO -->
+      <text x="80" y="110" font-size="12" fill="white">ACU_NO</text>
+      <rect x="165" y="95" width="30" height="20" rx="3" fill="#4caf50"/>
+      <text x="180" y="108" font-size="10" fill="white" text-anchor="middle">10G</text>
+      <rect x="245" y="95" width="30" height="20" rx="3" fill="#2196f3"/>
+      <text x="260" y="108" font-size="10" fill="white" text-anchor="middle">10G</text>
+      <rect x="325" y="95" width="30" height="20" rx="3" fill="#ff9800"/>
+      <text x="340" y="108" font-size="10" fill="white" text-anchor="middle">1G</text>
+      
+      <!-- Row: ACU_IT -->
+      <text x="80" y="140" font-size="12" fill="white">ACU_IT</text>
+      <rect x="165" y="125" width="30" height="20" rx="3" fill="#2196f3"/>
+      <text x="180" y="138" font-size="10" fill="white" text-anchor="middle">10G</text>
+      <rect x="325" y="125" width="30" height="20" rx="3" fill="#4caf50"/>
+      <text x="340" y="138" font-size="10" fill="white" text-anchor="middle">1G</text>
+      <rect x="405" y="125" width="30" height="20" rx="3" fill="#ff9800"/>
+      <text x="420" y="138" font-size="10" fill="white" text-anchor="middle">1G</text>
+      
+      <!-- Connection Types Legend -->
+      <rect x="50" y="200" width="650" height="120" rx="10" fill="rgba(255,255,255,0.1)"/>
+      <text x="375" y="225" font-size="14" fill="white" font-weight="bold" text-anchor="middle">Connection Types</text>
+      
+      <rect x="100" y="240" width="30" height="20" fill="#4caf50"/>
+      <text x="140" y="254" font-size="12" fill="white">10GbE Primary</text>
+      
+      <rect x="300" y="240" width="30" height="20" fill="#2196f3"/>
+      <text x="340" y="254" font-size="12" fill="white">10GbE Secondary</text>
+      
+      <rect x="500" y="240" width="30" height="20" fill="#ff9800"/>
+      <text x="540" y="254" font-size="12" fill="white">1GbE</text>
+      
+      <rect x="100" y="280" width="30" height="20" fill="#ffc107"/>
+      <text x="140" y="294" font-size="12" fill="white">CAN-FD</text>
+      
+      <rect x="300" y="280" width="30" height="20" fill="#9c27b0"/>
+      <text x="340" y="294" font-size="12" fill="white">FlexRay</text>
+      
+      <rect x="500" y="280" width="30" height="20" fill="#795548"/>
+      <text x="540" y="294" font-size="12" fill="white">LIN</text>
+    </g>
+  </g>
+  
+  <!-- Power Architecture -->
+  <g id="power-architecture" transform="translate(100, 1050)">
+    <rect width="700" height="300" rx="20" fill="#424242" filter="url(#dropShadow)"/>
+    <text x="350" y="35" font-size="20" font-weight="bold" text-anchor="middle" fill="white">Power Distribution</text>
+    
+    <!-- Main Power -->
+    <rect x="50" y="60" width="150" height="80" rx="10" fill="#d32f2f"/>
+    <text x="125" y="90" font-size="14" fill="white" text-anchor="middle" font-weight="bold">Main Battery</text>
+    <text x="125" y="110" font-size="12" fill="white" text-anchor="middle">800V DC</text>
+    <text x="125" y="130" font-size="12" fill="white" text-anchor="middle">120 kWh</text>
+    
+    <!-- DC-DC Converters -->
+    <rect x="250" y="60" width="150" height="80" rx="10" fill="#ff5722"/>
+    <text x="325" y="90" font-size="14" fill="white" text-anchor="middle" font-weight="bold">DC-DC Conv</text>
+    <text x="325" y="110" font-size="12" fill="white" text-anchor="middle">800V → 48V</text>
+    <text x="325" y="130" font-size="12" fill="white" text-anchor="middle">5kW</text>
+    
+    <rect x="250" y="160" width="150" height="80" rx="10" fill="#ff5722"/>
+    <text x="325" y="190" font-size="14" fill="white" text-anchor="middle" font-weight="bold">DC-DC Conv</text>
+    <text x="325" y="210" font-size="12" fill="white" text-anchor="middle">48V → 12V</text>
+    <text x="325" y="230" font-size="12" fill="white" text-anchor="middle">3kW</text>
+    
+    <!-- Power Distribution -->
+    <rect x="450" y="60" width="200" height="220" rx="10" fill="rgba(255,255,255,0.1)"/>
+    <text x="550" y="90" font-size="14" fill="white" text-anchor="middle" font-weight="bold">Power Distribution</text>
+    <text x="470" y="120" font-size="12" fill="white">• ACU_NO: 450W @ 48V</text>
+    <text x="470" y="145" font-size="12" fill="white">• ACU_IT: 150W @ 48V</text>
+    <text x="470" y="170" font-size="12" fill="white">• Switches: 30W @ 12V each</text>
+    <text x="470" y="195" font-size="12" fill="white">• Sensors: 200W total</text>
+    <text x="470" y="220" font-size="12" fill="white">• Backup: 30min @ 12V</text>
+    <text x="470" y="245" font-size="12" fill="white">• Total: ~1kW continuous</text>
+    <text x="470" y="270" font-size="12" fill="white">• Peak: 1.5kW</text>
+  </g>
+  
+  <!-- Thermal Management -->
+  <g id="thermal-management" transform="translate(850, 1050)">
+    <rect width="400" height="300" rx="20" fill="#00acc1" filter="url(#dropShadow)"/>
+    <text x="200" y="35" font-size="20" font-weight="bold" text-anchor="middle" fill="white">Thermal Management</text>
+    
+    <!-- Temperature Zones -->
+    <rect x="30" y="60" width="340" height="80" rx="10" fill="rgba(255,255,255,0.2)"/>
+    <text x="40" y="85" font-size="14" fill="white" font-weight="bold">Operating Temperature:</text>
+    <text x="40" y="105" font-size="12" fill="white">• Ambient: -40°C to +85°C</text>
+    <text x="40" y="125" font-size="12" fill="white">• Junction: Max 105°C</text>
+    
+    <!-- Cooling Systems -->
+    <rect x="30" y="150" width="340" height="100" rx="10" fill="rgba(255,255,255,0.15)"/>
+    <text x="40" y="175" font-size="14" fill="white" font-weight="bold">Cooling Systems:</text>
+    <text x="40" y="195" font-size="12" fill="white">• Liquid Cooling: ACU_NO, ACU_IT</text>
+    <text x="40" y="215" font-size="12" fill="white">• Heat Pipe: High-power switches</text>
+    <text x="40" y="235" font-size="12" fill="white">• Passive: Low-power ECUs</text>
+    
+    <!-- Thermal Budget -->
+    <rect x="30" y="260" width="160" height="70" rx="10" fill="rgba(255,255,255,0.1)"/>
+    <text x="110" y="285" font-size="12" fill="white" text-anchor="middle">Total Heat: 1.2kW</text>
+    <text x="110" y="305" font-size="12" fill="white" text-anchor="middle">Dissipation: 1.5kW</text>
+    <text x="110" y="320" font-size="12" fill="white" text-anchor="middle">Margin: 25%</text>
+    
+    <rect x="210" y="260" width="160" height="70" rx="10" fill="rgba(255,255,255,0.1)"/>
+    <text x="290" y="285" font-size="12" fill="white" text-anchor="middle">Coolant: 50/50 Glycol</text>
+    <text x="290" y="305" font-size="12" fill="white" text-anchor="middle">Flow: 10 L/min</text>
+    <text x="290" y="320" font-size="12" fill="white" text-anchor="middle">Pump: 150W</text>
+  </g>
+  
+  <!-- Redundancy Architecture -->
+  <g id="redundancy-arch" transform="translate(1300, 1050)">
+    <rect width="450" height="300" rx="20" fill="#4527a0" filter="url(#dropShadow)"/>
+    <text x="225" y="35" font-size="20" font-weight="bold" text-anchor="middle" fill="white">Redundancy Architecture</text>
+    
+    <rect x="30" y="60" width="390" height="220" rx="10" fill="rgba(255,255,255,0.1)"/>
+    
+    <text x="40" y="85" font-size="14" fill="white" font-weight="bold">Computing Redundancy:</text>
+    <text x="40" y="105" font-size="12" fill="white">• ACU_NO ↔ ACU_IT: Hot standby</text>
+    <text x="40" y="125" font-size="12" fill="white">• Failover time: &lt;50ms</text>
+    
+    <text x="40" y="155" font-size="14" fill="white" font-weight="bold">Network Redundancy:</text>
+    <text x="40" y="175" font-size="12" fill="white">• Dual 10GbE paths per ACU</text>
+    <text x="40" y="195" font-size="12" fill="white">• FRER: Seamless redundancy</text>
+    
+    <text x="40" y="225" font-size="14" fill="white" font-weight="bold">Power Redundancy:</text>
+    <text x="40" y="245" font-size="12" fill="white">• Dual power supplies per critical ECU</text>
+    <text x="40" y="265" font-size="12" fill="white">• Battery backup: 30 min operation</text>
+  </g>
+</svg>
