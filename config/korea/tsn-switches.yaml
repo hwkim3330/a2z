@@ -1,0 +1,352 @@
+# A2Z 대한민국 TSN 스위치 구성
+# 서울시 자율주행 버스 테스트베드용 설정
+
+# 기본 설정
+global:
+  country_code: "KR"
+  timezone: "Asia/Seoul"
+  language: "ko-KR"
+  
+  # 한국 전기통신기술협회(TTA) 준수
+  compliance:
+    tta_standards: true
+    kisa_encryption: true
+    kcmvp_certified: true
+
+# TSN 스위치 인벤토리
+switches:
+  # 서울시 강남구 테헤란로 구간
+  LAN9692-서울-강남-001:
+    location:
+      address: "서울특별시 강남구 테헤란로 427"
+      coordinates: [37.5665, 126.9780]
+      zone: "강남테스트구간"
+      route: "서울시내버스 146번"
+    
+    hardware:
+      model: "Microchip LAN9692"
+      firmware: "v2.1.3-KR"
+      ports: 30
+      bandwidth: "1Gbps"
+      power: "PoE+ 90W"
+    
+    network:
+      management_ip: "192.168.1.10"
+      vlan_range: "100-199"
+      management_vlan: 100
+      
+    tsn_config:
+      time_aware_shaper:
+        enabled: true
+        base_time: "2024-01-01T00:00:00+09:00"  # KST
+        cycle_time: "125us"  # 8kHz
+        gate_control_list:
+          - priority: 7
+            gate_states: "oCCCCCCC"  # 최고우선순위 개방
+            time_interval: "15.625us"
+          - priority: 6  
+            gate_states: "CoCCCCCC"
+            time_interval: "15.625us"
+          - priority: 5
+            gate_states: "CCoCCCCC" 
+            time_interval: "15.625us"
+      
+      frer_config:
+        enabled: true
+        streams:
+          - stream_id: "긴급제동-001"
+            handle: 1001
+            source_mac: "00:1B:19:00:00:01"
+            dest_mac: "01:80:C2:00:00:0E"
+            vlan_id: 101
+            priority: 7
+            paths:
+              primary: ["LAN9692-서울-강남-001", "LAN9692-서울-강남-002"]
+              secondary: ["LAN9692-서울-강남-001", "LAN9668-서울-강남-003", "LAN9692-서울-강남-002"]
+            recovery_algorithm: "vector_recovery"
+            history_length: 32
+            reset_timeout: "100ms"
+          
+          - stream_id: "조향제어-001"
+            handle: 1002
+            source_mac: "00:1B:19:00:00:02"
+            dest_mac: "01:80:C2:00:00:0F"
+            vlan_id: 102
+            priority: 7
+            paths:
+              primary: ["LAN9692-서울-강남-001", "LAN9692-서울-강남-002"]
+              secondary: ["LAN9692-서울-강남-001", "LAN9668-서울-강남-003", "LAN9692-서울-강남-002"]
+            recovery_algorithm: "individual_recovery"
+            take_no_sequence: false
+      
+      qos_config:
+        traffic_classes:
+          - class: "제어신호"  # Control signals
+            priority: 7
+            algorithm: "strict_priority"
+            bandwidth: "100Mbps"
+          - class: "라이다데이터"  # LiDAR data  
+            priority: 6
+            algorithm: "credit_based_shaper"
+            bandwidth: "400Mbps"
+            idle_slope: 400000  # 400Mbps
+          - class: "카메라데이터"  # Camera data
+            priority: 5  
+            algorithm: "credit_based_shaper"
+            bandwidth: "300Mbps"
+            idle_slope: 300000
+          - class: "V2X통신"  # V2X communication
+            priority: 4
+            algorithm: "weighted_round_robin"
+            weight: 20
+          - class: "일반데이터"  # General data
+            priority: 0
+            algorithm: "best_effort"
+    
+    korean_specific:
+      # 한국형 V2X 설정
+      kv2x:
+        enabled: true
+        frequency: "5.9GHz"  # ITS 전용주파수
+        channel_config:
+          - channel: 172  # 긴급차량용
+            power: "23dBm"
+            service: "emergency_vehicle"
+          - channel: 174  # 교통정보용  
+            power: "20dBm"
+            service: "traffic_info"
+          - channel: 176  # 안전서비스용
+            power: "20dBm" 
+            service: "safety_service"
+      
+      # 한국 시간동기화 (KST)
+      time_sync:
+        source: "KRISS"  # 한국표준과학연구원
+        ntp_servers:
+          - "time.kriss.re.kr"
+          - "time2.kriss.re.kr"  
+        ptp_domain: 0
+        
+      # 도로교통공단 연동
+        koroad_integration:
+          enabled: true
+          api_endpoint: "https://api.koroad.or.kr/v2"
+          certificate_path: "/etc/ssl/koroad-cert.pem"
+          
+      # 국토교통부 C-ITS 연동
+      cits_integration:
+        enabled: true
+        rsu_id: "KR-SEOUL-RSU-001"
+        molit_center: "https://cits.molit.go.kr"
+
+  # 서울시 강남구 역삼동 구간
+  LAN9692-서울-강남-002:
+    location:
+      address: "서울특별시 강남구 역삼로 123"
+      coordinates: [37.5010, 127.0374]
+      zone: "역삼테스트구간"
+      route: "서울시내버스 146번"
+    
+    hardware:
+      model: "Microchip LAN9692"
+      firmware: "v2.1.3-KR"
+      ports: 30
+      bandwidth: "1Gbps"
+    
+    network:
+      management_ip: "192.168.1.11"
+      vlan_range: "200-299" 
+      management_vlan: 100
+      
+    # 중앙처리장치 연결
+    connections:
+      main_ecu:
+        ip: "10.0.1.100"
+        mac: "00:1B:19:01:00:00"
+        interface: "eth0"
+        bandwidth: "1Gbps"
+        
+      ai_processing_unit:
+        ip: "10.0.1.101"  
+        mac: "00:1B:19:01:00:01"
+        interface: "eth1"
+        bandwidth: "1Gbps"
+        gpu: "NVIDIA Drive AGX"
+        
+      v2x_module:
+        ip: "10.0.1.102"
+        mac: "00:1B:19:01:00:02" 
+        interface: "eth2"
+        bandwidth: "100Mbps"
+        standard: "IEEE 802.11p"
+
+  # 보조 스위치 (후방 센서용)
+  LAN9668-서울-강남-003:
+    location:
+      address: "서울특별시 강남구 선릉로 456"
+      coordinates: [37.5045, 127.0489]
+      zone: "후방센서구간"
+      
+    hardware:
+      model: "Microchip LAN9668" 
+      firmware: "v2.1.3-KR"
+      ports: 8
+      bandwidth: "1Gbps"
+      
+    network:
+      management_ip: "192.168.1.12"
+      vlan_range: "300-350"
+      management_vlan: 100
+      
+    # 후방 센서 연결
+    sensor_connections:
+      rear_cameras:
+        count: 3
+        resolution: "4K"
+        fps: 30
+        bandwidth_per_camera: "200Mbps"
+        
+      rear_lidars:
+        count: 2 
+        model: "Velodyne VLS-128"
+        points_per_second: 2300000
+        bandwidth_per_lidar: "100Mbps"
+        
+      parking_sensors:
+        count: 8
+        type: "ultrasonic"
+        range: "5m"
+        bandwidth_per_sensor: "1Mbps"
+
+# 네트워크 토폴로지
+topology:
+  backbone:
+    type: "redundant_ring"
+    switches:
+      - "LAN9692-서울-강남-001"
+      - "LAN9692-서울-강남-002"
+      - "LAN9668-서울-강남-003"
+    
+    links:
+      - from: "LAN9692-서울-강남-001"
+        to: "LAN9692-서울-강남-002" 
+        bandwidth: "1Gbps"
+        latency: "0.1ms"
+        redundancy: true
+        
+      - from: "LAN9692-서울-강남-002"
+        to: "LAN9668-서울-강남-003"
+        bandwidth: "1Gbps" 
+        latency: "0.1ms"
+        redundancy: true
+        
+      - from: "LAN9668-서울-강남-003" 
+        to: "LAN9692-서울-강남-001"
+        bandwidth: "1Gbps"
+        latency: "0.2ms"
+        redundancy: true
+        backup: true  # 백업 링크
+
+# 성능 모니터링
+monitoring:
+  korean_requirements:
+    # 국토교통부 자율주행차 안전기준
+    safety_requirements:
+      emergency_brake_latency: "50ms"
+      steering_response_time: "100ms" 
+      sensor_data_freshness: "10ms"
+      
+    # 도로교통공단 성능기준  
+    performance_requirements:
+      packet_loss_rate: "< 0.001%"
+      jitter: "< 1ms"
+      availability: "> 99.99%"
+      
+  metrics:
+    collection_interval: "1s"
+    retention_period: "90d" 
+    alerting:
+      latency_threshold: "5ms"
+      packet_loss_threshold: "0.01%"
+      
+  logging:
+    format: "korean_standard"
+    timezone: "Asia/Seoul" 
+    language: "ko-KR"
+    syslog_server: "syslog.a2z-tsn.co.kr"
+
+# 보안 설정
+security:
+  korean_standards:
+    # 개인정보보호법 준수
+    privacy_protection:
+      data_minimization: true
+      consent_required: true
+      retention_period: "3년"
+      
+    # 정보보호관리체계(ISMS) 준수
+    isms_compliance:
+      access_control: true
+      encryption_required: true
+      audit_logging: true
+      
+    # 국가사이버안전센터 지침
+    ncsc_guidelines:
+      vulnerability_scanning: "daily"
+      patch_management: "automatic"
+      incident_response: "24x7"
+  
+  certificates:
+    root_ca: "/etc/ssl/certs/korea-root-ca.pem"
+    device_cert: "/etc/ssl/certs/device-cert.pem"
+    
+  encryption:
+    algorithm: "SEED-256"  # 한국 표준 암호알고리즘
+    key_management: "KISA-approved"
+    
+# 비상 상황 대응
+emergency_response:
+  korean_emergency_services:
+    # 119 소방서 연동
+    fire_department:
+      enabled: true
+      priority: 7
+      emergency_channel: 172
+      
+    # 112 경찰서 연동  
+    police:
+      enabled: true
+      priority: 7
+      emergency_channel: 172
+      
+    # 교통정보센터 연동
+    traffic_center:
+      enabled: true
+      center_code: "SEOUL-TIC"
+      api_endpoint: "https://topis.seoul.go.kr/api"
+  
+  failover_procedures:
+    automatic_failover: true
+    manual_override: true
+    emergency_stop: true
+    
+# 유지보수 일정
+maintenance:
+  schedule:
+    daily_check: "06:00-07:00"
+    weekly_maintenance: "일요일 02:00-04:00"
+    monthly_update: "첫째주 일요일 01:00-05:00"
+    
+  korean_holidays:
+    exclude_maintenance:
+      - "신정" 
+      - "구정연휴"
+      - "어린이날"
+      - "추석연휴"
+      - "성탄절"
+    
+  contact:
+    primary_engineer: "김한울 수석엔지니어"
+    phone: "+82-2-1234-5678"
+    emergency_hotline: "+82-10-9876-5432"
+    email: "maintenance@a2z-tsn.co.kr"
