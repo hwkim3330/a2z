@@ -1,0 +1,227 @@
+version: '3.9'
+
+services:
+  # Main A2Z TSN/FRER Application
+  a2z-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: a2z-tsn-app
+    ports:
+      - "3000:3000"
+      - "8080:8080"
+      - "8443:8443"
+    environment:
+      - NODE_ENV=production
+      - DB_HOST=mongodb
+      - REDIS_HOST=redis
+      - INFLUX_HOST=influxdb
+      - MQTT_BROKER=mosquitto
+    volumes:
+      - ./data:/app/data
+      - ./logs:/app/logs
+    networks:
+      - a2z-network
+    depends_on:
+      - mongodb
+      - redis
+      - influxdb
+      - mosquitto
+    restart: unless-stopped
+
+  # MongoDB for configuration and logs
+  mongodb:
+    image: mongo:7.0
+    container_name: a2z-mongodb
+    ports:
+      - "27017:27017"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=a2z
+      - MONGO_INITDB_ROOT_PASSWORD=A2Z_TSN_2024!
+      - MONGO_INITDB_DATABASE=a2z_tsn
+    volumes:
+      - mongo-data:/data/db
+    networks:
+      - a2z-network
+    restart: unless-stopped
+
+  # Redis for caching and real-time data
+  redis:
+    image: redis:7-alpine
+    container_name: a2z-redis
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes --requirepass A2Z_Redis_2024!
+    volumes:
+      - redis-data:/data
+    networks:
+      - a2z-network
+    restart: unless-stopped
+
+  # InfluxDB for time-series metrics
+  influxdb:
+    image: influxdb:2.7
+    container_name: a2z-influxdb
+    ports:
+      - "8086:8086"
+    environment:
+      - INFLUXDB_DB=a2z_metrics
+      - INFLUXDB_ADMIN_USER=admin
+      - INFLUXDB_ADMIN_PASSWORD=A2Z_Influx_2024!
+      - INFLUXDB_HTTP_AUTH_ENABLED=true
+    volumes:
+      - influx-data:/var/lib/influxdb2
+    networks:
+      - a2z-network
+    restart: unless-stopped
+
+  # Grafana for visualization
+  grafana:
+    image: grafana/grafana:10.1.0
+    container_name: a2z-grafana
+    ports:
+      - "3001:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=A2Z_Grafana_2024!
+      - GF_INSTALL_PLUGINS=redis-datasource
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./grafana/dashboards:/etc/grafana/provisioning/dashboards
+      - ./grafana/datasources:/etc/grafana/provisioning/datasources
+    networks:
+      - a2z-network
+    depends_on:
+      - influxdb
+    restart: unless-stopped
+
+  # MQTT Broker for IoT communication
+  mosquitto:
+    image: eclipse-mosquitto:2.0
+    container_name: a2z-mosquitto
+    ports:
+      - "1883:1883"
+      - "9001:9001"
+    volumes:
+      - ./mosquitto/config:/mosquitto/config
+      - mosquitto-data:/mosquitto/data
+      - mosquitto-logs:/mosquitto/log
+    networks:
+      - a2z-network
+    restart: unless-stopped
+
+  # Prometheus for metrics collection
+  prometheus:
+    image: prom/prometheus:v2.47.0
+    container_name: a2z-prometheus
+    ports:
+      - "9090:9090"
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus-data:/prometheus
+    networks:
+      - a2z-network
+    restart: unless-stopped
+
+  # Elasticsearch for log aggregation
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.10.2
+    container_name: a2z-elasticsearch
+    environment:
+      - discovery.type=single-node
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - xpack.security.enabled=false
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    volumes:
+      - elastic-data:/usr/share/elasticsearch/data
+    networks:
+      - a2z-network
+    restart: unless-stopped
+
+  # Kibana for log visualization
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.10.2
+    container_name: a2z-kibana
+    ports:
+      - "5601:5601"
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+    networks:
+      - a2z-network
+    depends_on:
+      - elasticsearch
+    restart: unless-stopped
+
+  # Nginx reverse proxy
+  nginx:
+    image: nginx:alpine
+    container_name: a2z-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/ssl:/etc/nginx/ssl
+    networks:
+      - a2z-network
+    depends_on:
+      - a2z-app
+    restart: unless-stopped
+
+  # PostgreSQL for structured data
+  postgres:
+    image: postgres:16-alpine
+    container_name: a2z-postgres
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=a2z
+      - POSTGRES_PASSWORD=A2Z_PG_2024!
+      - POSTGRES_DB=a2z_tsn
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - a2z-network
+    restart: unless-stopped
+
+  # Jupyter for data analysis
+  jupyter:
+    build:
+      context: .
+      dockerfile: Dockerfile.jupyter
+    container_name: a2z-jupyter
+    ports:
+      - "8888:8888"
+    environment:
+      - JUPYTER_TOKEN=A2Z_Jupyter_2024!
+    volumes:
+      - ./notebooks:/home/jovyan/work
+      - ./data:/home/jovyan/data
+    networks:
+      - a2z-network
+    restart: unless-stopped
+
+networks:
+  a2z-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
+
+volumes:
+  mongo-data:
+  redis-data:
+  influx-data:
+  grafana-data:
+  mosquitto-data:
+  mosquitto-logs:
+  prometheus-data:
+  elastic-data:
+  postgres-data:

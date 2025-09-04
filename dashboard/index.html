@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A2Z Gigabit Vehicle Network Monitor - Microchip TSN/FRER Dashboard</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="styles.css" rel="stylesheet">
+</head>
+<body>
+    <div class="a2z-header">
+        <div class="header-content">
+            <div class="logo-section">
+                <i class="fas fa-car"></i>
+                <h1>Autonomous A2Z</h1>
+                <span class="subtitle">Gigabit Network Control Center</span>
+            </div>
+            <div class="fleet-overview">
+                <div class="fleet-stat">
+                    <i class="fas fa-shuttle-van"></i>
+                    <span class="label">ROii Shuttles</span>
+                    <span class="value" id="roii-count">12</span>
+                </div>
+                <div class="fleet-stat">
+                    <i class="fas fa-truck"></i>
+                    <span class="label">COii Delivery</span>
+                    <span class="value" id="coii-count">8</span>
+                </div>
+                <div class="fleet-stat">
+                    <i class="fas fa-users"></i>
+                    <span class="label">Total Bandwidth</span>
+                    <span class="value" id="total-bandwidth">481 Mbps</span>
+                </div>
+                <div class="fleet-stat">
+                    <i class="fas fa-shield-alt"></i>
+                    <span class="label">Safety Score</span>
+                    <span class="value" id="safety-score">99.9999%</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-dashboard">
+        <div class="dashboard-row">
+            <!-- FRER Network Status -->
+            <div class="status-card frer-card">
+                <div class="card-header">
+                    <i class="fas fa-shield-alt"></i>
+                    <h3>Gigabit FRER Status</h3>
+                    <span class="status-indicator active" id="frer-status"></span>
+                </div>
+                <div class="frer-metrics">
+                    <div class="frer-gauge-container">
+                        <div class="frer-gauge" id="frer-availability">
+                            <div class="gauge-center">
+                                <span class="gauge-value" id="frer-percent">99.9999</span>
+                                <span class="gauge-unit">%</span>
+                            </div>
+                        </div>
+                        <div class="gauge-label">Gigabit Network Availability</div>
+                    </div>
+                    <div class="frer-stats">
+                        <div class="stat-item">
+                            <span class="stat-label">Recovery Time</span>
+                            <span class="stat-value" id="recovery-time">12.3ms</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Active Streams</span>
+                            <span class="stat-value" id="active-streams">4</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Network Usage</span>
+                            <span class="stat-value" id="network-usage">481/1000 Mbps</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Path Failures</span>
+                            <span class="stat-value critical" id="path-failures">0</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Vehicle Systems Status -->
+            <div class="status-card systems-card">
+                <div class="card-header">
+                    <i class="fas fa-cogs"></i>
+                    <h3>Vehicle Systems</h3>
+                    <span class="status-indicator active"></span>
+                </div>
+                <div class="systems-grid">
+                    <div class="system-item healthy" id="lidar-system">
+                        <div class="system-icon">
+                            <i class="fas fa-radar-dish"></i>
+                        </div>
+                        <div class="system-info">
+                            <div class="system-name">LiDAR System</div>
+                            <div class="system-metric">100 Mbps</div>
+                            <div class="system-latency">Latency: 8.2ms</div>
+                        </div>
+                        <div class="system-status">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="system-item healthy" id="camera-system">
+                        <div class="system-icon">
+                            <i class="fas fa-camera"></i>
+                        </div>
+                        <div class="system-info">
+                            <div class="system-name">Camera Array (x4)</div>
+                            <div class="system-metric">400 Mbps</div>
+                            <div class="system-latency">FPS: 30</div>
+                        </div>
+                        <div class="system-status">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="system-item warning" id="emergency-system">
+                        <div class="system-icon">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <div class="system-info">
+                            <div class="system-name">Emergency Brake</div>
+                            <div class="system-metric">1 Mbps</div>
+                            <div class="system-latency">Response: 38ms</div>
+                        </div>
+                        <div class="system-status">
+                            <i class="fas fa-exclamation-circle"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="system-item healthy" id="steering-system">
+                        <div class="system-icon">
+                            <i class="fas fa-steering-wheel"></i>
+                        </div>
+                        <div class="system-info">
+                            <div class="system-name">Steering Control</div>
+                            <div class="system-metric">10 Mbps</div>
+                            <div class="system-latency">Latency: 15ms</div>
+                        </div>
+                        <div class="system-status">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- A2Z Fleet Status -->
+            <div class="status-card fleet-card">
+                <div class="card-header">
+                    <i class="fas fa-map-marked-alt"></i>
+                    <h3>A2Z Fleet Status</h3>
+                    <span class="status-indicator active"></span>
+                </div>
+                <div class="fleet-status">
+                    <div class="route-item">
+                        <div class="route-info">
+                            <span class="route-name">서울 자율주행 버스</span>
+                            <span class="vehicle-count">3 x ROii shuttles</span>
+                        </div>
+                        <div class="route-metrics">
+                            <span class="efficiency">99.97%</span>
+                            <span class="passengers">2,247 served</span>
+                        </div>
+                    </div>
+                    
+                    <div class="route-item">
+                        <div class="route-info">
+                            <span class="route-name">인천공항 터미널</span>
+                            <span class="vehicle-count">2 x COii delivery</span>
+                        </div>
+                        <div class="route-metrics">
+                            <span class="efficiency">98.5%</span>
+                            <span class="passengers">Cargo Service</span>
+                        </div>
+                    </div>
+                    
+                    <div class="route-item">
+                        <div class="route-info">
+                            <span class="route-name">싱가포르 Grab</span>
+                            <span class="vehicle-count">1 x ROii pilot</span>
+                        </div>
+                        <div class="route-metrics">
+                            <span class="efficiency">97.3%</span>
+                            <span class="passengers">International</span>
+                        </div>
+                    </div>
+                    
+                    <div class="route-item">
+                        <div class="route-info">
+                            <span class="route-name">해안 순찰차</span>
+                            <span class="vehicle-count">1 x COii patrol</span>
+                        </div>
+                        <div class="route-metrics">
+                            <span class="efficiency">99.8%</span>
+                            <span class="passengers">Security Mode</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Network Topology Visualization -->
+        <div class="topology-section">
+            <div class="topology-header">
+                <h2><i class="fas fa-project-diagram"></i> A2Z Gigabit Network Topology</h2>
+                <div class="topology-controls">
+                    <button class="control-btn active" data-view="logical">Logical View</button>
+                    <button class="control-btn" data-view="physical">Physical View</button>
+                    <button class="control-btn" data-view="frer">FRER Paths</button>
+                </div>
+            </div>
+            <div class="topology-container">
+                <svg id="topology-svg" width="100%" height="500" viewBox="0 0 1200 500">
+                    <!-- Central Zone - LAN9692 Primary Switch -->
+                    <g id="central-zone" transform="translate(500, 200)">
+                        <rect class="switch-box primary" x="-80" y="-40" width="160" height="80" rx="10"/>
+                        <text class="switch-label" x="0" y="-50">Central Zone</text>
+                        <text class="switch-model" x="0" y="0">LAN9692</text>
+                        <text class="switch-specs" x="0" y="15">Multi-Gig, 12-port</text>
+                        <circle class="status-led active" cx="60" cy="-25" r="4"/>
+                    </g>
+                    
+                    <!-- Front Zone - LAN9668 -->
+                    <g id="front-zone" transform="translate(200, 100)">
+                        <rect class="switch-box secondary" x="-60" y="-30" width="120" height="60" rx="8"/>
+                        <text class="switch-label" x="0" y="-40">Front Zone</text>
+                        <text class="switch-model" x="0" y="0">LAN9668</text>
+                        <text class="switch-specs" x="0" y="12">8-port 1G</text>
+                        <circle class="status-led active" cx="45" cy="-20" r="3"/>
+                        
+                        <!-- Front Zone Sensors -->
+                        <g class="sensors">
+                            <g transform="translate(-80, -80)">
+                                <rect class="sensor-box" x="-30" y="-10" width="60" height="20" rx="5"/>
+                                <text class="sensor-label">LiDAR 100M</text>
+                            </g>
+                            <g transform="translate(-80, -40)">
+                                <rect class="sensor-box" x="-30" y="-10" width="60" height="20" rx="5"/>
+                                <text class="sensor-label">Camera 400M</text>
+                            </g>
+                            <g transform="translate(-80, 0)">
+                                <rect class="sensor-box" x="-30" y="-10" width="60" height="20" rx="5"/>
+                                <text class="sensor-label">Radar 10M</text>
+                            </g>
+                        </g>
+                    </g>
+                    
+                    <!-- Rear Zone - LAN9668 -->
+                    <g id="rear-zone" transform="translate(800, 100)">
+                        <rect class="switch-box secondary" x="-60" y="-30" width="120" height="60" rx="8"/>
+                        <text class="switch-label" x="0" y="-40">Rear Zone</text>
+                        <text class="switch-model" x="0" y="0">LAN9668</text>
+                        <text class="switch-specs" x="0" y="12">8-port 1G</text>
+                        <circle class="status-led active" cx="45" cy="-20" r="3"/>
+                        
+                        <!-- Rear Zone Sensors -->
+                        <g class="sensors">
+                            <g transform="translate(80, -80)">
+                                <rect class="sensor-box" x="-30" y="-10" width="60" height="20" rx="5"/>
+                                <text class="sensor-label">LiDAR 100M</text>
+                            </g>
+                            <g transform="translate(80, -40)">
+                                <rect class="sensor-box" x="-30" y="-10" width="60" height="20" rx="5"/>
+                                <text class="sensor-label">Radar 10M</text>
+                            </g>
+                            <g transform="translate(80, 0)">
+                                <rect class="sensor-box" x="-30" y="-10" width="60" height="20" rx="5"/>
+                                <text class="sensor-label">Camera 200M</text>
+                            </g>
+                        </g>
+                    </g>
+                    
+                    <!-- Computing Units -->
+                    <g id="computing-units" transform="translate(500, 350)">
+                        <g transform="translate(-100, 0)">
+                            <rect class="compute-box" x="-40" y="-20" width="80" height="40" rx="8"/>
+                            <text class="compute-label" x="0" y="-25">ACU_NO</text>
+                            <text class="compute-model" x="0" y="0">NVIDIA Orin</text>
+                            <text class="compute-specs" x="0" y="12">10GbE</text>
+                        </g>
+                        
+                        <g transform="translate(100, 0)">
+                            <rect class="compute-box" x="-40" y="-20" width="80" height="40" rx="8"/>
+                            <text class="compute-label" x="0" y="-25">ACU_IT</text>
+                            <text class="compute-model" x="0" y="0">Intel TGL</text>
+                            <text class="compute-specs" x="0" y="12">2.5GbE</text>
+                        </g>
+                    </g>
+                    
+                    <!-- FRER Paths -->
+                    <g id="frer-paths" class="frer-overlay" style="display: none;">
+                        <!-- Primary Path -->
+                        <path class="frer-path primary" d="M 260 100 Q 380 150 420 200" stroke-width="4"/>
+                        <path class="frer-path primary" d="M 580 200 Q 680 150 740 100" stroke-width="4"/>
+                        <text class="path-label primary" x="340" y="130">Primary Path</text>
+                        <text class="path-label primary" x="660" y="130">Primary Path</text>
+                        
+                        <!-- Backup Path -->
+                        <path class="frer-path backup" d="M 260 100 Q 380 250 420 200" stroke-width="3" stroke-dasharray="5,5"/>
+                        <path class="frer-path backup" d="M 580 200 Q 680 250 740 100" stroke-width="3" stroke-dasharray="5,5"/>
+                        <text class="path-label backup" x="340" y="180">Backup Path</text>
+                        <text class="path-label backup" x="660" y="180">Backup Path</text>
+                    </g>
+                    
+                    <!-- Connection Lines -->
+                    <g id="connections">
+                        <line class="connection-line" x1="260" y1="100" x2="420" y2="200"/>
+                        <line class="connection-line" x1="580" y1="200" x2="740" y2="100"/>
+                        <line class="connection-line" x1="460" y1="240" x2="460" y2="330"/>
+                        <line class="connection-line" x1="540" y1="240" x2="540" y2="330"/>
+                    </g>
+                    
+                    <!-- Data Flow Indicators -->
+                    <g id="data-flow">
+                        <circle class="flow-indicator" cx="300" cy="150" r="3">
+                            <animate attributeName="cx" values="260;420" dur="2s" repeatCount="indefinite"/>
+                        </circle>
+                        <circle class="flow-indicator" cx="700" cy="150" r="3">
+                            <animate attributeName="cx" values="740;580" dur="2s" repeatCount="indefinite"/>
+                        </circle>
+                    </g>
+                </svg>
+            </div>
+        </div>
+
+        <!-- Alerts and Logs -->
+        <div class="dashboard-row">
+            <div class="alerts-section">
+                <div class="section-header">
+                    <h3><i class="fas fa-bell"></i> System Alerts</h3>
+                    <div class="alert-filter">
+                        <button class="filter-btn active" data-level="all">All</button>
+                        <button class="filter-btn" data-level="critical">Critical</button>
+                        <button class="filter-btn" data-level="warning">Warning</button>
+                    </div>
+                </div>
+                <div class="alerts-container" id="alerts-container">
+                    <!-- Alerts will be dynamically populated -->
+                </div>
+            </div>
+            
+            <div class="performance-charts">
+                <div class="section-header">
+                    <h3><i class="fas fa-chart-line"></i> Performance Metrics</h3>
+                    <div class="chart-controls">
+                        <select id="metric-selector">
+                            <option value="latency">FRER Recovery Time</option>
+                            <option value="throughput">Network Throughput</option>
+                            <option value="availability">System Availability</option>
+                        </select>
+                        <select id="time-range">
+                            <option value="1h">Last Hour</option>
+                            <option value="24h">Last 24 Hours</option>
+                            <option value="7d">Last Week</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="performance-chart" width="400" height="200"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- WebSocket Status Indicator -->
+    <div class="connection-status" id="connection-status">
+        <i class="fas fa-wifi"></i>
+        <span>Connected</span>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <script src="monitoring.js"></script>
+</body>
+</html>

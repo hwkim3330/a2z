@@ -1,0 +1,728 @@
+/* A2Z Autonomous Vehicle Monitoring Dashboard Styles */
+
+:root {
+    --a2z-primary: #1e3c72;
+    --a2z-secondary: #2a5298;
+    --a2z-accent: #4fc3f7;
+    --success-color: #4caf50;
+    --warning-color: #ff9800;
+    --critical-color: #f44336;
+    --text-primary: #212121;
+    --text-secondary: #757575;
+    --background-primary: #f5f7fa;
+    --background-secondary: #ffffff;
+    --border-color: #e0e6ed;
+    --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: var(--background-primary);
+    color: var(--text-primary);
+    line-height: 1.6;
+}
+
+/* Header Styles */
+.a2z-header {
+    background: linear-gradient(135deg, var(--a2z-primary), var(--a2z-secondary));
+    color: white;
+    padding: 20px 0;
+    box-shadow: var(--shadow);
+}
+
+.header-content {
+    max-width: 1400px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+}
+
+.logo-section {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.logo-section i {
+    font-size: 2.5rem;
+    color: var(--a2z-accent);
+}
+
+.logo-section h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    margin: 0;
+}
+
+.subtitle {
+    font-size: 0.9rem;
+    opacity: 0.8;
+    margin-left: 10px;
+}
+
+.fleet-overview {
+    display: flex;
+    gap: 30px;
+}
+
+.fleet-stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+}
+
+.fleet-stat i {
+    font-size: 1.5rem;
+    color: var(--a2z-accent);
+}
+
+.fleet-stat .label {
+    font-size: 0.8rem;
+    opacity: 0.9;
+}
+
+.fleet-stat .value {
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+/* Main Dashboard */
+.main-dashboard {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 30px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+.dashboard-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 20px;
+}
+
+/* Status Cards */
+.status-card {
+    background: var(--background-secondary);
+    border-radius: 12px;
+    padding: 25px;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border-color);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.status-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid var(--border-color);
+}
+
+.card-header h3 {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.card-header i {
+    color: var(--a2z-secondary);
+}
+
+.status-indicator {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    position: relative;
+}
+
+.status-indicator.active {
+    background: var(--success-color);
+    box-shadow: 0 0 10px rgba(76, 175, 80, 0.5);
+}
+
+.status-indicator.active::before {
+    content: '';
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--success-color);
+    animation: pulse 2s infinite;
+}
+
+/* FRER Card Specific Styles */
+.frer-card {
+    border-left: 5px solid var(--a2z-secondary);
+}
+
+.frer-metrics {
+    display: flex;
+    gap: 25px;
+    align-items: center;
+}
+
+.frer-gauge-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.frer-gauge {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: conic-gradient(
+        var(--success-color) 0deg, 
+        var(--success-color) 359.64deg, 
+        var(--critical-color) 359.64deg
+    );
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.frer-gauge::before {
+    content: '';
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    background: var(--background-secondary);
+    position: absolute;
+}
+
+.gauge-center {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    z-index: 1;
+}
+
+.gauge-value {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.gauge-unit {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
+.gauge-label {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    text-align: center;
+}
+
+.frer-stats {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+.stat-item {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.stat-label {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+.stat-value {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.stat-value.critical {
+    color: var(--success-color);
+}
+
+/* Systems Card */
+.systems-card {
+    border-left: 5px solid var(--success-color);
+}
+
+.systems-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.system-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 15px;
+    border-radius: 8px;
+    background: var(--background-primary);
+    border-left: 4px solid transparent;
+}
+
+.system-item.healthy {
+    border-left-color: var(--success-color);
+}
+
+.system-item.warning {
+    border-left-color: var(--warning-color);
+}
+
+.system-item.critical {
+    border-left-color: var(--critical-color);
+}
+
+.system-icon {
+    width: 40px;
+    display: flex;
+    justify-content: center;
+}
+
+.system-icon i {
+    font-size: 1.5rem;
+    color: var(--a2z-secondary);
+}
+
+.system-info {
+    flex: 1;
+}
+
+.system-name {
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.system-metric {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
+
+.system-latency {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
+.system-status i {
+    font-size: 1.2rem;
+}
+
+.system-item.healthy .system-status i {
+    color: var(--success-color);
+}
+
+.system-item.warning .system-status i {
+    color: var(--warning-color);
+}
+
+/* Fleet Card */
+.fleet-card {
+    border-left: 5px solid var(--a2z-accent);
+}
+
+.fleet-status {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.route-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 15px;
+    border-radius: 8px;
+    background: var(--background-primary);
+}
+
+.route-info {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.route-name {
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.vehicle-count {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+.route-metrics {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    text-align: right;
+}
+
+.efficiency {
+    font-weight: 600;
+    color: var(--success-color);
+}
+
+.passengers {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+/* Network Topology */
+.topology-section {
+    background: var(--background-secondary);
+    border-radius: 12px;
+    padding: 25px;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border-color);
+}
+
+.topology-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid var(--border-color);
+}
+
+.topology-header h2 {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--text-primary);
+}
+
+.topology-header i {
+    color: var(--a2z-secondary);
+}
+
+.topology-controls {
+    display: flex;
+    gap: 10px;
+}
+
+.control-btn {
+    padding: 8px 16px;
+    border: 2px solid var(--border-color);
+    background: var(--background-primary);
+    border-radius: 6px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.control-btn:hover {
+    border-color: var(--a2z-secondary);
+    color: var(--a2z-secondary);
+}
+
+.control-btn.active {
+    background: var(--a2z-secondary);
+    border-color: var(--a2z-secondary);
+    color: white;
+}
+
+.topology-container {
+    width: 100%;
+    overflow-x: auto;
+}
+
+/* SVG Topology Styles */
+.switch-box {
+    fill: var(--background-primary);
+    stroke-width: 2;
+}
+
+.switch-box.primary {
+    stroke: var(--a2z-secondary);
+    fill: rgba(42, 82, 152, 0.1);
+}
+
+.switch-box.secondary {
+    stroke: var(--a2z-accent);
+    fill: rgba(79, 195, 247, 0.1);
+}
+
+.switch-label, .switch-model, .switch-specs {
+    text-anchor: middle;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+.switch-label {
+    font-size: 12px;
+    font-weight: 600;
+    fill: var(--text-primary);
+}
+
+.switch-model {
+    font-size: 14px;
+    font-weight: 700;
+    fill: var(--a2z-secondary);
+}
+
+.switch-specs {
+    font-size: 10px;
+    fill: var(--text-secondary);
+}
+
+.status-led {
+    fill: var(--success-color);
+    animation: pulse 2s infinite;
+}
+
+.sensor-box, .compute-box {
+    fill: var(--background-secondary);
+    stroke: var(--border-color);
+    stroke-width: 1;
+}
+
+.sensor-label, .compute-label, .compute-model, .compute-specs {
+    text-anchor: middle;
+    font-family: 'Segoe UI', sans-serif;
+    font-size: 10px;
+    fill: var(--text-primary);
+}
+
+.connection-line {
+    stroke: var(--border-color);
+    stroke-width: 2;
+}
+
+.frer-path {
+    fill: none;
+    stroke-width: 4;
+}
+
+.frer-path.primary {
+    stroke: var(--success-color);
+}
+
+.frer-path.backup {
+    stroke: var(--warning-color);
+}
+
+.path-label {
+    text-anchor: middle;
+    font-family: 'Segoe UI', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.path-label.primary {
+    fill: var(--success-color);
+}
+
+.path-label.backup {
+    fill: var(--warning-color);
+}
+
+.flow-indicator {
+    fill: var(--a2z-accent);
+    opacity: 0.8;
+}
+
+/* Alerts and Performance Section */
+.alerts-section, .performance-charts {
+    background: var(--background-secondary);
+    border-radius: 12px;
+    padding: 25px;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border-color);
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid var(--border-color);
+}
+
+.section-header h3 {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--text-primary);
+}
+
+.section-header i {
+    color: var(--a2z-secondary);
+}
+
+.alert-filter, .chart-controls {
+    display: flex;
+    gap: 10px;
+}
+
+.filter-btn {
+    padding: 6px 12px;
+    border: 1px solid var(--border-color);
+    background: var(--background-primary);
+    border-radius: 4px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.filter-btn:hover {
+    border-color: var(--a2z-secondary);
+    color: var(--a2z-secondary);
+}
+
+.filter-btn.active {
+    background: var(--a2z-secondary);
+    border-color: var(--a2z-secondary);
+    color: white;
+}
+
+.alerts-container {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.chart-container {
+    height: 250px;
+    position: relative;
+}
+
+.chart-controls select {
+    padding: 6px 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    background: var(--background-primary);
+    color: var(--text-primary);
+}
+
+/* Connection Status */
+.connection-status {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 15px;
+    background: var(--success-color);
+    color: white;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    box-shadow: var(--shadow);
+    z-index: 1000;
+}
+
+.connection-status i {
+    animation: pulse 2s infinite;
+}
+
+/* Animations */
+@keyframes pulse {
+    0% {
+        opacity: 1;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 0.7;
+        transform: scale(1.05);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+    .dashboard-row {
+        grid-template-columns: 1fr 1fr;
+    }
+    
+    .header-content {
+        flex-direction: column;
+        gap: 20px;
+    }
+    
+    .fleet-overview {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 768px) {
+    .dashboard-row {
+        grid-template-columns: 1fr;
+    }
+    
+    .main-dashboard {
+        padding: 20px 15px;
+    }
+    
+    .status-card {
+        padding: 20px;
+    }
+    
+    .frer-metrics {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .topology-controls {
+        flex-wrap: wrap;
+    }
+    
+    .systems-grid {
+        gap: 10px;
+    }
+    
+    .system-item {
+        padding: 10px;
+    }
+}
+
+/* Print Styles */
+@media print {
+    .connection-status,
+    .control-btn,
+    .filter-btn,
+    .chart-controls {
+        display: none;
+    }
+    
+    .status-card {
+        break-inside: avoid;
+    }
+    
+    body {
+        background: white;
+    }
+    
+    .a2z-header {
+        background: var(--a2z-primary) !important;
+        -webkit-print-color-adjust: exact;
+    }
+}

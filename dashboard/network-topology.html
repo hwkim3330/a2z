@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A2Z Gigabit TSN/FRER Network Topology - Interactive Visualization</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Samsung One', 'Noto Sans KR', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #0a0e1a 0%, #1a1f2e 100%);
+            color: #ffffff;
+            overflow: hidden;
+        }
+        
+        .header {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            padding: 20px 40px;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #00ff88;
+        }
+        
+        .title-section {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .logo {
+            width: 120px;
+            height: 40px;
+            background: linear-gradient(45deg, #00ff88, #0088ff);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 20px;
+        }
+        
+        h1 {
+            font-size: 24px;
+            font-weight: 700;
+            color: #ffffff;
+            text-shadow: 0 0 20px rgba(0, 255, 136, 0.5);
+        }
+        
+        .controls {
+            display: flex;
+            gap: 15px;
+        }
+        
+        button {
+            padding: 10px 20px;
+            background: linear-gradient(45deg, #00ff88, #00cc77);
+            border: none;
+            border-radius: 25px;
+            color: #000;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            font-size: 12px;
+            letter-spacing: 1px;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(0, 255, 136, 0.4);
+        }
+        
+        button.active {
+            background: linear-gradient(45deg, #ff4488, #ff0044);
+            color: #fff;
+        }
+        
+        #network-canvas {
+            position: absolute;
+            top: 80px;
+            left: 0;
+            right: 0;
+            bottom: 100px;
+        }
+        
+        .info-panel {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 100px;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            border-top: 2px solid #00ff88;
+        }
+        
+        .metric {
+            text-align: center;
+        }
+        
+        .metric-label {
+            font-size: 11px;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 5px;
+        }
+        
+        .metric-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #00ff88;
+            text-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
+        }
+        
+        .metric-unit {
+            font-size: 14px;
+            color: #666;
+            margin-left: 5px;
+        }
+        
+        /* Network elements styling */
+        .switch-node {
+            filter: drop-shadow(0 0 20px rgba(0, 136, 255, 0.6));
+        }
+        
+        .sensor-node {
+            filter: drop-shadow(0 0 15px rgba(255, 204, 0, 0.6));
+        }
+        
+        .link {
+            stroke-opacity: 0.8;
+        }
+        
+        .link-active {
+            animation: pulse-link 2s infinite;
+        }
+        
+        @keyframes pulse-link {
+            0%, 100% { stroke-width: 2px; stroke-opacity: 0.8; }
+            50% { stroke-width: 4px; stroke-opacity: 1; }
+        }
+        
+        .packet {
+            fill: #00ff88;
+            filter: drop-shadow(0 0 10px #00ff88);
+        }
+        
+        .tooltip {
+            position: absolute;
+            padding: 10px 15px;
+            background: rgba(0, 0, 0, 0.9);
+            border: 1px solid #00ff88;
+            border-radius: 8px;
+            pointer-events: none;
+            font-size: 12px;
+            z-index: 2000;
+            display: none;
+        }
+        
+        .legend {
+            position: absolute;
+            top: 100px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid #00ff88;
+            border-radius: 10px;
+            padding: 15px;
+            width: 200px;
+        }
+        
+        .legend-title {
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #00ff88;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+            font-size: 12px;
+        }
+        
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            margin-right: 10px;
+            border-radius: 50%;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="title-section">
+            <div class="logo">A2Z</div>
+            <h1>Gigabit TSN/FRER Network Topology</h1>
+        </div>
+        <div class="controls">
+            <button onclick="toggleAnimation()" id="animBtn">Pause Animation</button>
+            <button onclick="toggleFRER()" id="frerBtn">Show FRER Paths</button>
+            <button onclick="changeView('zone')" class="active">Zone View</button>
+            <button onclick="changeView('logical')">Logical View</button>
+            <button onclick="changeView('physical')">Physical View</button>
+        </div>
+    </div>
+    
+    <div id="network-canvas"></div>
+    
+    <div class="info-panel">
+        <div class="metric">
+            <div class="metric-label">Total Bandwidth</div>
+            <div class="metric-value">561<span class="metric-unit">Mbps</span></div>
+        </div>
+        <div class="metric">
+            <div class="metric-label">Active FRER Streams</div>
+            <div class="metric-value">4<span class="metric-unit">streams</span></div>
+        </div>
+        <div class="metric">
+            <div class="metric-label">Network Latency</div>
+            <div class="metric-value">0.8<span class="metric-unit">ms</span></div>
+        </div>
+        <div class="metric">
+            <div class="metric-label">FRER Recovery</div>
+            <div class="metric-value">12.3<span class="metric-unit">ms</span></div>
+        </div>
+        <div class="metric">
+            <div class="metric-label">Packet Loss</div>
+            <div class="metric-value">0.00001<span class="metric-unit">%</span></div>
+        </div>
+        <div class="metric">
+            <div class="metric-label">Uptime</div>
+            <div class="metric-value">99.97<span class="metric-unit">%</span></div>
+        </div>
+    </div>
+    
+    <div class="legend">
+        <div class="legend-title">Network Elements</div>
+        <div class="legend-item">
+            <div class="legend-color" style="background: #0088ff;"></div>
+            <span>TSN Switch (LAN9692/9668)</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background: #ffcc00;"></div>
+            <span>Sensor/Actuator</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background: #ff4488;"></div>
+            <span>Control Unit</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background: #00ff88;"></div>
+            <span>Active Data Flow</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background: #666;"></div>
+            <span>Backup Path (FRER)</span>
+        </div>
+    </div>
+    
+    <div class="tooltip" id="tooltip"></div>
+    
+    <script src="network-topology.js"></script>
+</body>
+</html>
