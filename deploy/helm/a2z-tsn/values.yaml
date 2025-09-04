@@ -1,0 +1,580 @@
+# A2Z TSN/FRER Network Management Platform - Helm Values
+
+# Global configuration
+global:
+  imageRegistry: ghcr.io/hwkim3330
+  imagePullSecrets:
+    - name: ghcr-secret
+  storageClass: gp3
+  domain: a2z-tsn.com
+  environment: production
+
+# Main application
+mainApp:
+  enabled: true
+  replicaCount: 3
+  
+  image:
+    repository: ghcr.io/hwkim3330/a2z
+    tag: v2.0.0
+    pullPolicy: IfNotPresent
+  
+  service:
+    type: ClusterIP
+    port: 3000
+    targetPort: 3000
+    annotations: {}
+  
+  ingress:
+    enabled: true
+    className: nginx
+    annotations:
+      cert-manager.io/cluster-issuer: letsencrypt-prod
+      nginx.ingress.kubernetes.io/ssl-redirect: "true"
+      nginx.ingress.kubernetes.io/websocket-services: "a2z-main-service"
+      nginx.ingress.kubernetes.io/proxy-body-size: "50m"
+      nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
+      nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
+    hosts:
+      - host: api.a2z-tsn.com
+        paths:
+          - path: /
+            pathType: Prefix
+    tls:
+      - secretName: a2z-tls-cert
+        hosts:
+          - api.a2z-tsn.com
+  
+  resources:
+    requests:
+      memory: "1Gi"
+      cpu: "500m"
+    limits:
+      memory: "2Gi"
+      cpu: "1000m"
+  
+  autoscaling:
+    enabled: true
+    minReplicas: 3
+    maxReplicas: 10
+    targetCPUUtilizationPercentage: 70
+    targetMemoryUtilizationPercentage: 80
+  
+  nodeSelector: {}
+  tolerations: []
+  affinity:
+    podAntiAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+      - labelSelector:
+          matchExpressions:
+          - key: app
+            operator: In
+            values:
+            - a2z-main
+        topologyKey: kubernetes.io/hostname
+  
+  env:
+    NODE_ENV: production
+    API_PORT: "3000"
+    WS_PORT: "8080"
+    LOG_LEVEL: info
+    ENABLE_FRER: "true"
+    ENABLE_ML: "true"
+    ENABLE_BLOCKCHAIN: "true"
+  
+  secrets:
+    JWT_SECRET: "change-me-in-production"
+    MONGODB_PASSWORD: "change-me-in-production"
+    REDIS_PASSWORD: "change-me-in-production"
+    BLOCKCHAIN_PRIVATE_KEY: "0x0000000000000000000000000000000000000000000000000000000000000000"
+
+# ML Engine
+mlEngine:
+  enabled: true
+  replicaCount: 2
+  
+  image:
+    repository: ghcr.io/hwkim3330/a2z-ml
+    tag: v2.0.0
+    pullPolicy: IfNotPresent
+  
+  service:
+    type: ClusterIP
+    port: 5000
+    targetPort: 5000
+  
+  resources:
+    requests:
+      memory: "4Gi"
+      cpu: "2000m"
+      nvidia.com/gpu: 1
+    limits:
+      memory: "8Gi"
+      cpu: "4000m"
+      nvidia.com/gpu: 1
+  
+  nodeSelector:
+    accelerator: nvidia-tesla-t4
+  
+  tolerations:
+    - key: ml-workload
+      operator: Equal
+      value: "true"
+      effect: NoSchedule
+  
+  env:
+    ENABLE_GPU: "true"
+    MODEL_PATH: "/models"
+    BATCH_SIZE: "32"
+    LEARNING_RATE: "0.001"
+  
+  persistence:
+    enabled: true
+    storageClass: gp3
+    accessMode: ReadWriteOnce
+    size: 100Gi
+    mountPath: /models
+
+# WebSocket Server
+websocket:
+  enabled: true
+  replicaCount: 2
+  
+  service:
+    type: ClusterIP
+    port: 8080
+    targetPort: 8080
+    annotations:
+      service.beta.kubernetes.io/aws-load-balancer-type: "nlb"
+  
+  ingress:
+    enabled: true
+    className: nginx
+    annotations:
+      nginx.ingress.kubernetes.io/upstream-hash-by: "$binary_remote_addr"
+    hosts:
+      - host: ws.a2z-tsn.com
+        paths:
+          - path: /
+            pathType: Prefix
+    tls:
+      - secretName: a2z-ws-tls-cert
+        hosts:
+          - ws.a2z-tsn.com
+  
+  resources:
+    requests:
+      memory: "512Mi"
+      cpu: "250m"
+    limits:
+      memory: "1Gi"
+      cpu: "500m"
+
+# Failover Orchestrator
+failover:
+  enabled: true
+  replicaCount: 1
+  
+  image:
+    repository: ghcr.io/hwkim3330/a2z-failover
+    tag: v2.0.0
+    pullPolicy: IfNotPresent
+  
+  rbac:
+    create: true
+    serviceAccountName: a2z-failover
+  
+  resources:
+    requests:
+      memory: "256Mi"
+      cpu: "100m"
+    limits:
+      memory: "512Mi"
+      cpu: "200m"
+  
+  nodeSelector:
+    NodeType: critical
+  
+  tolerations:
+    - key: critical
+      operator: Equal
+      value: "true"
+      effect: NoSchedule
+  
+  config:
+    checkInterval: 10
+    failoverThreshold: 3
+    recoveryWindow: 300
+    enableAutoFailover: true
+
+# MongoDB
+mongodb:
+  enabled: true
+  architecture: replicaset
+  replicaCount: 3
+  
+  auth:
+    enabled: true
+    rootUser: root
+    rootPassword: "change-me-in-production"
+    database: a2z
+    username: a2z
+    password: "change-me-in-production"
+  
+  persistence:
+    enabled: true
+    storageClass: gp3
+    size: 50Gi
+  
+  resources:
+    requests:
+      memory: "1Gi"
+      cpu: "500m"
+    limits:
+      memory: "2Gi"
+      cpu: "1000m"
+  
+  metrics:
+    enabled: true
+    serviceMonitor:
+      enabled: true
+
+# Redis
+redis:
+  enabled: true
+  architecture: replication
+  
+  auth:
+    enabled: true
+    password: "change-me-in-production"
+  
+  master:
+    persistence:
+      enabled: true
+      storageClass: gp3
+      size: 10Gi
+    
+    resources:
+      requests:
+        memory: "512Mi"
+        cpu: "250m"
+      limits:
+        memory: "1Gi"
+        cpu: "500m"
+  
+  replica:
+    replicaCount: 2
+    persistence:
+      enabled: true
+      storageClass: gp3
+      size: 10Gi
+    
+    resources:
+      requests:
+        memory: "512Mi"
+        cpu: "250m"
+      limits:
+        memory: "1Gi"
+        cpu: "500m"
+  
+  sentinel:
+    enabled: true
+    quorum: 2
+  
+  metrics:
+    enabled: true
+    serviceMonitor:
+      enabled: true
+
+# InfluxDB for time-series metrics
+influxdb:
+  enabled: true
+  
+  image:
+    repository: influxdb
+    tag: 2.7-alpine
+  
+  persistence:
+    enabled: true
+    storageClass: gp3
+    size: 100Gi
+  
+  resources:
+    requests:
+      memory: "1Gi"
+      cpu: "500m"
+    limits:
+      memory: "2Gi"
+      cpu: "1000m"
+  
+  config:
+    http:
+      enabled: true
+      bind-address: ":8086"
+      auth-enabled: true
+    data:
+      wal-fsync-delay: "10ms"
+      index-version: "tsi1"
+  
+  setDefaultUser:
+    enabled: true
+    user:
+      username: "a2z"
+      password: "change-me-in-production"
+      organization: "a2z"
+      bucket: "tsn_metrics"
+      retention: "30d"
+
+# Prometheus
+prometheus:
+  enabled: true
+  
+  alertmanager:
+    enabled: true
+    persistentVolume:
+      enabled: true
+      size: 10Gi
+  
+  server:
+    persistentVolume:
+      enabled: true
+      size: 50Gi
+    
+    retention: "15d"
+    
+    resources:
+      requests:
+        memory: "512Mi"
+        cpu: "250m"
+      limits:
+        memory: "1Gi"
+        cpu: "500m"
+  
+  nodeExporter:
+    enabled: true
+  
+  pushgateway:
+    enabled: false
+  
+  configmapReload:
+    prometheus:
+      enabled: true
+    alertmanager:
+      enabled: true
+
+# Grafana
+grafana:
+  enabled: true
+  
+  adminUser: admin
+  adminPassword: "change-me-in-production"
+  
+  persistence:
+    enabled: true
+    storageClass: gp3
+    size: 10Gi
+  
+  resources:
+    requests:
+      memory: "256Mi"
+      cpu: "100m"
+    limits:
+      memory: "512Mi"
+      cpu: "200m"
+  
+  datasources:
+    datasources.yaml:
+      apiVersion: 1
+      datasources:
+      - name: Prometheus
+        type: prometheus
+        url: http://prometheus-server:80
+        access: proxy
+        isDefault: true
+      - name: InfluxDB
+        type: influxdb
+        url: http://influxdb:8086
+        access: proxy
+        database: tsn_metrics
+        user: a2z
+        secureJsonData:
+          password: "change-me-in-production"
+      - name: Loki
+        type: loki
+        url: http://loki:3100
+        access: proxy
+  
+  dashboardProviders:
+    dashboardproviders.yaml:
+      apiVersion: 1
+      providers:
+      - name: 'default'
+        orgId: 1
+        folder: ''
+        type: file
+        disableDeletion: false
+        editable: true
+        options:
+          path: /var/lib/grafana/dashboards/default
+  
+  dashboards:
+    default:
+      a2z-overview:
+        url: https://raw.githubusercontent.com/hwkim3330/a2z/main/dashboards/overview.json
+      frer-metrics:
+        url: https://raw.githubusercontent.com/hwkim3330/a2z/main/dashboards/frer.json
+      ml-insights:
+        url: https://raw.githubusercontent.com/hwkim3330/a2z/main/dashboards/ml.json
+
+# Loki for log aggregation
+loki:
+  enabled: true
+  
+  persistence:
+    enabled: true
+    storageClass: gp3
+    size: 50Gi
+  
+  config:
+    auth_enabled: false
+    
+    ingester:
+      chunk_idle_period: 3m
+      chunk_block_size: 262144
+      chunk_retain_period: 1m
+      max_transfer_retries: 0
+      lifecycler:
+        ring:
+          kvstore:
+            store: inmemory
+          replication_factor: 1
+    
+    limits_config:
+      enforce_metric_name: false
+      reject_old_samples: true
+      reject_old_samples_max_age: 168h
+    
+    schema_config:
+      configs:
+      - from: 2024-01-01
+        store: boltdb-shipper
+        object_store: filesystem
+        schema: v11
+        index:
+          prefix: index_
+          period: 24h
+    
+    server:
+      http_listen_port: 3100
+    
+    storage_config:
+      boltdb_shipper:
+        active_index_directory: /loki/boltdb-shipper-active
+        cache_location: /loki/boltdb-shipper-cache
+        cache_ttl: 24h
+        shared_store: filesystem
+      filesystem:
+        directory: /loki/chunks
+    
+    chunk_store_config:
+      max_look_back_period: 0s
+    
+    table_manager:
+      retention_deletes_enabled: false
+      retention_period: 0s
+
+# Backup CronJob
+backup:
+  enabled: true
+  schedule: "0 2 * * *"
+  
+  image:
+    repository: ghcr.io/hwkim3330/a2z-backup
+    tag: v2.0.0
+    pullPolicy: IfNotPresent
+  
+  resources:
+    requests:
+      memory: "512Mi"
+      cpu: "250m"
+    limits:
+      memory: "1Gi"
+      cpu: "500m"
+  
+  s3:
+    enabled: true
+    bucket: a2z-backups
+    region: ap-northeast-2
+    prefix: k8s-backups
+  
+  retention:
+    days: 30
+    minCount: 7
+
+# Network Policies
+networkPolicies:
+  enabled: true
+  policyTypes:
+    - Ingress
+    - Egress
+
+# Pod Security Policies
+podSecurityPolicy:
+  enabled: true
+  
+# Service Monitor for Prometheus
+serviceMonitor:
+  enabled: true
+  interval: 30s
+  scrapeTimeout: 10s
+
+# Pod Disruption Budget
+podDisruptionBudget:
+  enabled: true
+  minAvailable: 2
+
+# Priority Classes
+priorityClassName: high-priority
+
+# Security Context
+securityContext:
+  runAsNonRoot: true
+  runAsUser: 1000
+  fsGroup: 1000
+  capabilities:
+    drop:
+    - ALL
+  readOnlyRootFilesystem: true
+
+# Health Checks
+livenessProbe:
+  httpGet:
+    path: /health
+    port: http
+  initialDelaySeconds: 30
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 3
+
+readinessProbe:
+  httpGet:
+    path: /ready
+    port: http
+  initialDelaySeconds: 5
+  periodSeconds: 5
+  timeoutSeconds: 3
+  failureThreshold: 3
+
+# Certificates
+certManager:
+  enabled: true
+  issuer:
+    name: letsencrypt-prod
+    server: https://acme-v02.api.letsencrypt.org/directory
+    email: admin@a2z-tsn.com
+    privateKeySecretRef:
+      name: letsencrypt-prod
+    solvers:
+    - http01:
+        ingress:
+          class: nginx

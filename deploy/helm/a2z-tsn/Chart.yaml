@@ -1,0 +1,40 @@
+apiVersion: v2
+name: a2z-tsn
+description: A2Z TSN/FRER Network Management Platform
+type: application
+version: 2.0.0
+appVersion: "2.0.0"
+keywords:
+  - tsn
+  - frer
+  - autonomous-vehicles
+  - network
+  - microchip
+home: https://github.com/hwkim3330/a2z
+sources:
+  - https://github.com/hwkim3330/a2z
+maintainers:
+  - name: A2Z Network Team
+    email: netops@a2z-tsn.com
+dependencies:
+  - name: mongodb
+    version: "13.x.x"
+    repository: "https://charts.bitnami.com/bitnami"
+    condition: mongodb.enabled
+  - name: redis
+    version: "18.x.x"
+    repository: "https://charts.bitnami.com/bitnami"
+    condition: redis.enabled
+  - name: prometheus
+    version: "25.x.x"
+    repository: "https://prometheus-community.github.io/helm-charts"
+    condition: prometheus.enabled
+  - name: grafana
+    version: "7.x.x"
+    repository: "https://grafana.github.io/helm-charts"
+    condition: grafana.enabled
+annotations:
+  artifacthub.io/license: MIT
+  artifacthub.io/signKey: |
+    fingerprint: A2ZTSN2024
+    url: https://keyserver.ubuntu.com/pks/lookup?op=get&search=0xA2ZTSN2024
