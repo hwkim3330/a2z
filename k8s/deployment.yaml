@@ -1,0 +1,539 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: a2z-tsn
+  labels:
+    name: a2z-tsn
+    environment: production
+
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: a2z-secrets
+  namespace: a2z-tsn
+type: Opaque
+stringData:
+  mongodb-password: "A2Z_TSN_2024!"
+  redis-password: "A2Z_Redis_2024!"
+  jwt-secret: "A2Z_JWT_Secret_2024!"
+  blockchain-private-key: "0x0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: a2z-config
+  namespace: a2z-tsn
+data:
+  NODE_ENV: "production"
+  API_PORT: "3000"
+  WEBSOCKET_PORT: "8080"
+  METRICS_PORT: "9090"
+  LOG_LEVEL: "info"
+  ENABLE_FRER: "true"
+  ENABLE_ML: "true"
+  ENABLE_BLOCKCHAIN: "true"
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: a2z-data-pvc
+  namespace: a2z-tsn
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 100Gi
+  storageClassName: fast-ssd
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: a2z-main-app
+  namespace: a2z-tsn
+  labels:
+    app: a2z-main
+    version: v2.0.0
+spec:
+  replicas: 3
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: a2z-main
+  template:
+    metadata:
+      labels:
+        app: a2z-main
+        version: v2.0.0
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "9090"
+    spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: app
+                operator: In
+                values:
+                - a2z-main
+            topologyKey: kubernetes.io/hostname
+      containers:
+      - name: a2z-app
+        image: ghcr.io/hwkim3330/a2z:v2.0.0
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 3000
+          name: http
+        - containerPort: 8080
+          name: websocket
+        - containerPort: 9090
+          name: metrics
+        env:
+        - name: NODE_ENV
+          valueFrom:
+            configMapKeyRef:
+              name: a2z-config
+              key: NODE_ENV
+        - name: MONGODB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: a2z-secrets
+              key: mongodb-password
+        - name: REDIS_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: a2z-secrets
+              key: redis-password
+        - name: JWT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: a2z-secrets
+              key: jwt-secret
+        resources:
+          requests:
+            memory: "1Gi"
+            cpu: "500m"
+          limits:
+            memory: "2Gi"
+            cpu: "1000m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 3000
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 3000
+          initialDelaySeconds: 5
+          periodSeconds: 5
+        volumeMounts:
+        - name: data
+          mountPath: /app/data
+      volumes:
+      - name: data
+        persistentVolumeClaim:
+          claimName: a2z-data-pvc
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: a2z-ml-engine
+  namespace: a2z-tsn
+  labels:
+    app: a2z-ml
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: a2z-ml
+  template:
+    metadata:
+      labels:
+        app: a2z-ml
+    spec:
+      containers:
+      - name: ml-engine
+        image: ghcr.io/hwkim3330/a2z-ml:v2.0.0
+        ports:
+        - containerPort: 5000
+          name: ml-api
+        env:
+        - name: ENABLE_GPU
+          value: "true"
+        - name: MODEL_PATH
+          value: "/models"
+        resources:
+          requests:
+            memory: "4Gi"
+            cpu: "2000m"
+            nvidia.com/gpu: 1
+          limits:
+            memory: "8Gi"
+            cpu: "4000m"
+            nvidia.com/gpu: 1
+        volumeMounts:
+        - name: models
+          mountPath: /models
+      volumes:
+      - name: models
+        persistentVolumeClaim:
+          claimName: ml-models-pvc
+      nodeSelector:
+        accelerator: nvidia-tesla-v100
+
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mongodb
+  namespace: a2z-tsn
+spec:
+  serviceName: mongodb
+  replicas: 3
+  selector:
+    matchLabels:
+      app: mongodb
+  template:
+    metadata:
+      labels:
+        app: mongodb
+    spec:
+      containers:
+      - name: mongodb
+        image: mongo:7.0
+        ports:
+        - containerPort: 27017
+        env:
+        - name: MONGO_INITDB_ROOT_USERNAME
+          value: a2z
+        - name: MONGO_INITDB_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: a2z-secrets
+              key: mongodb-password
+        volumeMounts:
+        - name: mongo-data
+          mountPath: /data/db
+  volumeClaimTemplates:
+  - metadata:
+      name: mongo-data
+    spec:
+      accessModes: ["ReadWriteOnce"]
+      storageClassName: fast-ssd
+      resources:
+        requests:
+          storage: 50Gi
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis
+  namespace: a2z-tsn
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redis
+  template:
+    metadata:
+      labels:
+        app: redis
+    spec:
+      containers:
+      - name: redis
+        image: redis:7-alpine
+        ports:
+        - containerPort: 6379
+        command:
+        - redis-server
+        - --requirepass
+        - $(REDIS_PASSWORD)
+        - --appendonly
+        - "yes"
+        env:
+        - name: REDIS_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: a2z-secrets
+              key: redis-password
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "250m"
+          limits:
+            memory: "1Gi"
+            cpu: "500m"
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: a2z-main-service
+  namespace: a2z-tsn
+  labels:
+    app: a2z-main
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 80
+    targetPort: 3000
+    protocol: TCP
+    name: http
+  - port: 8080
+    targetPort: 8080
+    protocol: TCP
+    name: websocket
+  - port: 9090
+    targetPort: 9090
+    protocol: TCP
+    name: metrics
+  selector:
+    app: a2z-main
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: a2z-ml-service
+  namespace: a2z-tsn
+spec:
+  type: ClusterIP
+  ports:
+  - port: 5000
+    targetPort: 5000
+  selector:
+    app: a2z-ml
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongodb
+  namespace: a2z-tsn
+spec:
+  clusterIP: None
+  ports:
+  - port: 27017
+    targetPort: 27017
+  selector:
+    app: mongodb
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis
+  namespace: a2z-tsn
+spec:
+  type: ClusterIP
+  ports:
+  - port: 6379
+    targetPort: 6379
+  selector:
+    app: redis
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: a2z-ingress
+  namespace: a2z-tsn
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/websocket-services: "a2z-main-service"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
+spec:
+  tls:
+  - hosts:
+    - api.a2z-tsn.com
+    - ws.a2z-tsn.com
+    secretName: a2z-tls-cert
+  rules:
+  - host: api.a2z-tsn.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: a2z-main-service
+            port:
+              number: 80
+  - host: ws.a2z-tsn.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: a2z-main-service
+            port:
+              number: 8080
+
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: a2z-main-hpa
+  namespace: a2z-tsn
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: a2z-main-app
+  minReplicas: 3
+  maxReplicas: 10
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 70
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: 80
+  - type: Pods
+    pods:
+      metric:
+        name: websocket_connections
+      target:
+        type: AverageValue
+        averageValue: "1000"
+
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: a2z-main-pdb
+  namespace: a2z-tsn
+spec:
+  minAvailable: 2
+  selector:
+    matchLabels:
+      app: a2z-main
+
+---
+apiVersion: v1
+kind: ServiceMonitor
+metadata:
+  name: a2z-metrics
+  namespace: a2z-tsn
+spec:
+  selector:
+    matchLabels:
+      app: a2z-main
+  endpoints:
+  - port: metrics
+    interval: 30s
+    path: /metrics
+
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: a2z-backup
+  namespace: a2z-tsn
+spec:
+  schedule: "0 2 * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: backup
+            image: ghcr.io/hwkim3330/a2z-backup:v2.0.0
+            command:
+            - /bin/sh
+            - -c
+            - |
+              mongodump --host=mongodb:27017 \
+                --username=a2z \
+                --password=$MONGODB_PASSWORD \
+                --out=/backup/$(date +%Y%m%d)
+              
+              tar -czf /backup/a2z-backup-$(date +%Y%m%d).tar.gz /backup/$(date +%Y%m%d)
+              
+              # Upload to S3 or other storage
+              aws s3 cp /backup/a2z-backup-$(date +%Y%m%d).tar.gz s3://a2z-backups/
+            env:
+            - name: MONGODB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: a2z-secrets
+                  key: mongodb-password
+            volumeMounts:
+            - name: backup
+              mountPath: /backup
+          volumes:
+          - name: backup
+            persistentVolumeClaim:
+              claimName: backup-pvc
+          restartPolicy: OnFailure
+
+---
+apiVersion: v1
+kind: NetworkPolicy
+metadata:
+  name: a2z-network-policy
+  namespace: a2z-tsn
+spec:
+  podSelector:
+    matchLabels:
+      app: a2z-main
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          name: ingress-nginx
+    - podSelector:
+        matchLabels:
+          app: a2z-ml
+    ports:
+    - protocol: TCP
+      port: 3000
+    - protocol: TCP
+      port: 8080
+    - protocol: TCP
+      port: 9090
+  egress:
+  - to:
+    - podSelector:
+        matchLabels:
+          app: mongodb
+    - podSelector:
+        matchLabels:
+          app: redis
+    - podSelector:
+        matchLabels:
+          app: a2z-ml
+  - to:
+    - namespaceSelector: {}
+      podSelector:
+        matchLabels:
+          k8s-app: kube-dns
+    ports:
+    - protocol: UDP
+      port: 53

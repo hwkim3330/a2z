@@ -1,0 +1,1251 @@
+openapi: 3.0.3
+info:
+  title: A2Z TSN/FRER Network Management API
+  description: |
+    Production-grade API for autonomous vehicle TSN network management with FRER capabilities.
+    Supports real-time monitoring, configuration, ML anomaly detection, and blockchain audit trail.
+  version: 2.0.0
+  contact:
+    name: A2Z Network Operations
+    email: netops@a2z-tsn.com
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: https://api.a2z-tsn.com/v2
+    description: Production server
+  - url: https://staging-api.a2z-tsn.com/v2
+    description: Staging server
+  - url: http://localhost:3000/v2
+    description: Development server
+
+security:
+  - bearerAuth: []
+  - apiKeyAuth: []
+
+tags:
+  - name: Network
+    description: TSN network management operations
+  - name: FRER
+    description: Frame Replication and Elimination for Reliability
+  - name: Monitoring
+    description: Real-time monitoring and metrics
+  - name: ML
+    description: Machine Learning anomaly detection
+  - name: Blockchain
+    description: Immutable audit trail operations
+  - name: Configuration
+    description: Network configuration management
+  - name: Failover
+    description: Automated failover orchestration
+
+paths:
+  /network/switches:
+    get:
+      tags:
+        - Network
+      summary: List all TSN switches
+      description: Retrieve information about all Microchip LAN9692/LAN9668 switches in the network
+      operationId: getSwitches
+      parameters:
+        - $ref: '#/components/parameters/ZoneFilter'
+        - $ref: '#/components/parameters/StatusFilter'
+        - $ref: '#/components/parameters/PaginationOffset'
+        - $ref: '#/components/parameters/PaginationLimit'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Switch'
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalError'
+    
+    post:
+      tags:
+        - Network
+      summary: Register new TSN switch
+      description: Add a new Microchip switch to the network topology
+      operationId: registerSwitch
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SwitchRegistration'
+      responses:
+        '201':
+          description: Switch registered successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Switch'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          description: Switch already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /network/switches/{switchId}:
+    get:
+      tags:
+        - Network
+      summary: Get switch details
+      description: Retrieve detailed information about a specific TSN switch
+      operationId: getSwitchById
+      parameters:
+        - $ref: '#/components/parameters/SwitchId'
+        - name: includeMetrics
+          in: query
+          description: Include performance metrics
+          schema:
+            type: boolean
+            default: false
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SwitchDetail'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    
+    put:
+      tags:
+        - Configuration
+      summary: Update switch configuration
+      description: Modify TSN switch configuration parameters
+      operationId: updateSwitch
+      parameters:
+        - $ref: '#/components/parameters/SwitchId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SwitchConfig'
+      responses:
+        '200':
+          description: Configuration updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Switch'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /frer/streams:
+    get:
+      tags:
+        - FRER
+      summary: List FRER streams
+      description: Retrieve all configured FRER streams with replication paths
+      operationId: getFRERStreams
+      parameters:
+        - name: active
+          in: query
+          description: Filter by active status
+          schema:
+            type: boolean
+        - name: priority
+          in: query
+          description: Filter by priority level
+          schema:
+            type: integer
+            enum: [0, 1, 2, 3, 4, 5, 6, 7]
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  streams:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/FRERStream'
+                  totalStreams:
+                    type: integer
+                  activeStreams:
+                    type: integer
+    
+    post:
+      tags:
+        - FRER
+      summary: Create FRER stream
+      description: Configure new FRER stream with redundancy paths
+      operationId: createFRERStream
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FRERStreamConfig'
+      responses:
+        '201':
+          description: FRER stream created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FRERStream'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+
+  /frer/streams/{streamId}/recovery:
+    post:
+      tags:
+        - FRER
+      summary: Trigger FRER recovery
+      description: Manually trigger frame recovery for a specific stream
+      operationId: triggerFRERRecovery
+      parameters:
+        - name: streamId
+          in: path
+          required: true
+          description: FRER stream identifier
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                reason:
+                  type: string
+                  description: Reason for manual recovery
+                targetPath:
+                  type: string
+                  enum: [primary, secondary, all]
+      responses:
+        '202':
+          description: Recovery initiated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  recoveryId:
+                    type: string
+                  status:
+                    type: string
+                    enum: [initiated, in_progress]
+                  estimatedTime:
+                    type: integer
+                    description: Estimated recovery time in milliseconds
+
+  /monitoring/metrics:
+    get:
+      tags:
+        - Monitoring
+      summary: Get real-time metrics
+      description: Retrieve current network performance metrics
+      operationId: getMetrics
+      parameters:
+        - name: switchId
+          in: query
+          description: Filter by switch ID
+          schema:
+            type: string
+        - name: metricType
+          in: query
+          description: Specific metric types to retrieve
+          schema:
+            type: array
+            items:
+              type: string
+              enum: [bandwidth, latency, packet_loss, frer_recoveries, availability]
+        - name: interval
+          in: query
+          description: Time interval for aggregation
+          schema:
+            type: string
+            enum: [1m, 5m, 15m, 1h, 24h]
+            default: 5m
+      responses:
+        '200':
+          description: Metrics retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MetricsResponse'
+
+  /monitoring/alerts:
+    get:
+      tags:
+        - Monitoring
+      summary: Get active alerts
+      description: Retrieve all active network alerts and warnings
+      operationId: getAlerts
+      parameters:
+        - name: severity
+          in: query
+          description: Filter by severity level
+          schema:
+            type: string
+            enum: [info, warning, error, critical]
+        - name: acknowledged
+          in: query
+          description: Include acknowledged alerts
+          schema:
+            type: boolean
+            default: false
+      responses:
+        '200':
+          description: Alerts retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  alerts:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Alert'
+                  totalCount:
+                    type: integer
+                  criticalCount:
+                    type: integer
+
+  /ml/anomalies:
+    get:
+      tags:
+        - ML
+      summary: Get detected anomalies
+      description: Retrieve anomalies detected by ML models
+      operationId: getAnomalies
+      parameters:
+        - name: startTime
+          in: query
+          required: true
+          description: Start time for anomaly search
+          schema:
+            type: string
+            format: date-time
+        - name: endTime
+          in: query
+          required: true
+          description: End time for anomaly search
+          schema:
+            type: string
+            format: date-time
+        - name: model
+          in: query
+          description: Specific ML model
+          schema:
+            type: string
+            enum: [lstm, autoencoder, isolation_forest, ensemble]
+      responses:
+        '200':
+          description: Anomalies retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AnomalyResponse'
+
+  /ml/predictions:
+    get:
+      tags:
+        - ML
+      summary: Get failure predictions
+      description: Retrieve predictive maintenance insights
+      operationId: getPredictions
+      parameters:
+        - name: componentType
+          in: query
+          description: Filter by component type
+          schema:
+            type: string
+            enum: [switch, port, stream, link]
+        - name: timeHorizon
+          in: query
+          description: Prediction time horizon in hours
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 168
+            default: 24
+      responses:
+        '200':
+          description: Predictions retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PredictionResponse'
+
+  /blockchain/audit:
+    post:
+      tags:
+        - Blockchain
+      summary: Record audit event
+      description: Submit event to blockchain audit trail
+      operationId: recordAuditEvent
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuditEvent'
+      responses:
+        '201':
+          description: Event recorded on blockchain
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  transactionHash:
+                    type: string
+                  blockNumber:
+                    type: integer
+                  eventId:
+                    type: string
+                  timestamp:
+                    type: string
+                    format: date-time
+
+  /blockchain/verify/{eventId}:
+    get:
+      tags:
+        - Blockchain
+      summary: Verify audit event
+      description: Verify event integrity on blockchain
+      operationId: verifyAuditEvent
+      parameters:
+        - name: eventId
+          in: path
+          required: true
+          description: Event identifier
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Verification result
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  verified:
+                    type: boolean
+                  eventData:
+                    $ref: '#/components/schemas/AuditEvent'
+                  blockchainProof:
+                    type: object
+                    properties:
+                      transactionHash:
+                        type: string
+                      blockNumber:
+                        type: integer
+                      merkleProof:
+                        type: array
+                        items:
+                          type: string
+
+  /failover/status:
+    get:
+      tags:
+        - Failover
+      summary: Get failover system status
+      description: Retrieve current status of automated failover orchestration
+      operationId: getFailoverStatus
+      responses:
+        '200':
+          description: Failover status retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FailoverStatus'
+
+  /failover/execute:
+    post:
+      tags:
+        - Failover
+      summary: Execute manual failover
+      description: Manually trigger failover for specific component
+      operationId: executeFailover
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - componentId
+                - targetNode
+                - reason
+              properties:
+                componentId:
+                  type: string
+                  description: Component to failover
+                targetNode:
+                  type: string
+                  description: Target node for failover
+                reason:
+                  type: string
+                  description: Reason for manual failover
+                priority:
+                  type: string
+                  enum: [normal, high, critical]
+                  default: high
+      responses:
+        '202':
+          description: Failover initiated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  failoverId:
+                    type: string
+                  status:
+                    type: string
+                  estimatedTime:
+                    type: integer
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    apiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key
+
+  parameters:
+    SwitchId:
+      name: switchId
+      in: path
+      required: true
+      description: Unique switch identifier
+      schema:
+        type: string
+        pattern: '^LAN96[69]2-[0-9]{3}$'
+    
+    ZoneFilter:
+      name: zone
+      in: query
+      description: Filter by network zone
+      schema:
+        type: string
+        enum: [front, central, rear, all]
+    
+    StatusFilter:
+      name: status
+      in: query
+      description: Filter by operational status
+      schema:
+        type: string
+        enum: [active, standby, maintenance, error]
+    
+    PaginationOffset:
+      name: offset
+      in: query
+      description: Number of items to skip
+      schema:
+        type: integer
+        minimum: 0
+        default: 0
+    
+    PaginationLimit:
+      name: limit
+      in: query
+      description: Maximum number of items to return
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 20
+
+  schemas:
+    Switch:
+      type: object
+      required:
+        - switchId
+        - model
+        - zone
+        - status
+        - ipAddress
+      properties:
+        switchId:
+          type: string
+          description: Unique switch identifier
+          example: LAN9692-001
+        model:
+          type: string
+          enum: [LAN9692, LAN9668]
+          description: Microchip switch model
+        zone:
+          type: string
+          enum: [front, central, rear]
+          description: Network zone location
+        status:
+          type: string
+          enum: [active, standby, maintenance, error]
+        ipAddress:
+          type: string
+          format: ipv4
+        macAddress:
+          type: string
+          pattern: '^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$'
+        firmware:
+          type: string
+          example: v2.1.3
+        uptime:
+          type: integer
+          description: Uptime in seconds
+        portCount:
+          type: integer
+        activePorts:
+          type: integer
+        temperature:
+          type: number
+          description: Temperature in Celsius
+
+    SwitchDetail:
+      allOf:
+        - $ref: '#/components/schemas/Switch'
+        - type: object
+          properties:
+            ports:
+              type: array
+              items:
+                $ref: '#/components/schemas/Port'
+            metrics:
+              $ref: '#/components/schemas/SwitchMetrics'
+            configuration:
+              $ref: '#/components/schemas/SwitchConfig'
+            frerStreams:
+              type: array
+              items:
+                type: string
+                description: FRER stream IDs
+
+    Port:
+      type: object
+      properties:
+        portNumber:
+          type: integer
+        status:
+          type: string
+          enum: [up, down, testing, unknown]
+        speed:
+          type: integer
+          description: Speed in Mbps
+        duplex:
+          type: string
+          enum: [full, half, auto]
+        vlan:
+          type: array
+          items:
+            type: integer
+        statistics:
+          type: object
+          properties:
+            rxPackets:
+              type: integer
+            txPackets:
+              type: integer
+            rxErrors:
+              type: integer
+            txErrors:
+              type: integer
+            rxDropped:
+              type: integer
+            txDropped:
+              type: integer
+
+    SwitchConfig:
+      type: object
+      properties:
+        hostname:
+          type: string
+        managementVlan:
+          type: integer
+        snmpCommunity:
+          type: string
+        syslogServer:
+          type: string
+          format: ipv4
+        ntpServer:
+          type: string
+          format: ipv4
+        qosEnabled:
+          type: boolean
+        tsnConfig:
+          type: object
+          properties:
+            tas:
+              type: boolean
+              description: Time-Aware Shaper (802.1Qbv)
+            cbs:
+              type: boolean
+              description: Credit-Based Shaper (802.1Qav)
+            frer:
+              type: boolean
+              description: Frame Replication and Elimination (802.1CB)
+            psfp:
+              type: boolean
+              description: Per-Stream Filtering and Policing (802.1Qci)
+            gptp:
+              type: boolean
+              description: Generalized Precision Time Protocol (802.1AS)
+
+    FRERStream:
+      type: object
+      required:
+        - streamId
+        - sourceMAC
+        - destMAC
+        - vlanId
+        - priority
+      properties:
+        streamId:
+          type: string
+          description: Unique stream identifier
+        sourceMAC:
+          type: string
+        destMAC:
+          type: string
+        vlanId:
+          type: integer
+        priority:
+          type: integer
+          minimum: 0
+          maximum: 7
+        active:
+          type: boolean
+        paths:
+          type: array
+          items:
+            $ref: '#/components/schemas/FRERPath'
+        sequenceNumber:
+          type: integer
+          description: Current R-TAG sequence number
+        recoveryWindow:
+          type: integer
+          description: Recovery window in milliseconds
+        statistics:
+          type: object
+          properties:
+            duplicatesEliminated:
+              type: integer
+            framesLost:
+              type: integer
+            outOfOrderFrames:
+              type: integer
+            recoveryCount:
+              type: integer
+
+    FRERPath:
+      type: object
+      properties:
+        pathId:
+          type: string
+        type:
+          type: string
+          enum: [primary, secondary]
+        switches:
+          type: array
+          items:
+            type: string
+            description: Switch IDs in path
+        status:
+          type: string
+          enum: [active, failed, recovering]
+        latency:
+          type: number
+          description: Path latency in milliseconds
+        packetLoss:
+          type: number
+          description: Packet loss percentage
+
+    FRERStreamConfig:
+      type: object
+      required:
+        - sourceMAC
+        - destMAC
+        - vlanId
+        - priority
+        - primaryPath
+        - secondaryPath
+      properties:
+        sourceMAC:
+          type: string
+        destMAC:
+          type: string
+        vlanId:
+          type: integer
+        priority:
+          type: integer
+          minimum: 0
+          maximum: 7
+        primaryPath:
+          type: array
+          items:
+            type: string
+            description: Switch IDs for primary path
+        secondaryPath:
+          type: array
+          items:
+            type: string
+            description: Switch IDs for secondary path
+        recoveryWindow:
+          type: integer
+          description: Recovery window in milliseconds
+          default: 100
+        sequenceRecovery:
+          type: boolean
+          default: true
+
+    MetricsResponse:
+      type: object
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+        interval:
+          type: string
+        switches:
+          type: array
+          items:
+            $ref: '#/components/schemas/SwitchMetrics'
+        aggregate:
+          type: object
+          properties:
+            totalBandwidth:
+              type: number
+              description: Total bandwidth in Gbps
+            averageLatency:
+              type: number
+              description: Average latency in ms
+            packetLoss:
+              type: number
+              description: Packet loss percentage
+            availability:
+              type: number
+              description: Network availability percentage
+
+    SwitchMetrics:
+      type: object
+      properties:
+        switchId:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+        bandwidth:
+          type: object
+          properties:
+            ingress:
+              type: number
+              description: Ingress bandwidth in Mbps
+            egress:
+              type: number
+              description: Egress bandwidth in Mbps
+            utilization:
+              type: number
+              description: Bandwidth utilization percentage
+        latency:
+          type: object
+          properties:
+            min:
+              type: number
+            max:
+              type: number
+            avg:
+              type: number
+            p99:
+              type: number
+        packetLoss:
+          type: number
+        frerRecoveries:
+          type: integer
+        errorRate:
+          type: number
+
+    Alert:
+      type: object
+      properties:
+        alertId:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+        severity:
+          type: string
+          enum: [info, warning, error, critical]
+        source:
+          type: string
+          description: Source component
+        type:
+          type: string
+          enum: [performance, failure, security, configuration]
+        title:
+          type: string
+        description:
+          type: string
+        affectedComponents:
+          type: array
+          items:
+            type: string
+        acknowledged:
+          type: boolean
+        acknowledgedBy:
+          type: string
+        acknowledgedAt:
+          type: string
+          format: date-time
+        resolved:
+          type: boolean
+        resolvedAt:
+          type: string
+          format: date-time
+
+    AnomalyResponse:
+      type: object
+      properties:
+        anomalies:
+          type: array
+          items:
+            $ref: '#/components/schemas/Anomaly'
+        totalCount:
+          type: integer
+        modelPerformance:
+          type: object
+          properties:
+            accuracy:
+              type: number
+            precision:
+              type: number
+            recall:
+              type: number
+            f1Score:
+              type: number
+
+    Anomaly:
+      type: object
+      properties:
+        anomalyId:
+          type: string
+        detectedAt:
+          type: string
+          format: date-time
+        model:
+          type: string
+          enum: [lstm, autoencoder, isolation_forest, ensemble]
+        confidence:
+          type: number
+          minimum: 0
+          maximum: 1
+        severity:
+          type: string
+          enum: [low, medium, high, critical]
+        type:
+          type: string
+          enum: [latency, bandwidth, packet_loss, pattern, behavioral]
+        description:
+          type: string
+        affectedComponent:
+          type: string
+        metrics:
+          type: object
+          additionalProperties:
+            type: number
+        recommendedAction:
+          type: string
+
+    PredictionResponse:
+      type: object
+      properties:
+        predictions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Prediction'
+        timeHorizon:
+          type: integer
+          description: Prediction horizon in hours
+        modelVersion:
+          type: string
+        accuracy:
+          type: number
+
+    Prediction:
+      type: object
+      properties:
+        componentId:
+          type: string
+        componentType:
+          type: string
+        failureProbability:
+          type: number
+          minimum: 0
+          maximum: 1
+        timeToFailure:
+          type: integer
+          description: Estimated time to failure in hours
+        confidence:
+          type: number
+          minimum: 0
+          maximum: 1
+        riskLevel:
+          type: string
+          enum: [low, medium, high, critical]
+        suggestedMaintenance:
+          type: string
+        estimatedDowntime:
+          type: integer
+          description: Estimated downtime in minutes if failure occurs
+
+    AuditEvent:
+      type: object
+      required:
+        - eventType
+        - severity
+        - switchId
+        - description
+      properties:
+        eventType:
+          type: string
+          enum: [configuration_change, frer_recovery, anomaly_detected, maintenance, security, performance, failover, compliance]
+        severity:
+          type: string
+          enum: [info, warning, error, critical]
+        switchId:
+          type: string
+        component:
+          type: string
+        description:
+          type: string
+        data:
+          type: object
+          additionalProperties: true
+        userId:
+          type: string
+        ipAddress:
+          type: string
+          format: ipv4
+
+    FailoverStatus:
+      type: object
+      properties:
+        enabled:
+          type: boolean
+        mode:
+          type: string
+          enum: [automatic, manual, maintenance]
+        lastFailover:
+          type: string
+          format: date-time
+        activeFailovers:
+          type: array
+          items:
+            type: object
+            properties:
+              failoverId:
+                type: string
+              componentId:
+                type: string
+              startTime:
+                type: string
+                format: date-time
+              status:
+                type: string
+                enum: [in_progress, completed, failed, rolled_back]
+        backupSystems:
+          type: array
+          items:
+            type: object
+            properties:
+              systemId:
+                type: string
+              status:
+                type: string
+                enum: [ready, active, unavailable]
+              capacity:
+                type: number
+                description: Available capacity percentage
+
+    SwitchRegistration:
+      type: object
+      required:
+        - model
+        - zone
+        - ipAddress
+        - macAddress
+      properties:
+        model:
+          type: string
+          enum: [LAN9692, LAN9668]
+        zone:
+          type: string
+          enum: [front, central, rear]
+        ipAddress:
+          type: string
+          format: ipv4
+        macAddress:
+          type: string
+        hostname:
+          type: string
+        location:
+          type: object
+          properties:
+            rack:
+              type: string
+            slot:
+              type: integer
+            datacenter:
+              type: string
+
+    Pagination:
+      type: object
+      properties:
+        total:
+          type: integer
+        offset:
+          type: integer
+        limit:
+          type: integer
+        hasMore:
+          type: boolean
+
+    Error:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        details:
+          type: object
+          additionalProperties: true
+        timestamp:
+          type: string
+          format: date-time
+        traceId:
+          type: string
+
+  responses:
+    BadRequest:
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            code: BAD_REQUEST
+            message: Invalid request parameters
+            details:
+              field: switchId
+              reason: Invalid format
+    
+    Unauthorized:
+      description: Authentication required
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            code: UNAUTHORIZED
+            message: Authentication required
+    
+    Forbidden:
+      description: Insufficient permissions
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            code: FORBIDDEN
+            message: Insufficient permissions for this operation
+    
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            code: NOT_FOUND
+            message: Resource not found
+    
+    InternalError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            code: INTERNAL_ERROR
+            message: An unexpected error occurred
+
+webhooks:
+  alertNotification:
+    post:
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Alert'
+      responses:
+        '200':
+          description: Notification received
+  
+  anomalyDetected:
+    post:
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Anomaly'
+      responses:
+        '200':
+          description: Notification received
+  
+  failoverExecuted:
+    post:
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                failoverId:
+                  type: string
+                componentId:
+                  type: string
+                timestamp:
+                  type: string
+                  format: date-time
+                status:
+                  type: string
+      responses:
+        '200':
+          description: Notification received

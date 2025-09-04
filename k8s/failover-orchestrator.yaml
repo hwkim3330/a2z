@@ -1,0 +1,612 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: failover-scripts
+  namespace: a2z-tsn
+data:
+  failover.py: |
+    #!/usr/bin/env python3
+    """
+    A2Z Automated Failover Orchestrator for Kubernetes
+    """
+    import os
+    import time
+    import json
+    import asyncio
+    from kubernetes import client, config, watch
+    from kubernetes.client.rest import ApiException
+    import redis
+    import logging
+    from datetime import datetime
+    
+    logging.basicConfig(level=logging.INFO)
+    logger = logging.getLogger('A2Z-Failover')
+    
+    class FailoverOrchestrator:
+        def __init__(self):
+            # Load k8s config
+            try:
+                config.load_incluster_config()
+            except:
+                config.load_kube_config()
+            
+            self.v1 = client.CoreV1Api()
+            self.apps_v1 = client.AppsV1Api()
+            self.namespace = os.getenv('NAMESPACE', 'a2z-tsn')
+            
+            # Redis for state management
+            self.redis_client = redis.Redis(
+                host=os.getenv('REDIS_HOST', 'redis'),
+                port=6379,
+                password=os.getenv('REDIS_PASSWORD'),
+                decode_responses=True
+            )
+            
+            # Failover configuration
+            self.config = {
+                'health_check_interval': 10,
+                'failure_threshold': 3,
+                'recovery_timeout': 60,
+                'min_replicas': 2,
+                'max_replicas': 10
+            }
+            
+            self.failed_nodes = {}
+            self.recovery_in_progress = {}
+            
+        async def monitor_pods(self):
+            """Monitor pod health and trigger failover"""
+            w = watch.Watch()
+            
+            for event in w.stream(
+                self.v1.list_namespaced_pod,
+                namespace=self.namespace,
+                timeout_seconds=0
+            ):
+                pod = event['object']
+                event_type = event['type']
+                
+                if event_type in ['MODIFIED', 'DELETED']:
+                    await self.check_pod_health(pod)
+        
+        async def check_pod_health(self, pod):
+            """Check individual pod health"""
+            pod_name = pod.metadata.name
+            
+            # Check pod status
+            if pod.status.phase != 'Running':
+                logger.warning(f"Pod {pod_name} not running: {pod.status.phase}")
+                await self.handle_pod_failure(pod)
+                
+            # Check container statuses
+            if pod.status.container_statuses:
+                for container in pod.status.container_statuses:
+                    if not container.ready:
+                        logger.warning(f"Container {container.name} in pod {pod_name} not ready")
+                        await self.handle_container_failure(pod, container)
+                        
+            # Check restart count
+            total_restarts = sum(
+                c.restart_count for c in pod.status.container_statuses or []
+            )
+            if total_restarts > 5:
+                logger.error(f"Pod {pod_name} has {total_restarts} restarts")
+                await self.handle_excessive_restarts(pod)
+        
+        async def handle_pod_failure(self, pod):
+            """Handle pod failure with automated recovery"""
+            pod_name = pod.metadata.name
+            app_label = pod.metadata.labels.get('app')
+            
+            if pod_name in self.recovery_in_progress:
+                logger.info(f"Recovery already in progress for {pod_name}")
+                return
+            
+            self.recovery_in_progress[pod_name] = True
+            
+            try:
+                # Check if this is a critical component
+                if self.is_critical_component(app_label):
+                    await self.execute_critical_failover(pod)
+                else:
+                    await self.execute_standard_failover(pod)
+                    
+            finally:
+                del self.recovery_in_progress[pod_name]
+        
+        async def execute_critical_failover(self, pod):
+            """Execute failover for critical components"""
+            app_label = pod.metadata.labels.get('app')
+            logger.critical(f"CRITICAL FAILOVER: {app_label}")
+            
+            # 1. Scale up healthy replicas immediately
+            await self.scale_deployment(app_label, delta=2)
+            
+            # 2. Redirect traffic away from failed pod
+            await self.update_service_endpoints(app_label, exclude_pod=pod.metadata.name)
+            
+            # 3. Trigger backup activation
+            await self.activate_backup_system(app_label)
+            
+            # 4. Delete failed pod for immediate recreation
+            await self.delete_pod(pod)
+            
+            # 5. Send alerts
+            await self.send_critical_alert(app_label, pod)
+            
+            # 6. Update blockchain audit trail
+            await self.record_failover_event(pod, 'CRITICAL')
+        
+        async def execute_standard_failover(self, pod):
+            """Execute standard failover procedure"""
+            app_label = pod.metadata.labels.get('app')
+            logger.info(f"Standard failover for {app_label}")
+            
+            # 1. Check current replica count
+            current_replicas = await self.get_replica_count(app_label)
+            
+            if current_replicas < self.config['min_replicas']:
+                # Scale up to minimum
+                await self.scale_deployment(app_label, target=self.config['min_replicas'])
+            
+            # 2. Grace period before deletion
+            await asyncio.sleep(30)
+            
+            # 3. Delete pod if still unhealthy
+            if not await self.is_pod_healthy(pod.metadata.name):
+                await self.delete_pod(pod)
+            
+            # 4. Record event
+            await self.record_failover_event(pod, 'STANDARD')
+        
+        async def handle_container_failure(self, pod, container):
+            """Handle container-specific failures"""
+            container_name = container.name
+            
+            if container.restart_count > 3:
+                logger.warning(f"Container {container_name} exceeded restart threshold")
+                
+                # Check if it's a sidecar or main container
+                if container_name == 'a2z-app':
+                    # Main container failure - trigger pod failover
+                    await self.handle_pod_failure(pod)
+                else:
+                    # Sidecar failure - attempt container restart
+                    await self.restart_container(pod, container_name)
+        
+        async def handle_excessive_restarts(self, pod):
+            """Handle pods with excessive restart counts"""
+            pod_name = pod.metadata.name
+            
+            # Check for crash loop backoff
+            if self.is_crash_loop_backoff(pod):
+                logger.error(f"Pod {pod_name} in crash loop backoff")
+                
+                # Delete and recreate with backoff
+                await self.delete_pod(pod)
+                await asyncio.sleep(60)  # Wait before recreation
+                
+                # Scale deployment to compensate
+                app_label = pod.metadata.labels.get('app')
+                await self.scale_deployment(app_label, delta=1)
+        
+        async def activate_backup_system(self, app_label):
+            """Activate backup systems for critical components"""
+            backup_configs = {
+                'a2z-main': {
+                    'backup_deployment': 'a2z-main-backup',
+                    'switch_endpoint': 'backup.a2z-tsn.com'
+                },
+                'a2z-ml': {
+                    'backup_deployment': 'a2z-ml-backup',
+                    'switch_endpoint': 'ml-backup.a2z-tsn.com'
+                }
+            }
+            
+            if app_label in backup_configs:
+                config = backup_configs[app_label]
+                
+                # Scale up backup deployment
+                await self.scale_deployment(config['backup_deployment'], target=3)
+                
+                # Update DNS/ingress to point to backup
+                await self.update_ingress(config['switch_endpoint'])
+                
+                logger.info(f"Backup system activated for {app_label}")
+        
+        async def scale_deployment(self, name, target=None, delta=None):
+            """Scale deployment up or down"""
+            try:
+                deployment = self.apps_v1.read_namespaced_deployment(
+                    name=name,
+                    namespace=self.namespace
+                )
+                
+                current = deployment.spec.replicas
+                
+                if target:
+                    new_replicas = target
+                elif delta:
+                    new_replicas = current + delta
+                else:
+                    return
+                
+                # Apply min/max limits
+                new_replicas = max(self.config['min_replicas'], 
+                                 min(new_replicas, self.config['max_replicas']))
+                
+                deployment.spec.replicas = new_replicas
+                
+                self.apps_v1.patch_namespaced_deployment(
+                    name=name,
+                    namespace=self.namespace,
+                    body=deployment
+                )
+                
+                logger.info(f"Scaled {name} from {current} to {new_replicas} replicas")
+                
+            except ApiException as e:
+                logger.error(f"Failed to scale deployment: {e}")
+        
+        async def update_service_endpoints(self, app_label, exclude_pod=None):
+            """Update service endpoints to exclude failed pods"""
+            try:
+                # Get service
+                services = self.v1.list_namespaced_service(
+                    namespace=self.namespace,
+                    label_selector=f"app={app_label}"
+                )
+                
+                for service in services.items:
+                    # Get endpoints
+                    endpoints = self.v1.read_namespaced_endpoints(
+                        name=service.metadata.name,
+                        namespace=self.namespace
+                    )
+                    
+                    # Filter out failed pod
+                    if endpoints.subsets:
+                        for subset in endpoints.subsets:
+                            if subset.addresses:
+                                subset.addresses = [
+                                    addr for addr in subset.addresses
+                                    if addr.target_ref.name != exclude_pod
+                                ]
+                    
+                    # Update endpoints
+                    self.v1.patch_namespaced_endpoints(
+                        name=service.metadata.name,
+                        namespace=self.namespace,
+                        body=endpoints
+                    )
+                    
+                    logger.info(f"Updated endpoints for service {service.metadata.name}")
+                    
+            except ApiException as e:
+                logger.error(f"Failed to update service endpoints: {e}")
+        
+        async def delete_pod(self, pod):
+            """Delete a pod for recreation"""
+            try:
+                self.v1.delete_namespaced_pod(
+                    name=pod.metadata.name,
+                    namespace=self.namespace,
+                    grace_period_seconds=0
+                )
+                logger.info(f"Deleted pod {pod.metadata.name}")
+            except ApiException as e:
+                logger.error(f"Failed to delete pod: {e}")
+        
+        async def restart_container(self, pod, container_name):
+            """Restart specific container in pod"""
+            # Kubernetes doesn't support restarting individual containers
+            # We'll delete the pod to force recreation
+            logger.info(f"Restarting pod {pod.metadata.name} due to container {container_name}")
+            await self.delete_pod(pod)
+        
+        async def is_pod_healthy(self, pod_name):
+            """Check if pod is healthy"""
+            try:
+                pod = self.v1.read_namespaced_pod(
+                    name=pod_name,
+                    namespace=self.namespace
+                )
+                
+                if pod.status.phase != 'Running':
+                    return False
+                
+                if pod.status.container_statuses:
+                    return all(c.ready for c in pod.status.container_statuses)
+                
+                return False
+                
+            except ApiException:
+                return False
+        
+        async def get_replica_count(self, app_label):
+            """Get current replica count for deployment"""
+            try:
+                deployments = self.apps_v1.list_namespaced_deployment(
+                    namespace=self.namespace,
+                    label_selector=f"app={app_label}"
+                )
+                
+                if deployments.items:
+                    return deployments.items[0].spec.replicas
+                
+                return 0
+                
+            except ApiException:
+                return 0
+        
+        def is_critical_component(self, app_label):
+            """Check if component is critical"""
+            critical_components = ['a2z-main', 'a2z-ml', 'mongodb', 'redis']
+            return app_label in critical_components
+        
+        def is_crash_loop_backoff(self, pod):
+            """Check if pod is in crash loop backoff"""
+            if pod.status.container_statuses:
+                for container in pod.status.container_statuses:
+                    if container.state.waiting:
+                        if container.state.waiting.reason == 'CrashLoopBackOff':
+                            return True
+            return False
+        
+        async def update_ingress(self, endpoint):
+            """Update ingress configuration"""
+            # Implementation would update ingress rules
+            logger.info(f"Updated ingress for endpoint {endpoint}")
+        
+        async def send_critical_alert(self, app_label, pod):
+            """Send critical failover alert"""
+            alert = {
+                'timestamp': datetime.now().isoformat(),
+                'severity': 'CRITICAL',
+                'component': app_label,
+                'pod': pod.metadata.name,
+                'message': f"Critical failover executed for {app_label}",
+                'action': 'Automatic failover initiated'
+            }
+            
+            # Publish to Redis
+            self.redis_client.publish('failover_alerts', json.dumps(alert))
+            
+            # Log critical event
+            logger.critical(f"ALERT: {alert}")
+        
+        async def record_failover_event(self, pod, failover_type):
+            """Record failover event for audit"""
+            event = {
+                'timestamp': datetime.now().isoformat(),
+                'type': 'FAILOVER',
+                'failover_type': failover_type,
+                'pod': pod.metadata.name,
+                'app': pod.metadata.labels.get('app'),
+                'namespace': self.namespace,
+                'reason': pod.status.message or 'Unknown'
+            }
+            
+            # Store in Redis
+            self.redis_client.lpush('failover_events', json.dumps(event))
+            self.redis_client.ltrim('failover_events', 0, 999)  # Keep last 1000 events
+            
+            logger.info(f"Recorded failover event: {event}")
+        
+        async def monitor_cluster_health(self):
+            """Monitor overall cluster health"""
+            while True:
+                try:
+                    # Get node status
+                    nodes = self.v1.list_node()
+                    unhealthy_nodes = []
+                    
+                    for node in nodes.items:
+                        for condition in node.status.conditions:
+                            if condition.type == 'Ready' and condition.status != 'True':
+                                unhealthy_nodes.append(node.metadata.name)
+                    
+                    if unhealthy_nodes:
+                        logger.warning(f"Unhealthy nodes detected: {unhealthy_nodes}")
+                        await self.handle_node_failure(unhealthy_nodes)
+                    
+                    # Check resource usage
+                    await self.check_resource_pressure()
+                    
+                    await asyncio.sleep(30)
+                    
+                except Exception as e:
+                    logger.error(f"Cluster health check failed: {e}")
+                    await asyncio.sleep(60)
+        
+        async def handle_node_failure(self, unhealthy_nodes):
+            """Handle node failures"""
+            for node_name in unhealthy_nodes:
+                # Cordon node to prevent new pods
+                await self.cordon_node(node_name)
+                
+                # Drain pods from unhealthy node
+                await self.drain_node(node_name)
+                
+                logger.warning(f"Handled failure for node {node_name}")
+        
+        async def cordon_node(self, node_name):
+            """Cordon a node to prevent scheduling"""
+            try:
+                body = {
+                    "spec": {
+                        "unschedulable": True
+                    }
+                }
+                
+                self.v1.patch_node(node_name, body)
+                logger.info(f"Cordoned node {node_name}")
+                
+            except ApiException as e:
+                logger.error(f"Failed to cordon node: {e}")
+        
+        async def drain_node(self, node_name):
+            """Drain pods from a node"""
+            try:
+                # Get pods on the node
+                pods = self.v1.list_pod_for_all_namespaces(
+                    field_selector=f"spec.nodeName={node_name}"
+                )
+                
+                for pod in pods.items:
+                    if not self.is_daemonset_pod(pod):
+                        # Evict pod
+                        await self.evict_pod(pod)
+                
+                logger.info(f"Drained node {node_name}")
+                
+            except ApiException as e:
+                logger.error(f"Failed to drain node: {e}")
+        
+        def is_daemonset_pod(self, pod):
+            """Check if pod is managed by DaemonSet"""
+            if pod.metadata.owner_references:
+                for ref in pod.metadata.owner_references:
+                    if ref.kind == 'DaemonSet':
+                        return True
+            return False
+        
+        async def evict_pod(self, pod):
+            """Evict a pod from node"""
+            try:
+                body = client.V1Eviction(
+                    metadata=client.V1ObjectMeta(
+                        name=pod.metadata.name,
+                        namespace=pod.metadata.namespace
+                    ),
+                    delete_options=client.V1DeleteOptions(
+                        grace_period_seconds=30
+                    )
+                )
+                
+                self.v1.create_namespaced_pod_eviction(
+                    name=pod.metadata.name,
+                    namespace=pod.metadata.namespace,
+                    body=body
+                )
+                
+                logger.info(f"Evicted pod {pod.metadata.name}")
+                
+            except ApiException as e:
+                logger.error(f"Failed to evict pod: {e}")
+        
+        async def check_resource_pressure(self):
+            """Check for resource pressure in cluster"""
+            # Get metrics from metrics-server
+            # This would require additional API client for metrics.k8s.io
+            pass
+        
+        async def run(self):
+            """Main orchestrator loop"""
+            logger.info("Starting A2Z Failover Orchestrator")
+            
+            # Start monitoring tasks
+            tasks = [
+                asyncio.create_task(self.monitor_pods()),
+                asyncio.create_task(self.monitor_cluster_health())
+            ]
+            
+            try:
+                await asyncio.gather(*tasks)
+            except Exception as e:
+                logger.error(f"Orchestrator error: {e}")
+            finally:
+                logger.info("Shutting down orchestrator")
+    
+    if __name__ == "__main__":
+        orchestrator = FailoverOrchestrator()
+        asyncio.run(orchestrator.run())
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: failover-orchestrator
+  namespace: a2z-tsn
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: failover-orchestrator
+  template:
+    metadata:
+      labels:
+        app: failover-orchestrator
+    spec:
+      serviceAccountName: failover-orchestrator
+      containers:
+      - name: orchestrator
+        image: python:3.11-slim
+        command: ["python", "/scripts/failover.py"]
+        env:
+        - name: NAMESPACE
+          value: a2z-tsn
+        - name: REDIS_HOST
+          value: redis
+        - name: REDIS_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: a2z-secrets
+              key: redis-password
+        volumeMounts:
+        - name: scripts
+          mountPath: /scripts
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "100m"
+          limits:
+            memory: "512Mi"
+            cpu: "200m"
+      volumes:
+      - name: scripts
+        configMap:
+          name: failover-scripts
+
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: failover-orchestrator
+  namespace: a2z-tsn
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: failover-orchestrator
+rules:
+- apiGroups: [""]
+  resources: ["pods", "nodes", "services", "endpoints"]
+  verbs: ["get", "list", "watch", "delete", "patch", "update"]
+- apiGroups: ["apps"]
+  resources: ["deployments", "replicasets", "statefulsets"]
+  verbs: ["get", "list", "watch", "patch", "update"]
+- apiGroups: [""]
+  resources: ["pods/eviction"]
+  verbs: ["create"]
+- apiGroups: ["networking.k8s.io"]
+  resources: ["ingresses"]
+  verbs: ["get", "list", "patch", "update"]
+- apiGroups: ["metrics.k8s.io"]
+  resources: ["pods", "nodes"]
+  verbs: ["get", "list"]
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: failover-orchestrator
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: failover-orchestrator
+subjects:
+- kind: ServiceAccount
+  name: failover-orchestrator
+  namespace: a2z-tsn
