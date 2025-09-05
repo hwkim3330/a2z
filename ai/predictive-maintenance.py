@@ -70,8 +70,8 @@ class NetworkTelemetryCollector:
         
         components = [
             ('central-switch', 'LAN9692'),
-            ('front-switch', 'LAN9668'),
-            ('rear-switch', 'LAN9668'),
+            ('front-switch', 'LAN9662'),
+            ('rear-switch', 'LAN9662'),
             ('sensor-lidar-1', 'sensor'),
             ('sensor-camera-1', 'sensor'),
             ('ecu-main', 'controller'),
@@ -95,7 +95,7 @@ class NetworkTelemetryCollector:
                 'bandwidth_usage': 560 + np.random.normal(0, 50),
                 'power_consumption': 25 + np.random.normal(0, 2)
             },
-            'LAN9668': {
+            'LAN9662': {
                 'temperature': 58 + np.random.normal(0, 6),
                 'cpu_usage': 38 + np.random.normal(0, 8),
                 'memory_usage': 55 + np.random.normal(0, 7),
@@ -331,7 +331,7 @@ class RemainingLifeEstimator:
         """Calculate degradation factor based on component type"""
         factors = {
             'LAN9692': self._switch_degradation,
-            'LAN9668': self._switch_degradation,
+            'LAN9662': self._switch_degradation,
             'sensor': self._sensor_degradation,
             'controller': self._controller_degradation
         }
@@ -375,7 +375,7 @@ class MaintenanceScheduler:
         self.maintenance_windows = []
         self.component_priorities = {
             'LAN9692': 10,  # Central switch - highest priority
-            'LAN9668': 8,
+            'LAN9662': 8,
             'sensor': 5,
             'controller': 9
         }
@@ -444,7 +444,7 @@ class MaintenanceScheduler:
         """Estimate maintenance duration in hours"""
         times = {
             'LAN9692': 4.0,
-            'LAN9668': 3.0,
+            'LAN9662': 3.0,
             'sensor': 1.5,
             'controller': 2.5
         }
@@ -500,7 +500,7 @@ class CostImpactAnalyzer:
     def __init__(self):
         self.component_costs = {
             'LAN9692': 5000,
-            'LAN9668': 2000,
+            'LAN9662': 2000,
             'sensor': 800,
             'controller': 3000
         }
@@ -564,8 +564,8 @@ class CostImpactAnalyzer:
         """Extract component type from ID"""
         if 'LAN9692' in component_id or 'central' in component_id:
             return 'LAN9692'
-        elif 'LAN9668' in component_id or 'front' in component_id or 'rear' in component_id:
-            return 'LAN9668'
+        elif 'LAN9662' in component_id or 'front' in component_id or 'rear' in component_id:
+            return 'LAN9662'
         elif 'sensor' in component_id or 'lidar' in component_id or 'camera' in component_id:
             return 'sensor'
         elif 'ecu' in component_id or 'control' in component_id:

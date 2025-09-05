@@ -5,7 +5,7 @@
 
 **Autonomous A2Z**는 2018년 설립된 한국의 자율주행 스타트업으로, 서울 자율주행 버스 상용 서비스를 세계 최초로 운영한 기술력을 보유하고 있습니다. 기아자동차, KG모빌리티와 Level 4 자율주행 파트너십을 체결하고 싱가포르 Grab과 해외 진출을 추진 중입니다. 
 
-본 프로젝트는 A2Z의 실제 자율주행 플랫폼에 **Microchip LAN9692/LAN9668 기가비트 TSN 스위치**를 활용한 **FRER(Frame Replication and Elimination for Reliability)** 기반 실용적 네트워크 아키텍처를 설계합니다.
+본 프로젝트는 A2Z의 실제 자율주행 플랫폼에 **Microchip LAN9692/LAN9662 기가비트 TSN 스위치**를 활용한 **FRER(Frame Replication and Elimination for Reliability)** 기반 실용적 네트워크 아키텍처를 설계합니다.
 
 ## A2Z 실제 기술 플랫폼 분석
 
@@ -40,14 +40,14 @@
 • 자동차 등급 온도 사양
 ```
 
-### LAN9668 - 8포트 기가비트 TSN 스위치
+### LAN9662 - 8포트 기가비트 TSN 스위치
 ```
 • 8포트 기가비트 이더넷 스위치
 • 600MHz ARM Cortex-A7 CPU 내장
 • 2개 통합 10/100/1000BASE-T PHY
 • RGMII/RMII, SerDes, SGMII 인터페이스
 • 산업용 등급: -40°C ~ +85°C
-• EVB-LAN9668 evaluation board
+• EVB-LAN9662 evaluation board
 ```
 
 ### 지원 TSN 표준
@@ -74,7 +74,7 @@ A2Z 자율주행 차량은 Zone 기반 기가비트 이더넷 아키텍처를 �
 │ ┌─LiDAR System  │ ┌─LAN9692───────│ ┌─LiDAR Autol               │
 │ ├─Camera Array  │ ├─ACU_NO (Orin) │ ├─Radar MRR-35              │
 │ ├─Radar MRR-35  │ ├─ACU_IT (Intel)│ ├─Camera Rear               │
-│ └─LAN9668───────┼─┤ LiDAR Infra   │ └─LAN9668───────────────────┤
+│ └─LAN9662───────┼─┤ LiDAR Infra   │ └─LAN9662───────────────────┤
 │   (8-port 1G)   │ ├─System (LIS)  │     (8-port 1G)             │
 │                 │ ├─TCU/EDR/VCU   │                             │
 │                 │ └─Multi-Gig────┼─  FRER Gigabit Paths:      │
@@ -87,13 +87,13 @@ A2Z 자율주행 차량은 Zone 기반 기가비트 이더넷 아키텍처를 �
 
 #### 1. Central Backbone 구성
 - **Primary**: LAN9692 중앙 스위치 (멀티기가 지원)
-- **Backup**: LAN9668 보조 스위치 (기가비트)
+- **Backup**: LAN9662 보조 스위치 (기가비트)
 - **Connection**: 기가비트 이더넷 업링크, 듀얼패스 구성
 
 #### 2. Zone Switch 실제 배치
 ```yaml
 Front Zone:
-  Switch: LAN9668 (8-port Gigabit)
+  Switch: LAN9662 (8-port Gigabit)
   Sensors: 
     - LiDAR 시스템: 100Mbps (실제 사양)
     - Camera Array x4: 100Mbps each (400Mbps total)
@@ -108,7 +108,7 @@ Central Zone:
     - TCU/EDR/VCU: 100Mbps each
 
 Rear Zone:
-  Switch: LAN9668 (8-port Gigabit)
+  Switch: LAN9662 (8-port Gigabit)
   Sensors:
     - LiDAR Autol: 100Mbps
     - Radar MRR-35: CAN-FD Bridge (10Mbps)
@@ -124,7 +124,7 @@ A2Z의 안전 중요 시스템을 위한 기가비트 FRER 구성:
 Gigabit Sensor Data Flow with FRER:
 ┌─────────────┐    1Gbps A   ┌──────────┐    Primary    ┌─────────┐
 │ LiDAR/Radar │──────────────│ Zone SW  │──────────────│ ACU_NO  │
-│             │              │ LAN9668  │    1Gbps     │ (Orin)  │
+│             │              │ LAN9662  │    1Gbps     │ (Orin)  │
 │             │    1Gbps B   │          │    Backup    │         │
 │             │──────────────│          │──────────────│         │
 └─────────────┘              └──────────┘    1Gbps     └─────────┘

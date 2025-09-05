@@ -19,7 +19,7 @@
 ## 🚀 핵심 기능
 
 ### 1. 실시간 네트워크 관리
-- **Microchip LAN9692/LAN9668** TSN 스위치 통합
+- **Microchip LAN9692/LAN9662** TSN 스위치 통합
 - **IEEE 802.1CB FRER** 완벽 구현
 - **기가비트 백본** (1Gbps) 아키텍처
 - **3중 Zone 토폴로지** (Front/Central/Rear)
@@ -66,7 +66,7 @@ graph TB
     subgraph "자율주행 차량"
         A[전방 센서 Zone] --> D[Microchip LAN9692]
         B[중앙 컴퓨팅 Zone] --> E[Microchip LAN9692]
-        C[후방 센서 Zone] --> F[Microchip LAN9668]
+        C[후방 센서 Zone] --> F[Microchip LAN9662]
     end
     
     subgraph "TSN/FRER 백본"
@@ -176,7 +176,7 @@ streams:
         - LAN9692-002
       secondary:
         - LAN9692-001
-        - LAN9668-001
+        - LAN9662-001
         - LAN9692-002
     recovery_window: 50  # ms
     redundancy: true

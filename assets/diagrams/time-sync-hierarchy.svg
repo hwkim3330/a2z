@@ -101,22 +101,22 @@
       </circle>
     </g>
     
-    <!-- Switch 2 - LAN9668 -->
+    <!-- Switch 2 - LAN9662 -->
     <g transform="translate(400, 0)">
       <rect x="0" y="0" width="180" height="80" rx="8" fill="url(#bcGradient)" filter="url(#shadow)"/>
       <text x="90" y="30" font-size="16" font-weight="bold" text-anchor="middle" fill="white">BC Switch 2</text>
-      <text x="90" y="50" font-size="12" text-anchor="middle" fill="white">LAN9668</text>
+      <text x="90" y="50" font-size="12" text-anchor="middle" fill="white">LAN9662</text>
       <text x="90" y="65" font-size="10" text-anchor="middle" fill="white">Stratum 1</text>
       <circle cx="160" cy="20" r="5" fill="#00FF00" opacity="0.8">
         <animate attributeName="opacity" values="0.3;1;0.3" dur="2s" begin="0.2s" repeatCount="indefinite"/>
       </circle>
     </g>
     
-    <!-- Switch 3 - LAN9668 -->
+    <!-- Switch 3 - LAN9662 -->
     <g transform="translate(800, 0)">
       <rect x="0" y="0" width="180" height="80" rx="8" fill="url(#bcGradient)" filter="url(#shadow)"/>
       <text x="90" y="30" font-size="16" font-weight="bold" text-anchor="middle" fill="white">BC Switch 3</text>
-      <text x="90" y="50" font-size="12" text-anchor="middle" fill="white">LAN9668</text>
+      <text x="90" y="50" font-size="12" text-anchor="middle" fill="white">LAN9662</text>
       <text x="90" y="65" font-size="10" text-anchor="middle" fill="white">Stratum 1</text>
       <circle cx="160" cy="20" r="5" fill="#00FF00" opacity="0.8">
         <animate attributeName="opacity" values="0.3;1;0.3" dur="2s" begin="0.3s" repeatCount="indefinite"/>

@@ -33,12 +33,12 @@ LAN9692 (Central Switch):
   Evaluation Board: EV09P11A (12-port)
   FRER Support: IEEE 802.1CB 완전 지원
 
-LAN9668 (Zone Switch):
+LAN9662 (Zone Switch):
   Type: 8-Port Gigabit TSN Switch  
   CPU: 600MHz ARM Cortex-A7
   Integrated PHY: 2x 10/100/1000BASE-T
   Temperature: Industrial grade (-40°C~+85°C)
-  Evaluation Board: EVB-LAN9668
+  Evaluation Board: EVB-LAN9662
 ```
 
 ### ✅ 기가비트 네트워크 실측 기반 설계
@@ -81,7 +81,7 @@ C:\Users\parksik\a2z\
 ```yaml
 Network Architecture:
   ✅ Zone-based gigabit topology (실제 A2Z 차량 구조)
-  ✅ LAN9692 central + LAN9668 zone switches
+  ✅ LAN9692 central + LAN9662 zone switches
   ✅ FRER triple redundancy for emergency systems
   ✅ 99.97% availability proven in Seoul operations
 
@@ -110,7 +110,7 @@ Seoul Autonomous Bus Service (30 days):
 
 Hardware Validation:
   ✅ Microchip EV09P11A (LAN9692) tested
-  ✅ EVB-LAN9668 evaluation completed
+  ✅ EVB-LAN9662 evaluation completed
   ✅ Real sensor data injection verified
   ✅ FRER performance measured and confirmed
 ```

@@ -750,8 +750,8 @@ def create_a2z_topology() -> NetworkTopology:
     
     # Create switches
     central = VirtualSwitch("central", "LAN9692", 12)
-    front = VirtualSwitch("front", "LAN9668", 8)
-    rear = VirtualSwitch("rear", "LAN9668", 8)
+    front = VirtualSwitch("front", "LAN9662", 8)
+    rear = VirtualSwitch("rear", "LAN9662", 8)
     
     topology.add_switch(central)
     topology.add_switch(front)

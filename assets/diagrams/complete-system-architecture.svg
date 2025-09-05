@@ -163,7 +163,7 @@
     <!-- Left Zone Switch -->
     <rect x="100" y="800" width="200" height="70" rx="15" fill="url(#switchGrad)" filter="url(#shadow)"/>
     <text x="200" y="825" font-size="14" text-anchor="middle" fill="white" font-weight="bold">TSN Switch Left</text>
-    <text x="200" y="845" font-size="11" text-anchor="middle" fill="white">LAN9668 - 1GbE</text>
+    <text x="200" y="845" font-size="11" text-anchor="middle" fill="white">LAN9662 - 1GbE</text>
   </g>
   
   <!-- Right Zone -->
@@ -189,7 +189,7 @@
     <!-- Right Zone Switch -->
     <rect x="1300" y="800" width="200" height="70" rx="15" fill="url(#switchGrad)" filter="url(#shadow)"/>
     <text x="1400" y="825" font-size="14" text-anchor="middle" fill="white" font-weight="bold">TSN Switch Right</text>
-    <text x="1400" y="845" font-size="11" text-anchor="middle" fill="white">LAN9668 - 1GbE</text>
+    <text x="1400" y="845" font-size="11" text-anchor="middle" fill="white">LAN9662 - 1GbE</text>
   </g>
   
   <!-- Central Backbone -->

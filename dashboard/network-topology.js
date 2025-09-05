@@ -63,7 +63,7 @@ class NetworkTopology {
                   x: this.width / 2, y: this.height / 2, bandwidth: '66Gbps', ports: 30 },
                 
                 // Front Zone
-                { id: 'front-switch', name: 'LAN9668 Front', type: 'switch', zone: 'front',
+                { id: 'front-switch', name: 'LAN9662 Front', type: 'switch', zone: 'front',
                   x: this.width / 2 - 200, y: this.height / 2 - 150, bandwidth: '8Gbps', ports: 8 },
                 { id: 'lidar-front', name: 'Front LiDAR', type: 'sensor', zone: 'front',
                   dataRate: '100Mbps', priority: 'critical' },
@@ -73,7 +73,7 @@ class NetworkTopology {
                   dataRate: '50Mbps', priority: 'high' },
                 
                 // Rear Zone
-                { id: 'rear-switch', name: 'LAN9668 Rear', type: 'switch', zone: 'rear',
+                { id: 'rear-switch', name: 'LAN9662 Rear', type: 'switch', zone: 'rear',
                   x: this.width / 2 + 200, y: this.height / 2 - 150, bandwidth: '8Gbps', ports: 8 },
                 { id: 'lidar-rear', name: 'Rear LiDAR', type: 'sensor', zone: 'rear',
                   dataRate: '100Mbps', priority: 'critical' },

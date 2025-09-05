@@ -100,14 +100,14 @@
 <body>
     <div class="container">
         <h1>A2Z Gigabit TSN/FRER System Architecture</h1>
-        <p class="subtitle">Microchip LAN9692/LAN9668 기반 자율주행 차량 네트워크 설계</p>
+        <p class="subtitle">Microchip LAN9692/LAN9662 기반 자율주행 차량 네트워크 설계</p>
         
         <!-- Diagram 1: Overall System Architecture -->
         <div class="diagram-section">
             <h2 class="diagram-title">1. Overall System Architecture</h2>
             <p class="diagram-description">
                 A2Z 자율주행 차량의 전체 시스템 아키텍처를 보여줍니다. 중앙 LAN9692 스위치를 중심으로 
-                Zone 기반 LAN9668 스위치들이 연결되어 있으며, 각 센서와 제어 유닛이 기가비트 네트워크로 
+                Zone 기반 LAN9662 스위치들이 연결되어 있으며, 각 센서와 제어 유닛이 기가비트 네트워크로 
                 통합되어 있습니다.
             </p>
             <div class="diagram-container">
@@ -150,18 +150,18 @@
                         <text x="600" y="330" text-anchor="middle" fill="white" font-size="10">66Gbps / 30 Ports</text>
                     </g>
                     
-                    <!-- Front Zone Switch (LAN9668) -->
+                    <!-- Front Zone Switch (LAN9662) -->
                     <g id="front-zone">
                         <rect x="200" y="100" width="160" height="80" rx="8" fill="url(#zoneGrad)" stroke="#2c3e50" stroke-width="2"/>
-                        <text x="280" y="130" text-anchor="middle" fill="white" font-size="14" font-weight="bold">LAN9668</text>
+                        <text x="280" y="130" text-anchor="middle" fill="white" font-size="14" font-weight="bold">LAN9662</text>
                         <text x="280" y="148" text-anchor="middle" fill="white" font-size="11">Front Zone</text>
                         <text x="280" y="165" text-anchor="middle" fill="white" font-size="9">8 Ports / 8Gbps</text>
                     </g>
                     
-                    <!-- Rear Zone Switch (LAN9668) -->
+                    <!-- Rear Zone Switch (LAN9662) -->
                     <g id="rear-zone">
                         <rect x="840" y="100" width="160" height="80" rx="8" fill="url(#zoneGrad)" stroke="#2c3e50" stroke-width="2"/>
-                        <text x="920" y="130" text-anchor="middle" fill="white" font-size="14" font-weight="bold">LAN9668</text>
+                        <text x="920" y="130" text-anchor="middle" fill="white" font-size="14" font-weight="bold">LAN9662</text>
                         <text x="920" y="148" text-anchor="middle" fill="white" font-size="11">Rear Zone</text>
                         <text x="920" y="165" text-anchor="middle" fill="white" font-size="9">8 Ports / 8Gbps</text>
                     </g>
@@ -261,7 +261,7 @@
                 </div>
                 <div class="legend-item">
                     <div class="legend-color" style="background: linear-gradient(135deg, #2ecc71, #27ae60);"></div>
-                    <span>Zone Switch (LAN9668)</span>
+                    <span>Zone Switch (LAN9662)</span>
                 </div>
                 <div class="legend-item">
                     <div class="legend-color" style="background: linear-gradient(135deg, #f39c12, #e67e22);"></div>
@@ -584,12 +584,12 @@
                     <g id="zone-clocks">
                         <!-- Front Zone -->
                         <rect x="250" y="250" width="150" height="45" rx="6" fill="#2ecc71" stroke="#2c3e50" stroke-width="2"/>
-                        <text x="325" y="268" text-anchor="middle" fill="white" font-size="11">LAN9668 Front</text>
+                        <text x="325" y="268" text-anchor="middle" fill="white" font-size="11">LAN9662 Front</text>
                         <text x="325" y="283" text-anchor="middle" fill="white" font-size="9">Boundary Clock</text>
                         
                         <!-- Rear Zone -->
                         <rect x="800" y="250" width="150" height="45" rx="6" fill="#2ecc71" stroke="#2c3e50" stroke-width="2"/>
-                        <text x="875" y="268" text-anchor="middle" fill="white" font-size="11">LAN9668 Rear</text>
+                        <text x="875" y="268" text-anchor="middle" fill="white" font-size="11">LAN9662 Rear</text>
                         <text x="875" y="283" text-anchor="middle" fill="white" font-size="9">Boundary Clock</text>
                     </g>
                     

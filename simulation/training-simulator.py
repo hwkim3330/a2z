@@ -510,7 +510,7 @@ class TrainingSimulator:
             ],
             initial_state={
                 'failed_zone': 'central',
-                'affected_switches': ['LAN9692-002', 'LAN9668-002'],
+                'affected_switches': ['LAN9692-002', 'LAN9662-002'],
                 'active_streams': 100,
                 'critical_streams': 20
             },

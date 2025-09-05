@@ -79,7 +79,7 @@
   <g transform="translate(250, 200)">
     <rect x="0" y="0" width="600" height="300" rx="20" fill="url(#microchipGradient)" filter="url(#shadow)"/>
     <text x="300" y="30" font-size="20" font-weight="bold" text-anchor="middle" fill="white">Front Zone</text>
-    <text x="300" y="55" font-size="14" text-anchor="middle" fill="#E0E7FF">LAN9668 TSN Switch (8-Port)</text>
+    <text x="300" y="55" font-size="14" text-anchor="middle" fill="#E0E7FF">LAN9662 TSN Switch (8-Port)</text>
     
     <!-- Sensors -->
     <g transform="translate(50, 80)">
@@ -103,7 +103,7 @@
       
       <!-- Zone Switch -->
       <rect x="450" y="0" width="120" height="60" rx="10" fill="url(#microchipGradient)"/>
-      <text x="510" y="20" font-size="11" font-weight="bold" text-anchor="middle" fill="white">LAN9668</text>
+      <text x="510" y="20" font-size="11" font-weight="bold" text-anchor="middle" fill="white">LAN9662</text>
       <text x="510" y="35" font-size="9" text-anchor="middle" fill="white">Zone Switch</text>
       <text x="510" y="48" font-size="8" text-anchor="middle" fill="white">ARM Cortex-A7</text>
     </g>
@@ -194,7 +194,7 @@
   <g transform="translate(1550, 200)">
     <rect x="0" y="0" width="600" height="300" rx="20" fill="url(#microchipGradient)" filter="url(#shadow)"/>
     <text x="300" y="30" font-size="20" font-weight="bold" text-anchor="middle" fill="white">Rear Zone</text>
-    <text x="300" y="55" font-size="14" text-anchor="middle" fill="#E0E7FF">LAN9668 TSN Switch (8-Port)</text>
+    <text x="300" y="55" font-size="14" text-anchor="middle" fill="#E0E7FF">LAN9662 TSN Switch (8-Port)</text>
     
     <!-- Sensors -->
     <g transform="translate(50, 80)">
@@ -218,7 +218,7 @@
       
       <!-- Zone Switch -->
       <rect x="450" y="0" width="120" height="60" rx="10" fill="url(#microchipGradient)"/>
-      <text x="510" y="20" font-size="11" font-weight="bold" text-anchor="middle" fill="white">LAN9668</text>
+      <text x="510" y="20" font-size="11" font-weight="bold" text-anchor="middle" fill="white">LAN9662</text>
       <text x="510" y="35" font-size="9" text-anchor="middle" fill="white">Zone Switch</text>
       <text x="510" y="48" font-size="8" text-anchor="middle" fill="white">ARM Cortex-A7</text>
     </g>
@@ -237,7 +237,7 @@
   <g transform="translate(950, 600)">
     <rect x="0" y="0" width="800" height="120" rx="15" fill="#6B7280" filter="url(#shadow)"/>
     <text x="400" y="25" font-size="18" font-weight="bold" text-anchor="middle" fill="white">Emergency Backup Path</text>
-    <text x="400" y="50" font-size="12" text-anchor="middle" fill="#D1D5DB">LAN9668 Backup Switch + Independent Power</text>
+    <text x="400" y="50" font-size="12" text-anchor="middle" fill="#D1D5DB">LAN9662 Backup Switch + Independent Power</text>
     
     <g transform="translate(50, 60)">
       <rect x="0" y="0" width="150" height="40" rx="5" fill="#059669"/>

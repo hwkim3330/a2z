@@ -46,7 +46,7 @@ paths:
       tags:
         - Network
       summary: List all TSN switches
-      description: Retrieve information about all Microchip LAN9692/LAN9668 switches in the network
+      description: Retrieve information about all Microchip LAN9692/LAN9662 switches in the network
       operationId: getSwitches
       parameters:
         - $ref: '#/components/parameters/ZoneFilter'
@@ -594,7 +594,7 @@ components:
           example: LAN9692-001
         model:
           type: string
-          enum: [LAN9692, LAN9668]
+          enum: [LAN9692, LAN9662]
           description: Microchip switch model
         zone:
           type: string
@@ -1097,7 +1097,7 @@ components:
       properties:
         model:
           type: string
-          enum: [LAN9692, LAN9668]
+          enum: [LAN9692, LAN9662]
         zone:
           type: string
           enum: [front, central, rear]

@@ -3,7 +3,7 @@
 
 ## 개요
 
-Autonomous A2Z의 ROii/COii 차량 플랫폼을 위한 통합 기가비트 모니터링 대시보드입니다. Microchip LAN9692/LAN9668 기가비트 TSN 스위치의 FRER 성능과 자율주행 시스템의 안전성을 실시간으로 감시하고 분석합니다. 실제 서울 자율주행 버스 운영 데이터를 기반으로 설계되었습니다.
+Autonomous A2Z의 ROii/COii 차량 플랫폼을 위한 통합 기가비트 모니터링 대시보드입니다. Microchip LAN9692/LAN9662 기가비트 TSN 스위치의 FRER 성능과 자율주행 시스템의 안전성을 실시간으로 감시하고 분석합니다. 실제 서울 자율주행 버스 운영 데이터를 기반으로 설계되었습니다.
 
 ## A2Z 실제 모니터링 요구사항
 
@@ -59,7 +59,7 @@ Actual A2Z Network Performance:
 ```yaml
 Data Collection Layer:
   FRER Metrics (Microchip Switches):
-    Source: LAN9692/LAN9668 SNMP/CLI
+    Source: LAN9692/LAN9662 SNMP/CLI
     Collection Rate: 1000Hz (1ms interval)
     Key Metrics:
       - Frame replication count
@@ -145,9 +145,9 @@ private:
         frer_metrics_.elimination_count = central_stats.frames_eliminated;
         frer_metrics_.recovery_time_avg_ms = central_stats.avg_recovery_time;
         
-        // LAN9668 존 스위치 메트릭
-        auto front_stats = queryMicrochipSwitch("192.168.1.101", "LAN9668");
-        auto rear_stats = queryMicrochipSwitch("192.168.1.102", "LAN9668");
+        // LAN9662 존 스위치 메트릭
+        auto front_stats = queryMicrochipSwitch("192.168.1.101", "LAN9662");
+        auto rear_stats = queryMicrochipSwitch("192.168.1.102", "LAN9662");
         
         // 실제 기가비트 사용률 계산
         frer_metrics_.bandwidth_usage_mbps = 

@@ -117,10 +117,10 @@ const NetworkDashboard: React.FC = () => {
       zone: 'central',
       location: '서울특별시 강남구 역삼로 123',
       coordinates: [37.5010, 127.0374],
-      connections: ['LAN9692-서울-강남-001', 'LAN9668-서울-강남-003']
+      connections: ['LAN9692-서울-강남-001', 'LAN9662-서울-강남-003']
     },
     {
-      id: 'LAN9668-서울-강남-003',
+      id: 'LAN9662-서울-강남-003',
       name: '후방 TSN 스위치',
       zone: 'rear',
       location: '서울특별시 강남구 선릉로 456',

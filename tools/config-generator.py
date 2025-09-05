@@ -18,7 +18,7 @@ import os
 
 class SwitchModel(Enum):
     LAN9692 = "LAN9692"  # 66Gbps, 30 ports
-    LAN9668 = "LAN9668"  # 8 ports, 8Gbps
+    LAN9662 = "LAN9662"  # 8 ports, 8Gbps
     LAN9662 = "LAN9662"  # 4 ports, industrial
     LAN9698 = "LAN9698"  # 98 ports, datacenter
     KSZ9897 = "KSZ9897"  # 7 ports, managed
@@ -95,7 +95,7 @@ class ConfigurationGenerator:
                 'memory_mb': 512,
                 'temperature_range': (-40, 85)
             },
-            SwitchModel.LAN9668: {
+            SwitchModel.LAN9662: {
                 'ports': 8,
                 'switching_capacity_gbps': 8,
                 'tsn_features': ['802.1CB', '802.1Qbv', '802.1Qav', '802.1AS'],
@@ -178,14 +178,14 @@ class ConfigurationGenerator:
                 'quantity': 1
             })
             analysis['recommended_switches'].append({
-                'model': SwitchModel.LAN9668.value,
+                'model': SwitchModel.LAN9662.value,
                 'role': 'zone',
                 'quantity': max(2, requirements.num_sensors // 4)
             })
             analysis['topology'] = 'hierarchical-star'
         elif total_bandwidth_gbps > 4:
             analysis['recommended_switches'].append({
-                'model': SwitchModel.LAN9668.value,
+                'model': SwitchModel.LAN9662.value,
                 'role': 'central',
                 'quantity': 1
             })

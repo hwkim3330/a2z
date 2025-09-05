@@ -38,8 +38,8 @@ class DiagnosticLevel(Enum):
 
 class SystemComponent(Enum):
     CENTRAL_SWITCH = "LAN9692 Central"
-    FRONT_SWITCH = "LAN9668 Front"
-    REAR_SWITCH = "LAN9668 Rear"
+    FRONT_SWITCH = "LAN9662 Front"
+    REAR_SWITCH = "LAN9662 Rear"
     FRER_SUBSYSTEM = "FRER Subsystem"
     NETWORK_BACKBONE = "Gigabit Backbone"
     SENSORS = "Sensor Array"

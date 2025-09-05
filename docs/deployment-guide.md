@@ -1,5 +1,5 @@
 # A2Z Gigabit TSN/FRER 배포 가이드
-## Microchip LAN9692/LAN9668 기반 완벽한 구축 매뉴얼
+## Microchip LAN9692/LAN9662 기반 완벽한 구축 매뉴얼
 
 ## 목차
 1. [사전 요구사항](#사전-요구사항)
@@ -24,8 +24,8 @@
     - Role: 중앙 기가비트 백본 스위치
   
   Zone Switches:
-    - Model: Microchip LAN9668
-    - Evaluation Board: EVB-LAN9668
+    - Model: Microchip LAN9662
+    - Evaluation Board: EVB-LAN9662
     - Quantity: 2 (Front Zone, Rear Zone)
     - Role: 구역별 분산 스위치
   
@@ -63,7 +63,7 @@ Development Tools:
   
 Firmware:
   - LAN9692 Firmware: v2.1.0 or later
-  - LAN9668 Firmware: v1.8.0 or later
+  - LAN9662 Firmware: v1.8.0 or later
   - TSN Stack: IEEE 802.1CB compliant
   
 Network Tools:
@@ -95,7 +95,7 @@ Port 11-12: Diagnostic/Service
 
 #### Step 2: Zone 스위치 설치
 ```bash
-# Front Zone LAN9668 설치
+# Front Zone LAN9662 설치
 1. 차량 전방 센서 클러스터 근처 설치
 2. IP67 인클로저 사용 (방수/방진)
 3. 포트 할당:
@@ -105,7 +105,7 @@ Port 11-12: Diagnostic/Service
    - Port 5-6: Uplink to Central
    - Port 7-8: Reserved
 
-# Rear Zone LAN9668 설치
+# Rear Zone LAN9662 설치
 1. 차량 후방 센서 클러스터 근처 설치
 2. 동일한 IP67 인클로저 사용
 3. 포트 할당:
@@ -169,7 +169,7 @@ Control Units:
 (config)# qos trust cos
 ```
 
-#### LAN9668 Zone 스위치 초기화
+#### LAN9662 Zone 스위치 초기화
 ```bash
 # Front Zone Switch
 > enable
@@ -524,7 +524,7 @@ LAN9692 LED:
   Red Solid: 하드웨어 오류
   Red Blink: FRER 복구 진행 중
 
-LAN9668 LED:
+LAN9662 LED:
   Port LED Green: Link up (1Gbps)
   Port LED Yellow: Link up (100Mbps)
   Port LED Off: No link

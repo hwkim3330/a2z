@@ -1,9 +1,9 @@
 # Microchip 기가비트 TSN 스위치 FRER 구성 가이드
-## A2Z 자율주행 플랫폼용 LAN9692/LAN9668 실제 설정
+## A2Z 자율주행 플랫폼용 LAN9692/LAN9662 실제 설정
 
 ## 개요
 
-본 문서는 Autonomous A2Z의 실제 자율주행 차량에서 Microchip LAN9692/LAN9668 기가비트 TSN 스위치를 사용하여 FRER(Frame Replication and Elimination for Reliability)를 구성하는 실용적 가이드입니다. 실제 상용 서비스 환경에서 검증된 설정과 성능 수치를 기반으로 작성되었습니다.
+본 문서는 Autonomous A2Z의 실제 자율주행 차량에서 Microchip LAN9692/LAN9662 기가비트 TSN 스위치를 사용하여 FRER(Frame Replication and Elimination for Reliability)를 구성하는 실용적 가이드입니다. 실제 상용 서비스 환경에서 검증된 설정과 성능 수치를 기반으로 작성되었습니다.
 
 ## Microchip TSN 스위치 실제 사양
 
@@ -36,18 +36,18 @@ Central Zone Backbone:
   - FRER Streams: 10-15 critical streams
 ```
 
-### LAN9668 - 8포트 기가비트 TSN 스위치
+### LAN9662 - 8포트 기가비트 TSN 스위치
 
 #### 하드웨어 사양
 ```yaml
-Chip: LAN9668
+Chip: LAN9662
 Type: 8-Port Gigabit TSN Switch with CPU
 Ports: 8 x Gigabit Ethernet
 CPU: 600MHz ARM Cortex-A7
 Integrated PHY: 2x 10/100/1000BASE-T
 Interfaces: RGMII/RMII, SerDes, SGMII
 Temperature: Industrial Grade (-40°C to +85°C)
-Evaluation Board: EVB-LAN9668
+Evaluation Board: EVB-LAN9662
 Package: BGA
 Memory: DDR3 support
 ```
@@ -75,7 +75,7 @@ A2Z Gigabit FRER Network:
 │                    A2Z Vehicle Network                      │
 ├────────────────┬────────────────┬───────────────────────────┤
 │  Front Zone    │  Central Zone  │    Rear Zone              │
-│  LAN9668       │  LAN9692       │    LAN9668                │
+│  LAN9662       │  LAN9692       │    LAN9662                │
 │  (8-port 1G)   │  (Multi-Gig)   │    (8-port 1G)            │
 ├────────────────┼────────────────┼───────────────────────────┤
 │                │                │                           │
@@ -267,9 +267,9 @@ lan9692(config-if)# cbs bandwidth-allocation 600000  # 60% for safety critical
 lan9692(config-if)# exit
 ```
 
-## LAN9668 Zone Switch FRER 설정
+## LAN9662 Zone Switch FRER 설정
 
-### Front Zone LAN9668 설정
+### Front Zone LAN9662 설정
 ```bash
 # A2Z Front Zone Switch
 lan9668> enable

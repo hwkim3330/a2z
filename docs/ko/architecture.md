@@ -38,7 +38,7 @@ graph TB
     subgraph "네트워크 계층"
         T1[Microchip LAN9692 - Front]
         T2[Microchip LAN9692 - Central]
-        T3[Microchip LAN9668 - Rear]
+        T3[Microchip LAN9662 - Rear]
         
         T1 <--> T2
         T2 <--> T3
@@ -126,7 +126,7 @@ graph TB
 
 #### 후방 Zone (Rear Zone)
 ```yaml
-스위치: Microchip LAN9668-001
+스위치: Microchip LAN9662-001
 위치: 후방 센서 허브
 연결 센서:
   - 후방 카메라 (3개)
