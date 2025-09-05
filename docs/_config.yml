@@ -1,0 +1,32 @@
+# GitHub Pages Configuration
+theme: jekyll-theme-cayman
+title: A2Z TSN/FRER Network Platform
+description: Autonomous Vehicle Network Architecture with Microchip LAN9662/LAN9692
+show_downloads: true
+google_analytics: 
+
+# Navigation
+navigation:
+  - title: Home
+    url: /
+  - title: Documentation
+    url: /docs
+  - title: Dashboard
+    url: /dashboard
+  - title: API
+    url: /api
+  - title: Korean
+    url: /ko
+
+# Plugins
+plugins:
+  - jekyll-sitemap
+  - jekyll-seo-tag
+  - jekyll-feed
+
+# Exclude files
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - node_modules
+  - vendor

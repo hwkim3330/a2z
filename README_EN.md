@@ -49,11 +49,13 @@ Next-generation **TSN (Time-Sensitive Networking)** based in-vehicle network pla
 | **IEEE 802.1AS** | gPTP (Time Synchronization) | ✅ Complete |
 | **IEEE 802.1Qci** | PSFP (Stream Filtering) | ✅ Complete |
 
-### FRER Triple Redundancy
+### FRER Triple Path Replication
 ```
 Sensor → [LAN9662] → 3 Simultaneous Paths → [LAN9692] → Duplicate Elimination → ACU
            ↓
     Immediate Triple Replication (Primary/Secondary/Tertiary)
+    Actual Redundancy: Primary ↔ Secondary (Dual Redundancy)
+                      + Tertiary (Additional Backup)
 ```
 
 ### CBS Bandwidth Guarantee

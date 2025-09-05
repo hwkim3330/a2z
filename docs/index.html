@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="A2Z Autonomous Vehicle TSN/FRER Network Platform - Next-generation in-vehicle network with Microchip LAN9662/LAN9692">
+    <meta name="keywords" content="TSN, FRER, CBS, Autonomous Vehicle, A2Z, Microchip, LAN9662, LAN9692">
+    <title>A2Z TSN/FRER Network Platform</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #2563eb;
+            --secondary-color: #10b981;
+            --danger-color: #ef4444;
+            --dark-bg: #0f172a;
+            --light-bg: #1e293b;
+            --text-primary: #f8fafc;
+            --text-secondary: #cbd5e1;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, var(--dark-bg) 0%, var(--light-bg) 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+        }
+
+        /* Header */
+        header {
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(10px);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        nav {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary-color);
+        }
+
+        .language-switch {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .language-switch a {
+            padding: 0.5rem 1rem;
+            border: 1px solid var(--primary-color);
+            border-radius: 0.5rem;
+            color: var(--primary-color);
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .language-switch a:hover {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        /* Hero Section */
+        .hero {
+            margin-top: 80px;
+            padding: 4rem 2rem;
+            text-align: center;
+            min-height: 80vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(45deg, #fff, var(--primary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: fadeInUp 1s;
+        }
+
+        .hero .subtitle {
+            font-size: 1.5rem;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+            animation: fadeInUp 1s 0.2s both;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+            animation: fadeInUp 1s 0.4s both;
+        }
+
+        .btn {
+            padding: 1rem 2rem;
+            border-radius: 0.5rem;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #1d4ed8;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(37, 99, 235, 0.3);
+        }
+
+        .btn-secondary {
+            border: 2px solid var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .btn-secondary:hover {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        /* Stats Section */
+        .stats {
+            padding: 4rem 2rem;
+            background: rgba(30, 41, 59, 0.5);
+        }
+
+        .stats-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+
+        .stat-card {
+            background: rgba(15, 23, 42, 0.8);
+            padding: 2rem;
+            border-radius: 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+            transition: transform 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+        }
+
+        /* Features Section */
+        .features {
+            padding: 4rem 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .features h2 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+        }
+
+        .feature-card {
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 1rem;
+            padding: 2rem;
+            transition: all 0.3s;
+        }
+
+        .feature-card:hover {
+            background: rgba(37, 99, 235, 0.1);
+            border-color: var(--primary-color);
+            transform: translateY(-5px);
+        }
+
+        .feature-icon {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .feature-title {
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+        }
+
+        .feature-description {
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* Network Diagram */
+        .network-section {
+            padding: 4rem 2rem;
+            background: rgba(15, 23, 42, 0.5);
+        }
+
+        .network-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .network-diagram {
+            background: rgba(30, 41, 59, 0.8);
+            border-radius: 1rem;
+            padding: 2rem;
+            position: relative;
+            height: 500px;
+            overflow: hidden;
+        }
+
+        .switch-node {
+            position: absolute;
+            width: 100px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border-radius: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            animation: pulse 2s infinite;
+        }
+
+        .switch-node:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 30px rgba(37, 99, 235, 0.5);
+        }
+
+        .switch-node.central {
+            width: 120px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--danger-color), #f97316);
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.9; }
+            50% { opacity: 1; }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Interactive Demo Cards */
+        .demos {
+            padding: 4rem 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .demos h2 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .demo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .demo-card {
+            background: linear-gradient(135deg, rgba(37, 99, 235, 0.1), rgba(16, 185, 129, 0.1));
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 1rem;
+            padding: 2rem;
+            text-align: center;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .demo-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(37, 99, 235, 0.3);
+        }
+
+        .demo-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .demo-title {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--primary-color);
+        }
+
+        .demo-description {
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+        }
+
+        .demo-link {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            background: var(--primary-color);
+            color: white;
+            border-radius: 0.5rem;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .demo-link:hover {
+            background: #1d4ed8;
+        }
+
+        /* Footer */
+        footer {
+            padding: 2rem;
+            text-align: center;
+            background: rgba(15, 23, 42, 0.95);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .footer-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+        }
+
+        .footer-links a:hover {
+            color: var(--primary-color);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            .hero h1 {
+                font-size: 2rem;
+            }
+
+            .hero .subtitle {
+                font-size: 1.125rem;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <nav>
+            <div class="logo">A2Z TSN Platform</div>
+            <ul class="nav-links">
+                <li><a href="#features">Features</a></li>
+                <li><a href="#network">Network</a></li>
+                <li><a href="#demos">Demos</a></li>
+                <li><a href="/dashboard/tsn-cbs-frer-dashboard.html">Dashboard</a></li>
+                <li><a href="https://github.com/hwkim3330/a2z">GitHub</a></li>
+            </ul>
+            <div class="language-switch">
+                <a href="/index.html">EN</a>
+                <a href="/ko/index.html">KO</a>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <h1>A2Z TSN/FRER Network Platform</h1>
+        <p class="subtitle">Next-Generation Autonomous Vehicle Network with Microchip LAN9662/LAN9692</p>
+        <div class="hero-buttons">
+            <a href="#demos" class="btn btn-primary">Live Demos</a>
+            <a href="https://github.com/hwkim3330/a2z" class="btn btn-secondary">View on GitHub</a>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="stats">
+        <div class="stats-container">
+            <div class="stat-card">
+                <div class="stat-number">99.997%</div>
+                <div class="stat-label">System Availability</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">0.34ms</div>
+                <div class="stat-label">Average Latency</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">8.3ms</div>
+                <div class="stat-label">FRER Switchover</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">400Mbps</div>
+                <div class="stat-label">LiDAR CBS Guarantee</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features" id="features">
+        <h2>Core Technologies</h2>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">🔄</div>
+                <h3 class="feature-title">FRER Triple Path</h3>
+                <p class="feature-description">
+                    IEEE 802.1CB FRER provides seamless redundancy with triple path replication.
+                    Primary and Secondary paths offer dual redundancy, with Tertiary as backup.
+                </p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📊</div>
+                <h3 class="feature-title">CBS Bandwidth Guarantee</h3>
+                <p class="feature-description">
+                    IEEE 802.1Qav CBS ensures 400Mbps for LiDAR, 200Mbps for Camera.
+                    Hardware-accelerated traffic shaping with microsecond precision.
+                </p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">⏱️</div>
+                <h3 class="feature-title">Time Synchronization</h3>
+                <p class="feature-description">
+                    IEEE 802.1AS gPTP provides sub-microsecond time synchronization.
+                    Essential for TAS scheduling and sensor fusion.
+                </p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🛡️</div>
+                <h3 class="feature-title">Security</h3>
+                <p class="feature-description">
+                    MACsec encryption, quantum-resistant algorithms, and blockchain audit trail.
+                    KISA certified cryptography for Korean market.
+                </p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🤖</div>
+                <h3 class="feature-title">AI/ML Integration</h3>
+                <p class="feature-description">
+                    Real-time anomaly detection with TensorFlow and PyTorch.
+                    Predictive maintenance and failure prediction.
+                </p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🇰🇷</div>
+                <h3 class="feature-title">Korea Integration</h3>
+                <p class="feature-description">
+                    MOLIT C-ITS, KOROAD traffic info, KMA weather integration.
+                    119/112 automatic emergency reporting system.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Network Diagram Section -->
+    <section class="network-section" id="network">
+        <div class="network-container">
+            <h2 style="text-align: center; margin-bottom: 2rem;">Mesh Network Topology</h2>
+            <div class="network-diagram">
+                <!-- Central Switch -->
+                <div class="switch-node central" style="top: 50%; left: 50%; transform: translate(-50%, -50%);">
+                    LAN9692<br>Central
+                </div>
+                
+                <!-- LAN9662 Switches -->
+                <div class="switch-node" style="top: 15%; left: 20%;">
+                    LAN9662-1<br>Front Left
+                </div>
+                <div class="switch-node" style="top: 15%; left: 50%; transform: translateX(-50%);">
+                    LAN9662-2<br>Front Center
+                </div>
+                <div class="switch-node" style="top: 15%; right: 20%;">
+                    LAN9662-3<br>Front Right
+                </div>
+                <div class="switch-node" style="bottom: 15%; left: 20%;">
+                    LAN9662-4<br>Rear Left
+                </div>
+                <div class="switch-node" style="bottom: 15%; left: 50%; transform: translateX(-50%);">
+                    LAN9662-5<br>Rear Center
+                </div>
+                <div class="switch-node" style="bottom: 15%; right: 20%;">
+                    LAN9662-6<br>Rear Right
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Interactive Demos -->
+    <section class="demos" id="demos">
+        <h2>Interactive Demos</h2>
+        <div class="demo-grid">
+            <div class="demo-card" onclick="window.location.href='/dashboard/tsn-cbs-frer-dashboard.html'">
+                <div class="demo-icon">📊</div>
+                <h3 class="demo-title">Real-time Dashboard</h3>
+                <p class="demo-description">Monitor CBS bandwidth, FRER paths, and network performance in real-time</p>
+                <a href="/dashboard/tsn-cbs-frer-dashboard.html" class="demo-link">Launch Dashboard</a>
+            </div>
+            
+            <div class="demo-card" onclick="window.location.href='/simulation/index.html'">
+                <div class="demo-icon">🎮</div>
+                <h3 class="demo-title">Network Simulator</h3>
+                <p class="demo-description">Simulate failure scenarios and test FRER recovery mechanisms</p>
+                <a href="/simulation/index.html" class="demo-link">Start Simulation</a>
+            </div>
+            
+            <div class="demo-card" onclick="window.location.href='/api/explorer.html'">
+                <div class="demo-icon">🔌</div>
+                <h3 class="demo-title">API Explorer</h3>
+                <p class="demo-description">Interactive API documentation with live testing capabilities</p>
+                <a href="/api/explorer.html" class="demo-link">Explore APIs</a>
+            </div>
+            
+            <div class="demo-card" onclick="window.location.href='/config/builder.html'">
+                <div class="demo-icon">⚙️</div>
+                <h3 class="demo-title">Config Builder</h3>
+                <p class="demo-description">Visual CBS/FRER configuration builder with CLI export</p>
+                <a href="/config/builder.html" class="demo-link">Build Config</a>
+            </div>
+            
+            <div class="demo-card" onclick="window.location.href='/ar/viewer.html'">
+                <div class="demo-icon">🥽</div>
+                <h3 class="demo-title">AR Viewer</h3>
+                <p class="demo-description">Augmented reality network visualization for HoloLens and mobile</p>
+                <a href="/ar/viewer.html" class="demo-link">View in AR</a>
+            </div>
+            
+            <div class="demo-card" onclick="window.location.href='/training/index.html'">
+                <div class="demo-icon">🎓</div>
+                <h3 class="demo-title">Training Center</h3>
+                <p class="demo-description">Interactive tutorials and certification programs</p>
+                <a href="/training/index.html" class="demo-link">Start Learning</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-links">
+            <a href="https://github.com/hwkim3330/a2z">GitHub</a>
+            <a href="/docs">Documentation</a>
+            <a href="/api">API</a>
+            <a href="mailto:tsn-team@autonomous-a2z.com">Contact</a>
+        </div>
+        <p style="color: var(--text-secondary);">
+            © 2025 Autonomous A2Z. Built with ❤️ in Seoul, Korea
+        </p>
+    </footer>
+
+    <script>
+        // Add interactive animations
+        document.addEventListener('DOMContentLoaded', () => {
+            // Animate stats on scroll
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -100px 0px'
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.animation = 'fadeInUp 0.6s ease-out';
+                    }
+                });
+            }, observerOptions);
+
+            document.querySelectorAll('.stat-card, .feature-card, .demo-card').forEach(el => {
+                observer.observe(el);
+            });
+
+            // Network diagram connections
+            const diagram = document.querySelector('.network-diagram');
+            const switches = diagram.querySelectorAll('.switch-node');
+            
+            // Draw connections
+            function drawConnections() {
+                // This would be enhanced with canvas or SVG for actual lines
+                console.log('Drawing network connections...');
+            }
+            
+            drawConnections();
+        });
+    </script>
+</body>
+</html>

@@ -49,11 +49,13 @@
 | **IEEE 802.1AS** | gPTP (시간 동기화) | ✅ 완료 |
 | **IEEE 802.1Qci** | PSFP (스트림 필터링) | ✅ 완료 |
 
-### FRER 3중 이중화
+### FRER 3중 복제 (Triple Path Replication)
 ```
 센서 → [LAN9662] → 3개 경로 동시 전송 → [LAN9692] → 중복 제거 → ACU
           ↓
     즉시 3중 복제 (Primary/Secondary/Tertiary)
+    실제 이중화: Primary ↔ Secondary (2중 이중화)
+                + Tertiary (추가 백업)
 ```
 
 ### CBS 대역폭 보장
