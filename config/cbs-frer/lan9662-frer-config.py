@@ -47,12 +47,12 @@ class FRERStream:
     source_mac: str
     dest_mac: str
     vlan_id: int
-    paths: List[str]  # List of path IDs
-    algorithm: FRERAlgorithm
-    history_length: int  # Sequence history length
-    reset_timeout_ms: int
-    latent_error_detection: bool
-    description: str
+    paths: List[str]  # List of path IDs (primary, secondary, tertiary)
+    algorithm: FRERAlgorithm = FRERAlgorithm.VECTOR
+    history_length: int = 32
+    reset_timeout_ms: int = 1000
+    latent_error_detection: bool = True
+    description: str = ""
 
 @dataclass 
 class FRERPath:

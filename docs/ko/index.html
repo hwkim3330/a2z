@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, maximum-scale=3.0, minimum-scale=0.5">
+    <meta name="description" content="A2Z 자율주행 차량 TSN/FRER 네트워크 플랫폼 - Microchip LAN9662/LAN9692를 활용한 차세대 차량 내 네트워크">
+    <meta name="keywords" content="TSN, FRER, CBS, 자율주행, A2Z, Microchip, LAN9662, LAN9692">
+    <title>A2Z TSN/FRER 네트워크 플랫폼</title>
+    <style>
+        /* High DPI display optimizations */
+        @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi), (min-resolution: 2dppx) {
+            svg, img {
+                image-rendering: -webkit-optimize-contrast;
+                image-rendering: crisp-edges;
+            }
+        }
+        
+        /* Vector graphics optimization */
+        svg {
+            max-width: 100%;
+            height: auto;
+            shape-rendering: geometricPrecision;
+            text-rendering: geometricPrecision;
+        }
+        
+        canvas {
+            image-rendering: pixelated;
+            image-rendering: -moz-crisp-edges;
+            image-rendering: crisp-edges;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #2563eb;
+            --secondary-color: #10b981;
+            --danger-color: #ef4444;
+            --dark-bg: #0f172a;
+            --light-bg: #1e293b;
+            --text-primary: #f8fafc;
+            --text-secondary: #cbd5e1;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Malgun Gothic', sans-serif;
+            background: linear-gradient(135deg, var(--dark-bg) 0%, var(--light-bg) 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+        }
+
+        /* Header */
+        header {
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(10px);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        nav {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary-color);
+        }
+
+        .language-switch {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .language-switch a {
+            padding: 0.5rem 1rem;
+            border: 1px solid var(--primary-color);
+            border-radius: 0.5rem;
+            color: var(--primary-color);
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .language-switch a:hover, .language-switch a.active {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        /* Hero Section */
+        .hero {
+            margin-top: 80px;
+            padding: 4rem 2rem;
+            text-align: center;
+            max-width: 1400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 800;
+        }
+
+        .hero .subtitle {
+            font-size: 1.25rem;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.6;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 0.75rem 2rem;
+            border-radius: 0.5rem;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .btn-primary:hover {
+            background: transparent;
+            color: var(--primary-color);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--secondary-color);
+            border-color: var(--secondary-color);
+        }
+
+        .btn-secondary:hover {
+            background: var(--secondary-color);
+            color: white;
+        }
+
+        /* Stats Section */
+        .stats {
+            padding: 4rem 2rem;
+            background: rgba(0, 0, 0, 0.3);
+        }
+
+        .stats-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+        }
+
+        .stat-card {
+            text-align: center;
+            padding: 2rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 1rem;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        /* Features Section */
+        .features {
+            padding: 4rem 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .features h2 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 3rem;
+            color: var(--primary-color);
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .feature-card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 1rem;
+            padding: 2rem;
+            text-align: center;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: transform 0.3s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .feature-title {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+        }
+
+        .feature-description {
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* Demo Section */
+        .demos {
+            padding: 4rem 2rem;
+            background: rgba(0, 0, 0, 0.3);
+        }
+
+        .demos h2 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 3rem;
+            color: var(--primary-color);
+        }
+
+        .demos-grid {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .demo-card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 1rem;
+            padding: 2rem;
+            text-align: center;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .demo-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(37, 99, 235, 0.3);
+        }
+
+        .demo-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .demo-title {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+        }
+
+        .demo-description {
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+        }
+
+        .demo-link {
+            color: var(--secondary-color);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        /* Footer */
+        footer {
+            padding: 2rem;
+            text-align: center;
+            background: rgba(15, 23, 42, 0.95);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .footer-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+        }
+
+        .footer-links a:hover {
+            color: var(--primary-color);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            .hero h1 {
+                font-size: 2rem;
+            }
+
+            .hero .subtitle {
+                font-size: 1.125rem;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .demos-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .language-switch {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <nav>
+            <div class="logo">A2Z TSN 플랫폼</div>
+            <ul class="nav-links">
+                <li><a href="#features">기술</a></li>
+                <li><a href="#network">네트워크</a></li>
+                <li><a href="#demos">데모</a></li>
+                <li><a href="/dashboard/tsn-cbs-frer-dashboard.html">대시보드</a></li>
+                <li><a href="https://github.com/hwkim3330/a2z">GitHub</a></li>
+            </ul>
+            <div class="language-switch">
+                <a href="../index.html">EN</a>
+                <a href="/ko/index.html" class="active">한국어</a>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <h1>A2Z TSN/FRER 네트워크 플랫폼</h1>
+        <p class="subtitle">Microchip LAN9662/LAN9692를 활용한 차세대 자율주행 차량 네트워크</p>
+        <div class="hero-buttons">
+            <a href="#demos" class="btn btn-primary">라이브 데모</a>
+            <a href="https://github.com/hwkim3330/a2z" class="btn btn-secondary">GitHub 보기</a>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="stats">
+        <div class="stats-container">
+            <div class="stat-card">
+                <div class="stat-number">99.997%</div>
+                <div class="stat-label">시스템 가용성</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">0.34ms</div>
+                <div class="stat-label">평균 지연시간</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">8.3ms</div>
+                <div class="stat-label">FRER 절체시간</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">400Mbps</div>
+                <div class="stat-label">LiDAR CBS 보장</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features" id="features">
+        <h2>핵심 기술</h2>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">🔄</div>
+                <h3 class="feature-title">FRER 3중 복제</h3>
+                <p class="feature-description">IEEE 802.1CB 표준 기반 프레임 복제 및 중복 제거로 99.9999% 데이터 무손실 보장</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">📊</div>
+                <h3 class="feature-title">CBS 대역폭 보장</h3>
+                <p class="feature-description">IEEE 802.1Qav 신용 기반 셰이퍼로 LiDAR 400Mbps, 카메라 200Mbps 대역폭 보장</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">⚡</div>
+                <h3 class="feature-title">1ms 이하 지연시간</h3>
+                <p class="feature-description">TSN 하드웨어 가속으로 센서 데이터 End-to-End 지연시간 0.34ms 달성</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">🛡️</div>
+                <h3 class="feature-title">ASIL-D 안전성</h3>
+                <p class="feature-description">ISO 26262 최고 등급 안전 요구사항 충족 및 KISA 인증 암호화 적용</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">🇰🇷</div>
+                <h3 class="feature-title">한국 특화 연동</h3>
+                <p class="feature-description">국토교통부 C-ITS, 기상청 날씨 QoS, 119/112 자동 신고 시스템 연동</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">🤖</div>
+                <h3 class="feature-title">AI 기반 모니터링</h3>
+                <p class="feature-description">실시간 이상 탐지, 예측 유지보수, 자동 장애 복구로 99.997% 가용성 달성</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Demo Section -->
+    <section class="demos" id="demos">
+        <h2>라이브 데모</h2>
+        <div class="demos-grid">
+            <div class="demo-card" onclick="window.location.href='/dashboard/tsn-cbs-frer-dashboard.html'">
+                <div class="demo-icon">📈</div>
+                <h3 class="demo-title">실시간 대시보드</h3>
+                <p class="demo-description">CBS 대역폭, FRER 경로, 네트워크 성능을 실시간으로 모니터링</p>
+                <a href="/dashboard/tsn-cbs-frer-dashboard.html" class="demo-link">대시보드 실행</a>
+            </div>
+            
+            <div class="demo-card" onclick="window.location.href='../simulation/index.html'">
+                <div class="demo-icon">🎮</div>
+                <h3 class="demo-title">네트워크 시뮬레이터</h3>
+                <p class="demo-description">실시간 FRER/CBS 시뮬레이션 및 인터랙티브 장애 시나리오</p>
+                <a href="../simulation/index.html" class="demo-link">시뮬레이션 시작</a>
+            </div>
+            
+            <div class="demo-card" onclick="window.location.href='../topology/index.html'">
+                <div class="demo-icon">🌐</div>
+                <h3 class="demo-title">네트워크 토폴로지</h3>
+                <p class="demo-description">인터랙티브 TSN 메시 토폴로지 및 실시간 모니터링</p>
+                <a href="../topology/index.html" class="demo-link">토폴로지 보기</a>
+            </div>
+            
+            <div class="demo-card" onclick="window.location.href='../api/index.html'">
+                <div class="demo-icon">🔌</div>
+                <h3 class="demo-title">API 문서</h3>
+                <p class="demo-description">완전한 REST 및 WebSocket API 레퍼런스와 예제</p>
+                <a href="../api/index.html" class="demo-link">API 탐색</a>
+            </div>
+            
+            <div class="demo-card" onclick="window.location.href='https://github.com/hwkim3330/a2z'">
+                <div class="demo-icon">📁</div>
+                <h3 class="demo-title">소스 코드</h3>
+                <p class="demo-description">완전한 CBS/FRER 구성 스크립트 및 문서</p>
+                <a href="https://github.com/hwkim3330/a2z" class="demo-link">GitHub 보기</a>
+            </div>
+            
+            <div class="demo-card" onclick="window.location.href='../index.html'">
+                <div class="demo-icon">🌍</div>
+                <h3 class="demo-title">글로벌 사이트</h3>
+                <p class="demo-description">영문 버전 사이트 및 국제 협력 파트너 정보</p>
+                <a href="../index.html" class="demo-link">English 보기</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-links">
+            <a href="https://github.com/hwkim3330/a2z">GitHub</a>
+            <a href="../docs">문서</a>
+            <a href="../api">API</a>
+            <a href="mailto:tsn-team@autonomous-a2z.com">연락처</a>
+        </div>
+        <p style="color: var(--text-secondary);">
+            © 2025 Autonomous A2Z. Made with ❤️ in Seoul, Korea
+        </p>
+    </footer>
+
+    <script>
+        // Add interactive animations
+        document.addEventListener('DOMContentLoaded', () => {
+            // Animate stats on scroll
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -100px 0px'
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.animation = 'fadeInUp 0.6s ease-out';
+                    }
+                });
+            }, observerOptions);
+
+            document.querySelectorAll('.stat-card, .feature-card, .demo-card').forEach(el => {
+                observer.observe(el);
+            });
+
+            // Add number animation to stats
+            const statNumbers = document.querySelectorAll('.stat-number');
+            const animateNumbers = (entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const number = entry.target;
+                        const text = number.textContent;
+                        if (text.includes('%')) {
+                            animatePercentage(number, parseFloat(text));
+                        } else if (text.includes('ms')) {
+                            animateDecimal(number, parseFloat(text), 'ms');
+                        } else if (text.includes('Mbps')) {
+                            animateInteger(number, parseInt(text), 'Mbps');
+                        }
+                    }
+                });
+            };
+
+            const numberObserver = new IntersectionObserver(animateNumbers, {
+                threshold: 0.5
+            });
+
+            statNumbers.forEach(stat => numberObserver.observe(stat));
+        });
+
+        function animatePercentage(element, target) {
+            let current = 0;
+            const increment = target / 100;
+            const timer = setInterval(() => {
+                current += increment;
+                if (current >= target) {
+                    element.textContent = target + '%';
+                    clearInterval(timer);
+                } else {
+                    element.textContent = current.toFixed(3) + '%';
+                }
+            }, 20);
+        }
+
+        function animateDecimal(element, target, unit) {
+            let current = 0;
+            const increment = target / 100;
+            const timer = setInterval(() => {
+                current += increment;
+                if (current >= target) {
+                    element.textContent = target + unit;
+                    clearInterval(timer);
+                } else {
+                    element.textContent = current.toFixed(2) + unit;
+                }
+            }, 20);
+        }
+
+        function animateInteger(element, target, unit) {
+            let current = 0;
+            const increment = target / 100;
+            const timer = setInterval(() => {
+                current += increment;
+                if (current >= target) {
+                    element.textContent = target + unit;
+                    clearInterval(timer);
+                } else {
+                    element.textContent = Math.floor(current) + unit;
+                }
+            }, 20);
+        }
+    </script>
+</body>
+</html>

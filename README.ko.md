@@ -1,4 +1,4 @@
-# A2Z 자율주행 TSN/FRER 네트워크 플랫폼 🚗
+# A2Z 자율주행 차량 TSN/FRER 네트워크 플랫폼 🚗
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Build Status](https://img.shields.io/github/workflow/status/hwkim3330/a2z/CI)](https://github.com/hwkim3330/a2z/actions)
