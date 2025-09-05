@@ -2,10 +2,33 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, maximum-scale=3.0, minimum-scale=0.5">
     <meta name="description" content="A2Z Autonomous Vehicle TSN/FRER Network Platform - Next-generation in-vehicle network with Microchip LAN9662/LAN9692">
     <meta name="keywords" content="TSN, FRER, CBS, Autonomous Vehicle, A2Z, Microchip, LAN9662, LAN9692">
     <title>A2Z TSN/FRER Network Platform</title>
+    <style>
+        /* High DPI display optimizations */
+        @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi), (min-resolution: 2dppx) {
+            svg, img {
+                image-rendering: -webkit-optimize-contrast;
+                image-rendering: crisp-edges;
+            }
+        }
+        
+        /* Vector graphics optimization */
+        svg {
+            max-width: 100%;
+            height: auto;
+            shape-rendering: geometricPrecision;
+            text-rendering: geometricPrecision;
+        }
+        
+        canvas {
+            image-rendering: pixelated;
+            image-rendering: -moz-crisp-edges;
+            image-rendering: crisp-edges;
+        }
+    </style>
     <style>
         * {
             margin: 0;
@@ -566,39 +589,39 @@
                 <a href="/dashboard/tsn-cbs-frer-dashboard.html" class="demo-link">Launch Dashboard</a>
             </div>
             
-            <div class="demo-card" onclick="window.location.href='/simulation/index.html'">
+            <div class="demo-card" onclick="window.location.href='simulation/index.html'">
                 <div class="demo-icon">🎮</div>
                 <h3 class="demo-title">Network Simulator</h3>
-                <p class="demo-description">Simulate failure scenarios and test FRER recovery mechanisms</p>
-                <a href="/simulation/index.html" class="demo-link">Start Simulation</a>
+                <p class="demo-description">Real-time FRER/CBS simulation with interactive failure scenarios</p>
+                <a href="simulation/index.html" class="demo-link">Start Simulation</a>
             </div>
             
-            <div class="demo-card" onclick="window.location.href='/api/explorer.html'">
+            <div class="demo-card" onclick="window.location.href='topology/index.html'">
+                <div class="demo-icon">🌐</div>
+                <h3 class="demo-title">Network Topology</h3>
+                <p class="demo-description">Interactive TSN mesh topology with real-time monitoring</p>
+                <a href="topology/index.html" class="demo-link">View Topology</a>
+            </div>
+            
+            <div class="demo-card" onclick="window.location.href='api/index.html'">
                 <div class="demo-icon">🔌</div>
-                <h3 class="demo-title">API Explorer</h3>
-                <p class="demo-description">Interactive API documentation with live testing capabilities</p>
-                <a href="/api/explorer.html" class="demo-link">Explore APIs</a>
+                <h3 class="demo-title">API Documentation</h3>
+                <p class="demo-description">Complete REST and WebSocket API reference with examples</p>
+                <a href="api/index.html" class="demo-link">Explore APIs</a>
             </div>
             
-            <div class="demo-card" onclick="window.location.href='/config/builder.html'">
-                <div class="demo-icon">⚙️</div>
-                <h3 class="demo-title">Config Builder</h3>
-                <p class="demo-description">Visual CBS/FRER configuration builder with CLI export</p>
-                <a href="/config/builder.html" class="demo-link">Build Config</a>
+            <div class="demo-card" onclick="window.location.href='https://github.com/hwkim3330/a2z'">
+                <div class="demo-icon">📁</div>
+                <h3 class="demo-title">Source Code</h3>
+                <p class="demo-description">Complete CBS/FRER configuration scripts and documentation</p>
+                <a href="https://github.com/hwkim3330/a2z" class="demo-link">View GitHub</a>
             </div>
             
-            <div class="demo-card" onclick="window.location.href='/ar/viewer.html'">
-                <div class="demo-icon">🥽</div>
-                <h3 class="demo-title">AR Viewer</h3>
-                <p class="demo-description">Augmented reality network visualization for HoloLens and mobile</p>
-                <a href="/ar/viewer.html" class="demo-link">View in AR</a>
-            </div>
-            
-            <div class="demo-card" onclick="window.location.href='/training/index.html'">
-                <div class="demo-icon">🎓</div>
-                <h3 class="demo-title">Training Center</h3>
-                <p class="demo-description">Interactive tutorials and certification programs</p>
-                <a href="/training/index.html" class="demo-link">Start Learning</a>
+            <div class="demo-card" onclick="window.location.href='/dashboard/tsn-cbs-frer-dashboard.html'">
+                <div class="demo-icon">📊</div>
+                <h3 class="demo-title">Live Dashboard</h3>
+                <p class="demo-description">Real-time network metrics and performance monitoring</p>
+                <a href="/dashboard/tsn-cbs-frer-dashboard.html" class="demo-link">View Dashboard</a>
             </div>
         </div>
     </section>

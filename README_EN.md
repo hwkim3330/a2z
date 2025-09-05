@@ -306,11 +306,11 @@ This project is distributed under the MIT License. See [LICENSE](LICENSE) file f
 ### Project Manager
 - **Hyunwoo Kim** - TSN Team Lead - [@hwkim3330](https://github.com/hwkim3330)
 
-### Team Members
-- **Busik Park** - System Architect
-- **Hyunsoo Song** - CBS Test Engineer
-- **Jihyun Choi** - TAS Verification Lead
-- **Jonghwa An** - OMNeT++ Simulation
+### Technical Expertise Areas
+- **System Architecture** - TSN Network Design
+- **CBS Testing** - Bandwidth Guarantee Verification
+- **TAS Verification** - Time-Aware Scheduling
+- **Network Simulation** - OMNeT++ Network Modeling
 
 ### Organization
 - **Company**: Autonomous A2Z
@@ -327,7 +327,7 @@ This project is distributed under the MIT License. See [LICENSE](LICENSE) file f
 ---
 
 <p align="center">
-  <img src="assets/logo/a2z-logo.png" width="200">
+  <img src="assets/logo/a2z-logo.svg" width="200" alt="A2Z Autonomous Vehicle TSN Network Platform Logo">
   <br>
   <strong>Building the Future of Autonomous Driving</strong>
   <br>

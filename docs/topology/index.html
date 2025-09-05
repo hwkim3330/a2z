@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, maximum-scale=3.0, minimum-scale=0.5">
+    <title>A2Z Network Topology - Interactive TSN Visualization</title>
+    <style>
+        /* High DPI display optimizations */
+        @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi), (min-resolution: 2dppx) {
+            svg, canvas {
+                image-rendering: -webkit-optimize-contrast;
+                image-rendering: pixelated;
+                image-rendering: crisp-edges;
+            }
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            color: #ffffff;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .header {
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            padding: 2rem;
+            text-align: center;
+            border-bottom: 2px solid #00d4ff;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(45deg, #00d4ff, #00ff88);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin: 2rem 0;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: 2px solid #00d4ff;
+            border-radius: 0.5rem;
+            background: transparent;
+            color: #00d4ff;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn:hover, .btn.active {
+            background: #00d4ff;
+            color: #1a1a2e;
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.5);
+        }
+
+        .topology-container {
+            display: flex;
+            justify-content: center;
+            padding: 2rem;
+            position: relative;
+        }
+
+        .network-canvas {
+            width: 90vw;
+            max-width: 1200px;
+            height: 80vh;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 1rem;
+            border: 2px solid #00d4ff;
+            position: relative;
+            overflow: hidden;
+            image-rendering: pixelated;
+            image-rendering: -moz-crisp-edges;
+            image-rendering: crisp-edges;
+        }
+
+        .switch {
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 3px solid;
+            box-shadow: 0 0 20px;
+        }
+
+        .switch:hover {
+            transform: scale(1.1);
+            z-index: 10;
+        }
+
+        .lan9662 {
+            background: radial-gradient(circle, #ff6b6b, #ee5a24);
+            border-color: #ff6b6b;
+            box-shadow: 0 0 20px rgba(255, 107, 107, 0.6);
+        }
+
+        .lan9692 {
+            background: radial-gradient(circle, #00d4ff, #0984e3);
+            border-color: #00d4ff;
+            box-shadow: 0 0 30px rgba(0, 212, 255, 0.8);
+            width: 120px;
+            height: 120px;
+            font-size: 1rem;
+        }
+
+        .connection {
+            position: absolute;
+            background: linear-gradient(90deg, #00ff88, #00d4ff);
+            height: 3px;
+            opacity: 0.8;
+            z-index: 1;
+            transition: all 0.3s;
+            border-radius: 2px;
+        }
+
+        .connection.active {
+            height: 5px;
+            opacity: 1;
+            box-shadow: 0 0 10px rgba(0, 255, 136, 0.8);
+            animation: pulse-connection 2s infinite;
+        }
+
+        @keyframes pulse-connection {
+            0%, 100% { opacity: 0.8; }
+            50% { opacity: 1; }
+        }
+
+        .sensor {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            border-radius: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            animation: sensor-pulse 3s infinite;
+        }
+
+        .lidar {
+            background: #e74c3c;
+            box-shadow: 0 0 15px rgba(231, 76, 60, 0.8);
+        }
+
+        .camera {
+            background: #f39c12;
+            box-shadow: 0 0 15px rgba(243, 156, 18, 0.8);
+        }
+
+        .radar {
+            background: #9b59b6;
+            box-shadow: 0 0 15px rgba(155, 89, 182, 0.8);
+        }
+
+        @keyframes sensor-pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .data-flow {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #00ff88;
+            box-shadow: 0 0 10px rgba(0, 255, 136, 0.8);
+            animation: flow 2s linear infinite;
+        }
+
+        @keyframes flow {
+            from { opacity: 0; transform: scale(0); }
+            50% { opacity: 1; transform: scale(1); }
+            to { opacity: 0; transform: scale(0); }
+        }
+
+        .info-panel {
+            position: fixed;
+            top: 50%;
+            right: 2rem;
+            transform: translateY(-50%);
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            border: 2px solid #00d4ff;
+            border-radius: 1rem;
+            padding: 2rem;
+            width: 300px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .info-panel h3 {
+            color: #00d4ff;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .metric {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            padding: 0.5rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 0.3rem;
+        }
+
+        .metric-value {
+            font-weight: bold;
+            color: #00ff88;
+        }
+
+        .legend {
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid #00d4ff;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            margin: 2rem auto;
+            max-width: 600px;
+        }
+
+        .legend h3 {
+            color: #00d4ff;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .legend-items {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .legend-icon {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .failure-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 0, 0, 0.2);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: bold;
+            color: #ff4757;
+            backdrop-filter: blur(5px);
+            z-index: 100;
+        }
+
+        @media (max-width: 768px) {
+            .info-panel {
+                position: static;
+                transform: none;
+                margin: 2rem;
+                width: auto;
+            }
+            
+            .controls {
+                padding: 1rem;
+            }
+            
+            .btn {
+                padding: 0.5rem 1rem;
+                font-size: 0.9rem;
+            }
+            
+            .network-canvas {
+                width: 95vw;
+                height: 60vh;
+            }
+            
+            .switch {
+                width: 60px;
+                height: 60px;
+                font-size: 0.7rem;
+            }
+            
+            .lan9692 {
+                width: 90px;
+                height: 90px;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🌐 A2Z Network Topology</h1>
+        <p>Interactive TSN/FRER Mesh Visualization</p>
+    </div>
+
+    <div class="controls">
+        <button class="btn active" onclick="showTopology('normal')">🔗 Normal Operation</button>
+        <button class="btn" onclick="showTopology('frer')">🔄 FRER Paths</button>
+        <button class="btn" onclick="showTopology('failure')">⚠️ Failure Scenario</button>
+        <button class="btn" onclick="showTopology('cbs')">📊 CBS Bandwidth</button>
+        <button class="btn" onclick="animateDataFlow()">📡 Data Flow</button>
+    </div>
+
+    <div class="topology-container">
+        <div class="network-canvas" id="networkCanvas">
+            <!-- LAN9662 Switches -->
+            <div class="switch lan9662" id="lan9662-1" style="top: 10%; left: 20%;" title="LAN9662-1 (8-port, Zone 1)">
+                LAN9662-1
+            </div>
+            <div class="switch lan9662" id="lan9662-2" style="top: 10%; right: 20%;" title="LAN9662-2 (8-port, Zone 2)">
+                LAN9662-2
+            </div>
+            <div class="switch lan9662" id="lan9662-3" style="top: 30%; right: 10%;" title="LAN9662-3 (8-port, Zone 3)">
+                LAN9662-3
+            </div>
+            <div class="switch lan9662" id="lan9662-4" style="bottom: 30%; left: 10%;" title="LAN9662-4 (8-port, Zone 4)">
+                LAN9662-4
+            </div>
+            <div class="switch lan9662" id="lan9662-5" style="bottom: 30%; right: 30%;" title="LAN9662-5 (8-port, Zone 5)">
+                LAN9662-5
+            </div>
+            <div class="switch lan9662" id="lan9662-6" style="bottom: 10%; left: 50%;" title="LAN9662-6 (8-port, Zone 6)">
+                LAN9662-6
+            </div>
+            
+            <!-- LAN9692 Central Switch -->
+            <div class="switch lan9692" id="lan9692" style="top: 50%; left: 50%; transform: translate(-50%, -50%);" title="LAN9692 Central (30-port, 66Gbps)">
+                LAN9692
+                <br><small>Central</small>
+            </div>
+
+            <!-- Sensors -->
+            <div class="sensor lidar" style="top: 5%; left: 15%;" title="Front LiDAR - 400 Mbps">📡</div>
+            <div class="sensor camera" style="top: 5%; right: 15%;" title="Camera Array - 200 Mbps">📷</div>
+            <div class="sensor radar" style="bottom: 5%; left: 15%;" title="Radar Sensors - 50 Mbps">🎯</div>
+            <div class="sensor camera" style="bottom: 5%; right: 15%;" title="Rear Camera - 200 Mbps">📹</div>
+
+            <!-- Failure overlay -->
+            <div class="failure-overlay" id="failureOverlay">
+                ⚠️ SWITCH FAILURE DETECTED<br>
+                <small>FRER Automatic Failover Activated</small>
+            </div>
+        </div>
+    </div>
+
+    <div class="info-panel">
+        <h3>📊 Network Statistics</h3>
+        <div id="networkStats">
+            <div class="metric">
+                <span>System Availability</span>
+                <span class="metric-value">99.997%</span>
+            </div>
+            <div class="metric">
+                <span>Active FRER Streams</span>
+                <span class="metric-value">24</span>
+            </div>
+            <div class="metric">
+                <span>Average Latency</span>
+                <span class="metric-value">0.34ms</span>
+            </div>
+            <div class="metric">
+                <span>Packet Loss Rate</span>
+                <span class="metric-value">0.000012%</span>
+            </div>
+            <div class="metric">
+                <span>CBS Accuracy</span>
+                <span class="metric-value">±0.3%</span>
+            </div>
+            <div class="metric">
+                <span>Total Bandwidth</span>
+                <span class="metric-value">950 Mbps</span>
+            </div>
+        </div>
+
+        <h3 style="margin-top: 2rem;">🔄 FRER Status</h3>
+        <div id="frerStatus">
+            <div class="metric">
+                <span>Active Paths</span>
+                <span class="metric-value">3/3</span>
+            </div>
+            <div class="metric">
+                <span>Failovers Today</span>
+                <span class="metric-value">0</span>
+            </div>
+            <div class="metric">
+                <span>Recovery Time</span>
+                <span class="metric-value">8.3ms</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="legend">
+        <h3>📋 Network Legend</h3>
+        <div class="legend-items">
+            <div class="legend-item">
+                <div class="legend-icon lan9662"></div>
+                <span>LAN9662 (8-port Zone Switch)</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-icon lan9692"></div>
+                <span>LAN9692 (30-port Central)</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-icon lidar"></div>
+                <span>📡 LiDAR (400 Mbps)</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-icon camera"></div>
+                <span>📷 Camera (200 Mbps)</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-icon radar"></div>
+                <span>🎯 Radar (50 Mbps)</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentTopology = 'normal';
+        let dataFlowAnimation = null;
+
+        // Switch positions for connection calculations
+        const switchPositions = {
+            'lan9662-1': { x: 0.2, y: 0.1 },
+            'lan9662-2': { x: 0.8, y: 0.1 },
+            'lan9662-3': { x: 0.9, y: 0.3 },
+            'lan9662-4': { x: 0.1, y: 0.7 },
+            'lan9662-5': { x: 0.7, y: 0.7 },
+            'lan9662-6': { x: 0.5, y: 0.9 },
+            'lan9692': { x: 0.5, y: 0.5 }
+        };
+
+        // Network connections (mesh topology)
+        const connections = [
+            ['lan9662-1', 'lan9692'],
+            ['lan9662-2', 'lan9692'],
+            ['lan9662-3', 'lan9692'],
+            ['lan9662-4', 'lan9692'],
+            ['lan9662-5', 'lan9692'],
+            ['lan9662-6', 'lan9692'],
+            ['lan9662-1', 'lan9662-2'],
+            ['lan9662-2', 'lan9662-3'],
+            ['lan9662-4', 'lan9662-5'],
+            ['lan9662-4', 'lan9662-6'],
+            ['lan9662-5', 'lan9662-6'],
+            ['lan9662-1', 'lan9662-4'],
+            ['lan9662-2', 'lan9662-5']
+        ];
+
+        function createConnection(from, to, className = '') {
+            const canvas = document.getElementById('networkCanvas');
+            const connection = document.createElement('div');
+            connection.className = `connection ${className}`;
+            
+            const fromPos = switchPositions[from];
+            const toPos = switchPositions[to];
+            
+            const deltaX = toPos.x - fromPos.x;
+            const deltaY = toPos.y - fromPos.y;
+            const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+            const angle = Math.atan2(deltaY, deltaX) * 180 / Math.PI;
+            
+            const canvasRect = canvas.getBoundingClientRect();
+            const startX = fromPos.x * canvasRect.width;
+            const startY = fromPos.y * canvasRect.height;
+            
+            connection.style.left = startX + 'px';
+            connection.style.top = startY + 'px';
+            connection.style.width = (distance * canvasRect.width) + 'px';
+            connection.style.transformOrigin = '0 50%';
+            connection.style.transform = `rotate(${angle}deg)`;
+            
+            canvas.appendChild(connection);
+            return connection;
+        }
+
+        function clearConnections() {
+            const connections = document.querySelectorAll('.connection');
+            connections.forEach(conn => conn.remove());
+        }
+
+        function clearDataFlow() {
+            const flows = document.querySelectorAll('.data-flow');
+            flows.forEach(flow => flow.remove());
+        }
+
+        function showTopology(type) {
+            // Update active button
+            document.querySelectorAll('.btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            clearConnections();
+            clearDataFlow();
+            currentTopology = type;
+            
+            const failureOverlay = document.getElementById('failureOverlay');
+            
+            switch(type) {
+                case 'normal':
+                    failureOverlay.style.display = 'none';
+                    connections.forEach(([from, to]) => {
+                        createConnection(from, to);
+                    });
+                    break;
+                    
+                case 'frer':
+                    failureOverlay.style.display = 'none';
+                    // Show FRER triple paths
+                    createConnection('lan9662-1', 'lan9692', 'active'); // Primary
+                    createConnection('lan9662-1', 'lan9662-4'); // Secondary path 1
+                    createConnection('lan9662-4', 'lan9692'); // Secondary path 2
+                    createConnection('lan9662-1', 'lan9662-2'); // Tertiary path 1
+                    createConnection('lan9662-2', 'lan9692'); // Tertiary path 2
+                    break;
+                    
+                case 'failure':
+                    failureOverlay.style.display = 'flex';
+                    // Simulate switch failure - show remaining connections
+                    const workingConnections = connections.filter(([from, to]) => 
+                        from !== 'lan9662-3' && to !== 'lan9662-3');
+                    workingConnections.forEach(([from, to]) => {
+                        createConnection(from, to);
+                    });
+                    // Highlight backup paths
+                    createConnection('lan9662-2', 'lan9692', 'active');
+                    createConnection('lan9662-5', 'lan9692', 'active');
+                    
+                    setTimeout(() => {
+                        failureOverlay.style.display = 'none';
+                    }, 3000);
+                    break;
+                    
+                case 'cbs':
+                    failureOverlay.style.display = 'none';
+                    // Show bandwidth allocations with different line thickness
+                    connections.forEach(([from, to]) => {
+                        const conn = createConnection(from, to);
+                        // Simulate different bandwidth usage
+                        if (from.includes('1') || to.includes('1')) {
+                            conn.style.height = '6px'; // High bandwidth (LiDAR)
+                            conn.style.background = 'linear-gradient(90deg, #e74c3c, #c0392b)';
+                        } else if (from.includes('2') || to.includes('2')) {
+                            conn.style.height = '4px'; // Medium bandwidth (Camera)
+                            conn.style.background = 'linear-gradient(90deg, #f39c12, #e67e22)';
+                        }
+                    });
+                    break;
+            }
+        }
+
+        function animateDataFlow() {
+            clearDataFlow();
+            
+            const canvas = document.getElementById('networkCanvas');
+            const flows = [
+                { from: 'lan9662-1', to: 'lan9692', color: '#e74c3c' }, // LiDAR
+                { from: 'lan9662-2', to: 'lan9692', color: '#f39c12' }, // Camera
+                { from: 'lan9662-4', to: 'lan9692', color: '#9b59b6' }, // Radar
+                { from: 'lan9662-5', to: 'lan9692', color: '#f39c12' }  // Camera
+            ];
+            
+            flows.forEach((flow, index) => {
+                setTimeout(() => {
+                    const dataPacket = document.createElement('div');
+                    dataPacket.className = 'data-flow';
+                    dataPacket.style.background = flow.color;
+                    dataPacket.style.boxShadow = `0 0 10px ${flow.color}`;
+                    
+                    const fromPos = switchPositions[flow.from];
+                    const toPos = switchPositions[flow.to];
+                    
+                    const canvasRect = canvas.getBoundingClientRect();
+                    const startX = fromPos.x * canvasRect.width;
+                    const startY = fromPos.y * canvasRect.height;
+                    const endX = toPos.x * canvasRect.width;
+                    const endY = toPos.y * canvasRect.height;
+                    
+                    dataPacket.style.left = startX + 'px';
+                    dataPacket.style.top = startY + 'px';
+                    
+                    canvas.appendChild(dataPacket);
+                    
+                    // Animate to destination
+                    setTimeout(() => {
+                        dataPacket.style.transition = 'all 1s linear';
+                        dataPacket.style.left = endX + 'px';
+                        dataPacket.style.top = endY + 'px';
+                        
+                        setTimeout(() => {
+                            dataPacket.remove();
+                        }, 1000);
+                    }, 100);
+                    
+                }, index * 200);
+            });
+        }
+
+        // Add click handlers for switches
+        document.querySelectorAll('.switch').forEach(switchElement => {
+            switchElement.addEventListener('click', function() {
+                const switchId = this.id;
+                const stats = document.getElementById('networkStats');
+                
+                // Show switch-specific information
+                if (switchId === 'lan9692') {
+                    stats.innerHTML = `
+                        <div class="metric">
+                            <span>Switch Model</span>
+                            <span class="metric-value">LAN9692</span>
+                        </div>
+                        <div class="metric">
+                            <span>Ports</span>
+                            <span class="metric-value">30 (Multi-Gig)</span>
+                        </div>
+                        <div class="metric">
+                            <span>Capacity</span>
+                            <span class="metric-value">66 Gbps</span>
+                        </div>
+                        <div class="metric">
+                            <span>Active Streams</span>
+                            <span class="metric-value">24</span>
+                        </div>
+                        <div class="metric">
+                            <span>Temperature</span>
+                            <span class="metric-value">42°C</span>
+                        </div>
+                        <div class="metric">
+                            <span>Uptime</span>
+                            <span class="metric-value">72h 15m</span>
+                        </div>
+                    `;
+                } else {
+                    const zoneNumber = switchId.split('-')[1];
+                    stats.innerHTML = `
+                        <div class="metric">
+                            <span>Switch Model</span>
+                            <span class="metric-value">LAN9662</span>
+                        </div>
+                        <div class="metric">
+                            <span>Zone</span>
+                            <span class="metric-value">Zone ${zoneNumber}</span>
+                        </div>
+                        <div class="metric">
+                            <span>Ports</span>
+                            <span class="metric-value">8 (Gigabit)</span>
+                        </div>
+                        <div class="metric">
+                            <span>Active Ports</span>
+                            <span class="metric-value">6/8</span>
+                        </div>
+                        <div class="metric">
+                            <span>FRER Streams</span>
+                            <span class="metric-value">4</span>
+                        </div>
+                        <div class="metric">
+                            <span>CBS Queues</span>
+                            <span class="metric-value">2</span>
+                        </div>
+                    `;
+                }
+            });
+        });
+
+        // Initialize with normal topology
+        showTopology('normal');
+        
+        // Auto-animate data flow periodically
+        setInterval(animateDataFlow, 5000);
+        
+        // Real-time stats update simulation
+        setInterval(() => {
+            const metrics = document.querySelectorAll('.metric-value');
+            metrics.forEach(metric => {
+                if (metric.textContent.includes('ms')) {
+                    const baseValue = 0.34;
+                    const newValue = (baseValue + (Math.random() - 0.5) * 0.1).toFixed(2);
+                    metric.textContent = newValue + 'ms';
+                }
+            });
+        }, 2000);
+    </script>
+</body>
+</html>

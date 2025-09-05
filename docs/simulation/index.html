@@ -2,8 +2,35 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, maximum-scale=3.0, minimum-scale=0.5">
     <title>A2Z Network Simulator - FRER/CBS Interactive Testing</title>
+    <style>
+        /* High DPI display optimizations */
+        @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi), (min-resolution: 2dppx) {
+            canvas, svg {
+                image-rendering: -webkit-optimize-contrast;
+                image-rendering: pixelated;
+                image-rendering: crisp-edges;
+            }
+        }
+        
+        /* Vector graphics and canvas optimization */
+        canvas {
+            image-rendering: pixelated;
+            image-rendering: -moz-crisp-edges;
+            image-rendering: crisp-edges;
+            width: 100%;
+            height: auto;
+            max-width: 100%;
+        }
+        
+        svg {
+            shape-rendering: geometricPrecision;
+            text-rendering: geometricPrecision;
+            width: 100%;
+            height: auto;
+        }
+    </style>
     <style>
         * {
             margin: 0;

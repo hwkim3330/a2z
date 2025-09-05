@@ -306,11 +306,11 @@ GET /api/v1/cbs/bandwidth
 ### 프로젝트 관리자
 - **김현우** - TSN Team Lead - [@hwkim3330](https://github.com/hwkim3330)
 
-### 팀 멤버
-- **박부식** - 시스템 아키텍트
-- **송현수** - CBS 테스트 엔지니어
-- **최지현** - TAS 검증 담당
-- **안종화** - OMNeT++ 시뮬레이션
+### 기술 전문 분야
+- **시스템 아키텍처** - TSN 네트워크 설계
+- **CBS 테스트** - 대역폭 보장 검증
+- **TAS 검증** - 시간 인지 스케줄링
+- **시뮬레이션** - OMNeT++ 네트워크 모델링
 
 ### 조직
 - **회사**: Autonomous A2Z
@@ -327,7 +327,7 @@ GET /api/v1/cbs/bandwidth
 ---
 
 <p align="center">
-  <img src="assets/logo/a2z-logo.png" width="200">
+  <img src="assets/logo/a2z-logo.svg" width="200" alt="A2Z Autonomous Vehicle TSN Network Platform Logo">
   <br>
   <strong>Building the Future of Autonomous Driving</strong>
   <br>

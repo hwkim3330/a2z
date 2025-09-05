@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, maximum-scale=3.0, minimum-scale=0.5">
+    <title>A2Z TSN/FRER API Documentation</title>
+    <style>
+        /* High DPI display optimizations */
+        @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi), (min-resolution: 2dppx) {
+            svg, img {
+                image-rendering: -webkit-optimize-contrast;
+                image-rendering: crisp-edges;
+            }
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #2563eb;
+            --secondary-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+            --dark-bg: #0f172a;
+            --light-bg: #1e293b;
+            --card-bg: #334155;
+            --text-primary: #f8fafc;
+            --text-secondary: #cbd5e1;
+            --border-color: #475569;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, var(--dark-bg) 0%, var(--light-bg) 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+        }
+
+        .header {
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 2rem;
+            text-align: center;
+            border-bottom: 2px solid var(--primary-color);
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .api-section {
+            margin-bottom: 3rem;
+            background: var(--card-bg);
+            border-radius: 1rem;
+            padding: 2rem;
+            border: 1px solid var(--border-color);
+        }
+
+        .api-section h2 {
+            color: var(--primary-color);
+            margin-bottom: 1.5rem;
+            font-size: 1.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .method {
+            background: var(--light-bg);
+            border-radius: 0.5rem;
+            margin-bottom: 1.5rem;
+            padding: 1.5rem;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .method-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .http-method {
+            padding: 0.3rem 0.8rem;
+            border-radius: 0.3rem;
+            font-weight: bold;
+            font-size: 0.8rem;
+        }
+
+        .get { background: var(--secondary-color); }
+        .post { background: var(--primary-color); }
+        .put { background: var(--warning-color); }
+        .delete { background: var(--danger-color); }
+
+        .endpoint {
+            font-family: 'Courier New', monospace;
+            font-size: 1.1rem;
+            font-weight: bold;
+        }
+
+        .description {
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+        }
+
+        .params {
+            background: var(--dark-bg);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin: 0.5rem 0;
+        }
+
+        .params h4 {
+            color: var(--secondary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .param {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 0.5rem;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+        }
+
+        .param-name {
+            color: var(--warning-color);
+            font-weight: bold;
+            min-width: 120px;
+        }
+
+        .param-type {
+            color: var(--secondary-color);
+            min-width: 80px;
+        }
+
+        .example {
+            background: var(--dark-bg);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin: 1rem 0;
+            overflow-x: auto;
+        }
+
+        .example h4 {
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .example pre {
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            line-height: 1.4;
+            color: var(--text-secondary);
+        }
+
+        .status-code {
+            display: inline-block;
+            padding: 0.2rem 0.5rem;
+            border-radius: 0.3rem;
+            font-weight: bold;
+            margin-right: 0.5rem;
+        }
+
+        .status-200 { background: var(--secondary-color); }
+        .status-400 { background: var(--warning-color); }
+        .status-500 { background: var(--danger-color); }
+
+        .websocket-section {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            border: none;
+        }
+
+        .realtime-indicator {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            background: var(--secondary-color);
+            border-radius: 50%;
+            animation: pulse 1.5s infinite;
+            margin-right: 0.5rem;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        .nav-pills {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .nav-pill {
+            padding: 0.5rem 1rem;
+            border: 2px solid var(--primary-color);
+            border-radius: 2rem;
+            color: var(--primary-color);
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .nav-pill:hover, .nav-pill.active {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .footer {
+            background: var(--dark-bg);
+            text-align: center;
+            padding: 2rem;
+            margin-top: 4rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            .method-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.5rem;
+            }
+            
+            .param {
+                flex-direction: column;
+                gap: 0.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🚀 A2Z TSN/FRER API Documentation</h1>
+        <p>Real-time network monitoring and configuration APIs</p>
+    </div>
+
+    <div class="container">
+        <nav class="nav-pills">
+            <a href="#switches" class="nav-pill active">Switch Management</a>
+            <a href="#frer" class="nav-pill">FRER Streams</a>
+            <a href="#cbs" class="nav-pill">CBS Bandwidth</a>
+            <a href="#monitoring" class="nav-pill">Real-time Monitoring</a>
+            <a href="#websocket" class="nav-pill">WebSocket API</a>
+        </nav>
+
+        <!-- Switch Management API -->
+        <section id="switches" class="api-section">
+            <h2>🔌 Switch Management API</h2>
+            
+            <div class="method">
+                <div class="method-header">
+                    <span class="http-method get">GET</span>
+                    <span class="endpoint">/api/v1/switches/status</span>
+                </div>
+                <div class="description">Get current status of all TSN switches (LAN9662/LAN9692)</div>
+                
+                <div class="example">
+                    <h4>Response Example:</h4>
+                    <pre>{
+  "switches": [
+    {
+      "id": "LAN9662-1",
+      "ip": "192.168.1.11",
+      "status": "active",
+      "ports": {
+        "active": 6,
+        "total": 8
+      },
+      "frer_streams": 12,
+      "cbs_queues": 4,
+      "uptime": "72h 15m",
+      "temperature": "45°C"
+    }
+  ]
+}</pre>
+                </div>
+                
+                <div class="params">
+                    <h4>Response Codes:</h4>
+                    <div><span class="status-code status-200">200</span>Success</div>
+                    <div><span class="status-code status-500">500</span>Switch communication error</div>
+                </div>
+            </div>
+
+            <div class="method">
+                <div class="method-header">
+                    <span class="http-method post">POST</span>
+                    <span class="endpoint">/api/v1/switches/{switch_id}/reboot</span>
+                </div>
+                <div class="description">Safely reboot a specific TSN switch</div>
+                
+                <div class="params">
+                    <h4>Path Parameters:</h4>
+                    <div class="param">
+                        <span class="param-name">switch_id</span>
+                        <span class="param-type">string</span>
+                        <span>Switch identifier (LAN9662-1, LAN9692, etc.)</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- FRER Streams API -->
+        <section id="frer" class="api-section">
+            <h2>🔄 FRER Stream Management</h2>
+            
+            <div class="method">
+                <div class="method-header">
+                    <span class="http-method get">GET</span>
+                    <span class="endpoint">/api/v1/frer/streams</span>
+                </div>
+                <div class="description">List all active FRER replication streams</div>
+                
+                <div class="example">
+                    <h4>Response Example:</h4>
+                    <pre>{
+  "frer_streams": [
+    {
+      "stream_id": "front_lidar_stream",
+      "vlan_id": 100,
+      "paths": {
+        "primary": "LAN9662-1 → LAN9692",
+        "secondary": "LAN9662-1 → LAN9662-4 → LAN9692",
+        "tertiary": "LAN9662-1 → LAN9662-2 → LAN9692"
+      },
+      "active_paths": 3,
+      "packets_sent": 1847293,
+      "packets_duplicated": 0,
+      "failovers": 0,
+      "latency_ms": 0.34
+    }
+  ]
+}</pre>
+                </div>
+            </div>
+
+            <div class="method">
+                <div class="method-header">
+                    <span class="http-method post">POST</span>
+                    <span class="endpoint">/api/v1/frer/streams</span>
+                </div>
+                <div class="description">Create new FRER stream with triple path replication</div>
+                
+                <div class="params">
+                    <h4>Request Body:</h4>
+                    <div class="param">
+                        <span class="param-name">stream_name</span>
+                        <span class="param-type">string</span>
+                        <span>Unique stream identifier</span>
+                    </div>
+                    <div class="param">
+                        <span class="param-name">vlan_id</span>
+                        <span class="param-type">integer</span>
+                        <span>VLAN ID for stream isolation</span>
+                    </div>
+                    <div class="param">
+                        <span class="param-name">source_switch</span>
+                        <span class="param-type">string</span>
+                        <span>Source switch ID</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CBS Bandwidth API -->
+        <section id="cbs" class="api-section">
+            <h2>📊 CBS Bandwidth Management</h2>
+            
+            <div class="method">
+                <div class="method-header">
+                    <span class="http-method get">GET</span>
+                    <span class="endpoint">/api/v1/cbs/bandwidth</span>
+                </div>
+                <div class="description">Get current CBS bandwidth allocation and usage</div>
+                
+                <div class="example">
+                    <h4>Response Example:</h4>
+                    <pre>{
+  "cbs_configuration": {
+    "LAN9662-1": {
+      "port_1": {
+        "sensor_type": "LiDAR",
+        "allocated_mbps": 400,
+        "current_mbps": 387.4,
+        "utilization": "96.8%",
+        "queue_depth": 12,
+        "drops": 0
+      },
+      "port_2": {
+        "sensor_type": "Camera",
+        "allocated_mbps": 200,
+        "current_mbps": 198.7,
+        "utilization": "99.3%",
+        "queue_depth": 8,
+        "drops": 0
+      }
+    }
+  }
+}</pre>
+                </div>
+            </div>
+
+            <div class="method">
+                <div class="method-header">
+                    <span class="http-method put">PUT</span>
+                    <span class="endpoint">/api/v1/cbs/bandwidth/{switch_id}/{port}</span>
+                </div>
+                <div class="description">Update CBS bandwidth allocation for specific port</div>
+                
+                <div class="params">
+                    <h4>Request Body:</h4>
+                    <div class="param">
+                        <span class="param-name">bandwidth_mbps</span>
+                        <span class="param-type">integer</span>
+                        <span>Bandwidth allocation in Mbps</span>
+                    </div>
+                    <div class="param">
+                        <span class="param-name">sensor_type</span>
+                        <span class="param-type">string</span>
+                        <span>LiDAR, Camera, Radar, or Control</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Real-time Monitoring API -->
+        <section id="monitoring" class="api-section">
+            <h2>📈 Real-time Monitoring</h2>
+            
+            <div class="method">
+                <div class="method-header">
+                    <span class="http-method get">GET</span>
+                    <span class="endpoint">/api/v1/monitoring/metrics</span>
+                </div>
+                <div class="description">Get real-time network performance metrics</div>
+                
+                <div class="params">
+                    <h4>Query Parameters:</h4>
+                    <div class="param">
+                        <span class="param-name">timerange</span>
+                        <span class="param-type">string</span>
+                        <span>1m, 5m, 15m, 1h, 24h</span>
+                    </div>
+                    <div class="param">
+                        <span class="param-name">metric</span>
+                        <span class="param-type">string</span>
+                        <span>latency, bandwidth, packet_loss, availability</span>
+                    </div>
+                </div>
+
+                <div class="example">
+                    <h4>Response Example:</h4>
+                    <pre>{
+  "timestamp": "2024-01-15T10:30:00Z",
+  "metrics": {
+    "system_availability": "99.997%",
+    "avg_latency_ms": 0.34,
+    "packet_loss_rate": "0.000012%",
+    "frer_switchover_ms": 8.3,
+    "cbs_accuracy": "±0.3%"
+  },
+  "alerts": [
+    {
+      "level": "warning",
+      "message": "High utilization on LAN9662-2 port 3",
+      "timestamp": "2024-01-15T10:28:15Z"
+    }
+  ]
+}</pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- WebSocket API -->
+        <section id="websocket" class="api-section websocket-section">
+            <h2><span class="realtime-indicator"></span>Real-time WebSocket API</h2>
+            
+            <div class="method">
+                <div class="method-header">
+                    <span class="http-method get">WS</span>
+                    <span class="endpoint">ws://localhost:8080/api/v1/realtime</span>
+                </div>
+                <div class="description">Real-time streaming of network events and metrics</div>
+                
+                <div class="example">
+                    <h4>Message Types:</h4>
+                    <pre>// Network Metrics Update
+{
+  "type": "metrics_update",
+  "data": {
+    "latency_ms": 0.35,
+    "bandwidth_utilization": 0.78,
+    "active_streams": 24
+  }
+}
+
+// FRER Failover Event
+{
+  "type": "frer_failover",
+  "data": {
+    "stream_id": "front_lidar_stream",
+    "failed_path": "primary",
+    "active_path": "secondary",
+    "switchover_time_ms": 7.2
+  }
+}
+
+// System Alert
+{
+  "type": "system_alert",
+  "data": {
+    "level": "critical",
+    "message": "LAN9662-3 communication timeout",
+    "timestamp": "2024-01-15T10:30:45Z",
+    "affected_streams": ["camera_stream_2", "radar_stream_1"]
+  }
+}</pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- Korean Government APIs -->
+        <section class="api-section">
+            <h2>🇰🇷 Korean Integration APIs</h2>
+            
+            <div class="method">
+                <div class="method-header">
+                    <span class="http-method get">GET</span>
+                    <span class="endpoint">/api/v1/korea/cits/traffic</span>
+                </div>
+                <div class="description">Get real-time traffic information from MOLIT C-ITS</div>
+            </div>
+
+            <div class="method">
+                <div class="method-header">
+                    <span class="http-method get">GET</span>
+                    <span class="endpoint">/api/v1/korea/weather/qos</span>
+                </div>
+                <div class="description">Weather-based QoS adjustments via KMA integration</div>
+            </div>
+
+            <div class="method">
+                <div class="method-header">
+                    <span class="http-method post">POST</span>
+                    <span class="endpoint">/api/v1/korea/emergency/report</span>
+                </div>
+                <div class="description">Automatic 119/112 emergency reporting</div>
+            </div>
+        </section>
+    </div>
+
+    <div class="footer">
+        <p>🚗 A2Z Autonomous Vehicle TSN/FRER Network Platform</p>
+        <p>Built with ❤️ in Seoul, Korea • <a href="../index.html" style="color: #2563eb;">Back to Main</a></p>
+    </div>
+
+    <script>
+        // Add smooth scrolling for navigation
+        document.querySelectorAll('.nav-pill').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const target = document.querySelector(link.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth' });
+                    
+                    // Update active state
+                    document.querySelectorAll('.nav-pill').forEach(pill => pill.classList.remove('active'));
+                    link.classList.add('active');
+                }
+            });
+        });
+
+        // Add syntax highlighting animation
+        document.querySelectorAll('pre').forEach(pre => {
+            pre.addEventListener('click', () => {
+                navigator.clipboard.writeText(pre.textContent);
+                pre.style.background = '#10b981';
+                setTimeout(() => {
+                    pre.style.background = '#0f172a';
+                }, 200);
+            });
+        });
+    </script>
+</body>
+</html>
