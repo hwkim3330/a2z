@@ -49,14 +49,34 @@
 | **IEEE 802.1AS** | gPTP (시간 동기화) | ✅ 완료 |
 | **IEEE 802.1Qci** | PSFP (스트림 필터링) | ✅ 완료 |
 
-### FRER 이중 복제 (Dual Path Redundancy)
+### FRER 이중 경로 복제 (Dual Path Redundancy)
+
+![FRER Architecture](assets/diagrams/frer-architecture.svg)
+
+#### 혁신적 아키텍처: 이중 LiDAR 집계 및 이중 경로 복제
 ```
-센서 → [LAN9662] → 2개 경로 동시 전송 → [LAN9692] → 중복 제거 → ACU
-          ↓
-    IEEE 802.1CB 표준 이중 복제
-    Primary Path: 직접 경로 (최소 지연)
-    Secondary Path: 대체 경로 (백업)
+[전방 LiDAR 400Mbps] ──┬──→ [Port 1]
+                      │              ┌──────────────────┐
+[후방 LiDAR 400Mbps] ──┴──→ [Port 2] │  LAN9662 (8-port)  │
+                                     │                  │
+                                     │ 집계 + FRER 생성 │
+                                     │  R-TAG Sequence  │
+                                     └─────┬────┬─────┘
+                                           │    │
+                                     [Port 3]  [Port 4]
+                                         │        │
+                                   Primary Path  Secondary Path
+                                   (직접 경로)   (백업 경로)
+                                         │        │
+                                         ↓        ↓
+                                    [LAN9692 - 중복 제거]
 ```
+
+#### LAN9662 포트 할당 (8포트 최적화)
+- **Port 1-2**: LiDAR 입력 (2개 포트, 각 400Mbps)
+- **Port 3-4**: FRER 출력 (2개 포트, 이중 경로)
+- **Port 5-6**: 카메라/레이더 입력 또는 추가 업링크
+- **Port 7-8**: 관리/예비
 
 ### CBS 대역폭 보장
 ```
@@ -92,10 +112,11 @@ Reserve: ██ 100 Mbps (10%)
 ## ⚡ 주요 기능
 
 ### 1. 실시간 센서 데이터 처리
-- **LiDAR**: 400Mbps CBS 보장, 이중 FRER 복제
-- **Camera**: 200Mbps CBS 보장, 이중 FRER 복제
-- **Radar**: 50Mbps CBS 보장
-- **지연시간**: < 1ms (End-to-End)
+- **이중 LiDAR 집계**: 전방/후방 LiDAR 통합 (800Mbps 총 대역폭)
+- **FRER 이중 경로**: 모든 LiDAR 데이터 이중화 전송
+- **Camera**: 200Mbps CBS 보장
+- **Radar**: 50Mbps CBS 보장  
+- **지연시간**: < 0.5ms (End-to-End)
 
 ### 2. 고장 대응 능력
 - **단일 스위치 고장**: 10ms 내 자동 복구

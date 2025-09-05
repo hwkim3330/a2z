@@ -49,14 +49,34 @@ Next-generation **TSN (Time-Sensitive Networking)** based in-vehicle network pla
 | **IEEE 802.1AS** | gPTP (Time Synchronization) | ✅ Complete |
 | **IEEE 802.1Qci** | PSFP (Stream Filtering) | ✅ Complete |
 
-### FRER Dual Path Redundancy
+### FRER Dual Path Redundancy Architecture
+
+![FRER Architecture](assets/diagrams/frer-architecture.svg)
+
+#### Innovative Architecture: Dual LiDAR Aggregation with Dual Path Replication
 ```
-Sensor → [LAN9662] → 2 Simultaneous Paths → [LAN9692] → Duplicate Elimination → ACU
-           ↓
-    IEEE 802.1CB Standard Dual Replication
-    Primary Path: Direct route (minimum latency)
-    Secondary Path: Alternate route (backup)
+[Front LiDAR 400Mbps] ──┬──→ [Port 1]
+                       │              ┌──────────────────┐
+[Rear LiDAR 400Mbps] ───┴──→ [Port 2] │  LAN9662 (8-port)  │
+                                      │                  │
+                                      │ Aggregation+FRER │
+                                      │  R-TAG Sequence  │
+                                      └─────┬────┬─────┘
+                                            │    │
+                                      [Port 3]  [Port 4]
+                                          │        │
+                                    Primary Path  Secondary Path
+                                    (Direct Route) (Backup Route)
+                                          │        │
+                                          ↓        ↓
+                                     [LAN9692 - Duplicate Elimination]
 ```
+
+#### LAN9662 Port Allocation (8-Port Optimization)
+- **Port 1-2**: LiDAR Input (2 ports, 400Mbps each)
+- **Port 3-4**: FRER Output (2 ports, dual path)
+- **Port 5-6**: Camera/Radar input or additional uplinks
+- **Port 7-8**: Management/Reserved
 
 ### CBS Bandwidth Guarantee
 ```
@@ -92,10 +112,11 @@ Reserve: ██ 100 Mbps (10%)
 ## ⚡ Key Features
 
 ### 1. Real-time Sensor Data Processing
-- **LiDAR**: 400Mbps CBS guaranteed, dual FRER replication
-- **Camera**: 200Mbps CBS guaranteed, dual FRER replication
+- **Dual LiDAR Aggregation**: Front/Rear LiDAR integration (800Mbps total)
+- **FRER Dual Path**: All LiDAR data transmitted with redundancy
+- **Camera**: 200Mbps CBS guaranteed
 - **Radar**: 50Mbps CBS guaranteed
-- **Latency**: < 1ms (End-to-End)
+- **Latency**: < 0.5ms (End-to-End)
 
 ### 2. Failure Recovery Capability
 - **Single switch failure**: Auto-recovery within 10ms
