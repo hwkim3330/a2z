@@ -5,7 +5,7 @@ For A2Z Autonomous Vehicle Safety-Critical Sensor Data
 
 FRER (IEEE 802.1CB) provides seamless redundancy by:
 1. Replicating frames at ingress (LAN9662 near sensors)  
-2. Sending copies via multiple paths
+2. Sending copies via dual paths (primary and secondary)
 3. Eliminating duplicates at egress (LAN9692 central)
 
 Each LAN9662 acts as a FRER replication point for LiDAR data.
@@ -47,7 +47,7 @@ class FRERStream:
     source_mac: str
     dest_mac: str
     vlan_id: int
-    paths: List[str]  # List of path IDs (primary, secondary, tertiary)
+    paths: List[str]  # List of path IDs (primary, secondary)
     algorithm: FRERAlgorithm = FRERAlgorithm.VECTOR
     history_length: int = 32
     reset_timeout_ms: int = 1000
@@ -60,7 +60,7 @@ class FRERPath:
     path_id: str
     switches: List[str]  # Ordered list of switches
     egress_port: int
-    priority: int  # Path priority (1=primary, 2=secondary, 3=tertiary)
+    priority: int  # Path priority (1=primary, 2=secondary)
     active: bool = True
 
 class LAN9662_FRER_Configurator:

@@ -49,13 +49,13 @@
 | **IEEE 802.1AS** | gPTP (시간 동기화) | ✅ 완료 |
 | **IEEE 802.1Qci** | PSFP (스트림 필터링) | ✅ 완료 |
 
-### FRER 3중 복제 (Triple Path Replication)
+### FRER 이중 복제 (Dual Path Redundancy)
 ```
-센서 → [LAN9662] → 3개 경로 동시 전송 → [LAN9692] → 중복 제거 → ACU
+센서 → [LAN9662] → 2개 경로 동시 전송 → [LAN9692] → 중복 제거 → ACU
           ↓
-    즉시 3중 복제 (Primary/Secondary/Tertiary)
-    실제 이중화: Primary ↔ Secondary (2중 이중화)
-                + Tertiary (추가 백업)
+    IEEE 802.1CB 표준 이중 복제
+    Primary Path: 직접 경로 (최소 지연)
+    Secondary Path: 대체 경로 (백업)
 ```
 
 ### CBS 대역폭 보장
@@ -92,8 +92,8 @@ Reserve: ██ 100 Mbps (10%)
 ## ⚡ 주요 기능
 
 ### 1. 실시간 센서 데이터 처리
-- **LiDAR**: 400Mbps CBS 보장, 3중 FRER 복제
-- **Camera**: 200Mbps CBS 보장, 2중 FRER 복제
+- **LiDAR**: 400Mbps CBS 보장, 이중 FRER 복제
+- **Camera**: 200Mbps CBS 보장, 이중 FRER 복제
 - **Radar**: 50Mbps CBS 보장
 - **지연시간**: < 1ms (End-to-End)
 
@@ -259,7 +259,7 @@ GET /api/v1/cbs/bandwidth
 | **시스템 가용성** | > 99.99% | 99.997% | ✅ |
 | **패킷 손실률** | < 10^-6 | 0.000012% | ✅ |
 | **평균 지연시간** | < 1ms | 0.34ms | ✅ |
-| **FRER 절체시간** | < 50ms | 8.3ms | ✅ |
+| **FRER 절체시간** | < 50ms | 10ms | ✅ |
 | **CBS 정확도** | ±1% | ±0.3% | ✅ |
 
 ### 안전성 인증

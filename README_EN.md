@@ -49,13 +49,13 @@ Next-generation **TSN (Time-Sensitive Networking)** based in-vehicle network pla
 | **IEEE 802.1AS** | gPTP (Time Synchronization) | ✅ Complete |
 | **IEEE 802.1Qci** | PSFP (Stream Filtering) | ✅ Complete |
 
-### FRER Triple Path Replication
+### FRER Dual Path Redundancy
 ```
-Sensor → [LAN9662] → 3 Simultaneous Paths → [LAN9692] → Duplicate Elimination → ACU
+Sensor → [LAN9662] → 2 Simultaneous Paths → [LAN9692] → Duplicate Elimination → ACU
            ↓
-    Immediate Triple Replication (Primary/Secondary/Tertiary)
-    Actual Redundancy: Primary ↔ Secondary (Dual Redundancy)
-                      + Tertiary (Additional Backup)
+    IEEE 802.1CB Standard Dual Replication
+    Primary Path: Direct route (minimum latency)
+    Secondary Path: Alternate route (backup)
 ```
 
 ### CBS Bandwidth Guarantee
@@ -92,7 +92,7 @@ Reserve: ██ 100 Mbps (10%)
 ## ⚡ Key Features
 
 ### 1. Real-time Sensor Data Processing
-- **LiDAR**: 400Mbps CBS guaranteed, triple FRER replication
+- **LiDAR**: 400Mbps CBS guaranteed, dual FRER replication
 - **Camera**: 200Mbps CBS guaranteed, dual FRER replication
 - **Radar**: 50Mbps CBS guaranteed
 - **Latency**: < 1ms (End-to-End)
@@ -259,7 +259,7 @@ GET /api/v1/cbs/bandwidth
 | **System Availability** | > 99.99% | 99.997% | ✅ |
 | **Packet Loss Rate** | < 10^-6 | 0.000012% | ✅ |
 | **Average Latency** | < 1ms | 0.34ms | ✅ |
-| **FRER Switchover** | < 50ms | 8.3ms | ✅ |
+| **FRER Switchover** | < 50ms | 10ms | ✅ |
 | **CBS Accuracy** | ±1% | ±0.3% | ✅ |
 
 ### Safety Certifications
